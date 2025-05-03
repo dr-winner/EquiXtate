@@ -33,6 +33,7 @@ EquiXtate is a revolutionary decentralized real estate marketplace that leverage
 - Node.js (v18 or higher)
 - npm or yarn
 - MetaMask or compatible Web3 wallet
+- API credentials (contact support for access)
 
 ### Installation
 1. Clone the repository:
@@ -48,14 +49,20 @@ EquiXtate is a revolutionary decentralized real estate marketplace that leverage
    yarn install
    ```
 
-3. Start the development server:
+3. Configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API credentials and other settings
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:8080](http://localhost:8080) in your browser
+5. Open [http://localhost:8080](http://localhost:8080) in your browser
 
 ## Project Structure
 ```
@@ -66,6 +73,7 @@ equixtate/
 │   ├── hooks/        # Custom React hooks
 │   ├── utils/        # Utility functions
 │   ├── types/        # TypeScript type definitions
+│   ├── services/     # API and blockchain services
 │   └── assets/       # Static assets
 ├── public/           # Public assets
 └── config/           # Configuration files
@@ -81,6 +89,10 @@ Security is our top priority. The platform implements:
 - Multi-signature transactions
 - Encrypted data storage
 - Secure wallet integration
+- API key rotation
+- OAuth2 authentication
+- CORS protection
+- Input validation and sanitization
 
 ## Roadmap
 - [ ] Phase 1: Core Marketplace (Q2 2024)
