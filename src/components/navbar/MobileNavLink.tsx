@@ -4,17 +4,19 @@ import React from 'react';
 interface MobileNavLinkProps {
   href: string;
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   isActive?: boolean;
 }
 
 const MobileNavLink: React.FC<MobileNavLinkProps> = ({ href, children, onClick, isActive }) => {
   return (
     <a
-      href={`#${href}`}
+      href={href}
       onClick={(e) => {
-        e.preventDefault();
-        onClick();
+        if (onClick) {
+          e.preventDefault();
+          onClick();
+        }
       }}
       className={`font-spacegrotesk flex items-center py-2 px-4 rounded-lg ${
         isActive 

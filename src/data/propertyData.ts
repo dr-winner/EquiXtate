@@ -1,10 +1,6 @@
-
-// Currency conversion rate (approximate as of 2025)
-// 1 USD = 14.5 GHS
-const USD_TO_GHS = 14.5;
-
-// Base token price (equivalent to $10)
-const BASE_TOKEN_PRICE = 10 * USD_TO_GHS;
+// Currency is now in USD/USDC directly (no conversion from GHS)
+// Base token price ($10)
+const BASE_TOKEN_PRICE = 10;
 
 export const properties = [
   {
@@ -18,8 +14,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,kitchen,modern',
       'https://source.unsplash.com/featured/?ghana,bedroom,luxury',
     ],
-    price: 2500000 * USD_TO_GHS, // Converting to GHS
-    tokenPrice: 50 * USD_TO_GHS, // Premium token price - 5x base
+    price: 2500000, // Now in USDC directly
+    tokenPrice: 50, // Premium token price - 5x base
     ownerCount: 127,
     type: 'Fractional',
     roi: 8.5,
@@ -41,7 +37,7 @@ export const properties = [
     bathrooms: 3,
     yearBuilt: 2022,
     rentalYield: 5.8,
-    rentalIncome: 12000 * USD_TO_GHS,
+    rentalIncome: 12000, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x3d8e45a1c51bf05eb23be868d6ec26e050650f09a23af8161',
@@ -60,8 +56,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,interior,design',
       'https://source.unsplash.com/featured/?ghana,balcony,view',
     ],
-    price: 1800000 * USD_TO_GHS,
-    tokenPrice: 35 * USD_TO_GHS, // Premium token price - 3.5x base
+    price: 1800000, // Now in USDC directly
+    tokenPrice: 35, // Premium token price - 3.5x base
     ownerCount: 83,
     type: 'Buy',
     roi: 6.2,
@@ -83,7 +79,7 @@ export const properties = [
     bathrooms: 2.5,
     yearBuilt: 2021,
     rentalYield: 4.9,
-    rentalIncome: 7800 * USD_TO_GHS,
+    rentalIncome: 7800, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x6a4b8e03c50d1e78bc59c085fc4934095c63d55d7ef56e32',
@@ -102,8 +98,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,swimming,pool',
       'https://source.unsplash.com/featured/?ghana,ocean,view',
     ],
-    price: 3200000 * USD_TO_GHS,
-    tokenPrice: 60 * USD_TO_GHS, // Premium token price - 6x base
+    price: 3200000, // Now in USDC directly
+    tokenPrice: 60, // Premium token price - 6x base
     ownerCount: 156,
     type: 'Auction',
     roi: 9.1,
@@ -125,7 +121,7 @@ export const properties = [
     bathrooms: 4.5,
     yearBuilt: 2020,
     rentalYield: 7.2,
-    rentalIncome: 19200 * USD_TO_GHS,
+    rentalIncome: 19200, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x9f2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4',
@@ -144,8 +140,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,modern,design',
       'https://source.unsplash.com/featured/?ghana,living,space',
     ],
-    price: 1200000 * USD_TO_GHS,
-    tokenPrice: 20 * USD_TO_GHS, // Medium token price - 2x base
+    price: 1200000, // Now in USDC directly
+    tokenPrice: 20, // Medium token price - 2x base
     ownerCount: 64,
     type: 'Rent',
     roi: 7.8,
@@ -167,7 +163,7 @@ export const properties = [
     bathrooms: 2,
     yearBuilt: 2018,
     rentalYield: 6.5,
-    rentalIncome: 6500 * USD_TO_GHS,
+    rentalIncome: 6500, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e',
@@ -186,8 +182,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,garden,luxury',
       'https://source.unsplash.com/featured/?ghana,swimming,pool',
     ],
-    price: 4500000 * USD_TO_GHS,
-    tokenPrice: 75 * USD_TO_GHS, // Premium token price - 7.5x base
+    price: 4500000, // Now in USDC directly
+    tokenPrice: 75, // Premium token price - 7.5x base
     ownerCount: 212,
     type: 'Fractional',
     roi: 10.3,
@@ -209,7 +205,7 @@ export const properties = [
     bathrooms: 5.5,
     yearBuilt: 2021,
     rentalYield: 8.4,
-    rentalIncome: 31500 * USD_TO_GHS,
+    rentalIncome: 31500, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b',
@@ -228,8 +224,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,modern,interior',
       'https://source.unsplash.com/featured/?ghana,living,luxury',
     ],
-    price: 5800000 * USD_TO_GHS,
-    tokenPrice: 100 * USD_TO_GHS, // Premium token price - 10x base
+    price: 5800000, // Now in USDC directly
+    tokenPrice: 100, // Premium token price - 10x base
     ownerCount: 245,
     type: 'Buy',
     roi: 7.5,
@@ -251,7 +247,7 @@ export const properties = [
     bathrooms: 4.5,
     yearBuilt: 2022,
     rentalYield: 6.8,
-    rentalIncome: 29000 * USD_TO_GHS,
+    rentalIncome: 29000, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x5e6d7c8b9a0f1e2d3c4b5a6f7d8e9c0b1a2f3e4d5c6b7',
@@ -270,8 +266,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,living,room',
       'https://source.unsplash.com/featured/?ghana,bedroom,modern',
     ],
-    price: 850000 * USD_TO_GHS,
-    tokenPrice: 15 * USD_TO_GHS, // Medium token price - 1.5x base
+    price: 850000, // Now in USDC directly
+    tokenPrice: 15, // Medium token price - 1.5x base
     ownerCount: 78,
     type: 'Rent',
     roi: 8.2,
@@ -293,7 +289,7 @@ export const properties = [
     bathrooms: 2,
     yearBuilt: 2020,
     rentalYield: 7.6,
-    rentalIncome: 5400 * USD_TO_GHS,
+    rentalIncome: 5400, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9',
@@ -312,8 +308,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,conference,room',
       'https://source.unsplash.com/featured/?ghana,business,district',
     ],
-    price: 2200000 * USD_TO_GHS,
-    tokenPrice: 45 * USD_TO_GHS, // Premium token price - 4.5x base
+    price: 2200000, // Now in USDC directly
+    tokenPrice: 45, // Premium token price - 4.5x base
     ownerCount: 134,
     type: 'Fractional',
     roi: 9.5,
@@ -335,7 +331,7 @@ export const properties = [
     bathrooms: 4,
     yearBuilt: 2019,
     rentalYield: 8.7,
-    rentalIncome: 15900 * USD_TO_GHS,
+    rentalIncome: 15900, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0',
@@ -354,8 +350,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,cultural,center',
       'https://source.unsplash.com/featured/?ghana,community,space',
     ],
-    price: 1750000 * USD_TO_GHS,
-    tokenPrice: 30 * USD_TO_GHS, // Medium token price - 3x base
+    price: 1750000, // Now in USDC directly
+    tokenPrice: 30, // Medium token price - 3x base
     ownerCount: 109,
     type: 'Auction',
     roi: 7.3,
@@ -377,7 +373,7 @@ export const properties = [
     bathrooms: 6,
     yearBuilt: 2016,
     rentalYield: 6.9,
-    rentalIncome: 10050 * USD_TO_GHS,
+    rentalIncome: 10050, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0x9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1',
@@ -396,8 +392,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,coastal,apartment',
       'https://source.unsplash.com/featured/?ghana,modern,living',
     ],
-    price: 1350000 * USD_TO_GHS,
-    tokenPrice: 25 * USD_TO_GHS, // Medium token price - 2.5x base
+    price: 1350000, // Now in USDC directly
+    tokenPrice: 25, // Medium token price - 2.5x base
     ownerCount: 91,
     type: 'Buy',
     roi: 8.7,
@@ -419,7 +415,7 @@ export const properties = [
     bathrooms: 2,
     yearBuilt: 2019,
     rentalYield: 7.8,
-    rentalIncome: 8775 * USD_TO_GHS,
+    rentalIncome: 8775, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0xd1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2',
@@ -438,8 +434,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,eco,architecture',
       'https://source.unsplash.com/featured/?ghana,resort,outdoor',
     ],
-    price: 2900000 * USD_TO_GHS,
-    tokenPrice: 55 * USD_TO_GHS, // Premium token price - 5.5x base
+    price: 2900000, // Now in USDC directly
+    tokenPrice: 55, // Premium token price - 5.5x base
     ownerCount: 176,
     type: 'Auction',
     roi: 11.2,
@@ -461,7 +457,7 @@ export const properties = [
     bathrooms: 20,
     yearBuilt: 2021,
     rentalYield: 9.6,
-    rentalIncome: 23200 * USD_TO_GHS,
+    rentalIncome: 23200, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0xe2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3',
@@ -480,8 +476,8 @@ export const properties = [
       'https://source.unsplash.com/featured/?ghana,historical,building',
       'https://source.unsplash.com/featured/?ghana,restored,interior',
     ],
-    price: 980000 * USD_TO_GHS,
-    tokenPrice: 8 * USD_TO_GHS, // Basic token price - 0.8x base
+    price: 980000, // Now in USDC directly
+    tokenPrice: 8, // Basic token price - 0.8x base
     ownerCount: 65,
     type: 'Rent',
     roi: 7.1,
@@ -503,7 +499,7 @@ export const properties = [
     bathrooms: 3,
     yearBuilt: 1885,
     rentalYield: 6.7,
-    rentalIncome: 5460 * USD_TO_GHS,
+    rentalIncome: 5460, // Now in USDC directly
     blockchainMetadata: {
       network: 'Ethereum',
       contractAddress: '0xf3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4',

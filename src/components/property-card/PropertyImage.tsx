@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PropertyType } from '@/types/property';
 
@@ -12,6 +12,16 @@ interface PropertyImageProps {
 }
 
 const PropertyImage: React.FC<PropertyImageProps> = ({ image, name, type, roi, isHovered }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  // Default fallback images from Unsplash that are known to work
+  const fallbackImages = {
+    [PropertyType.FRACTIONAL]: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04',
+    [PropertyType.BUY]: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7',
+    [PropertyType.RENT]: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+    [PropertyType.AUCTION]: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa'
+  };
+  
   const getBadgeClass = () => {
     switch (type) {
       case PropertyType.FRACTIONAL:
@@ -27,13 +37,19 @@ const PropertyImage: React.FC<PropertyImageProps> = ({ image, name, type, roi, i
     }
   };
 
+  // Use fallback image if original fails or use the type-specific fallback
+  const imageToDisplay = imageError 
+    ? fallbackImages[type] || fallbackImages[PropertyType.FRACTIONAL]
+    : image;
+
   return (
     <div className="relative overflow-hidden rounded-t-lg h-56">
       <img 
-        src={image} 
+        src={imageToDisplay} 
         alt={name}
         className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
         style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+        onError={() => setImageError(true)}
       />
       
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Building, Coins, Gavel, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import NavLink from './NavLink';
 
 interface DesktopNavigationProps {
@@ -8,46 +8,40 @@ interface DesktopNavigationProps {
   scrollToSection: (sectionId: string) => void;
 }
 
-const DesktopNavigation: React.FC<DesktopNavigationProps> = ({ 
-  activeSection, 
-  scrollToSection 
+const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
+  activeSection,
+  scrollToSection
 }) => {
   return (
-    <div className="hidden md:flex space-x-8">
-      <NavLink 
-        href="home" 
-        isActive={activeSection === "home"}
-        onClick={() => scrollToSection("home")}
+    <div className="hidden lg:flex items-center space-x-8">
+      <NavLink
+        href="/"
+        isActive={activeSection === 'hero'}
+        onClick={() => scrollToSection('hero')}
       >
-        <Home className="w-4 h-4 mr-1" /> Home
+        Home
       </NavLink>
-      <NavLink 
-        href="marketplace" 
-        isActive={activeSection === "marketplace"}
-        onClick={() => scrollToSection("marketplace")}
+      
+      <NavLink
+        href="/#marketplace"
+        isActive={activeSection === 'marketplace'}
+        onClick={() => scrollToSection('marketplace')}
       >
-        <Building className="w-4 h-4 mr-1" /> Marketplace
+        Marketplace
       </NavLink>
-      <NavLink 
-        href="properties" 
-        isActive={activeSection === "properties"}
-        onClick={() => scrollToSection("properties")}
+      
+      <NavLink
+        href="/#tokenization"
+        isActive={activeSection === 'tokenization'}
+        onClick={() => scrollToSection('tokenization')}
       >
-        <Building className="w-4 h-4 mr-1" /> Properties
+        Tokenization
       </NavLink>
-      <NavLink 
-        href="invest" 
-        isActive={activeSection === "invest"}
-        onClick={() => scrollToSection("invest")}
+      
+      <NavLink
+        href="/profile"
       >
-        <Coins className="w-4 h-4 mr-1" /> Invest
-      </NavLink>
-      <NavLink 
-        href="governance" 
-        isActive={activeSection === "governance"}
-        onClick={() => scrollToSection("governance")}
-      >
-        <Gavel className="w-4 h-4 mr-1" /> Governance
+        Profile
       </NavLink>
     </div>
   );

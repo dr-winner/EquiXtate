@@ -6,6 +6,7 @@ import Web3Service from '@/services/Web3Service';
 import TokenAmountInput from './TokenAmountInput';
 import TokenPurchaseDisplay from './TokenPurchaseDisplay';
 import { getPriceTier, getTokenPriceColorClass } from '@/utils/propertyUtils';
+import { EQUIX_TOKEN_SYMBOL, STABLECOIN_SYMBOL, calculateTokenValue } from '@/types/property';
 
 interface TokenPurchaseControlsProps {
   id: string;
@@ -54,7 +55,7 @@ const TokenPurchaseControls: React.FC<TokenPurchaseControlsProps> = ({
           // Success toast
           toast({
             title: "Purchase Successful",
-            description: `You've successfully purchased ${tokenAmount} tokens for ${formatPrice(tokenPrice * tokenAmount)}`,
+            description: `You've successfully purchased ${tokenAmount.toLocaleString()} ${EQUIX_TOKEN_SYMBOL} tokens for ${formatPrice(calculateTokenValue(tokenAmount))} ${STABLECOIN_SYMBOL}`,
           });
         }
       } catch (error) {
@@ -73,7 +74,7 @@ const TokenPurchaseControls: React.FC<TokenPurchaseControlsProps> = ({
   return (
     <div className="glassmorphism p-4 mb-6">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-orbitron">Purchase Tokens</h3>
+        <h3 className="font-orbitron">Purchase {EQUIX_TOKEN_SYMBOL} Tokens</h3>
         <span className={`text-xs px-2 py-1 rounded ${getTokenPriceColorClass(tokenPrice)} bg-opacity-20 ${getTokenPriceColorClass(tokenPrice)}`}>
           {getPriceTier(tokenPrice)} Tier
         </span>
@@ -91,7 +92,7 @@ const TokenPurchaseControls: React.FC<TokenPurchaseControlsProps> = ({
         
         <TokenPurchaseDisplay 
           tokenAmount={tokenAmount}
-          tokenPrice={tokenPrice}
+          tokenPrice={calculateTokenValue(1)} // Price per token in USDC
           formatPrice={formatPrice}
         />
       </div>
@@ -101,8 +102,12 @@ const TokenPurchaseControls: React.FC<TokenPurchaseControlsProps> = ({
         onClick={handlePurchase}
         disabled={isLoading}
       >
-        {isLoading ? 'Processing...' : 'Buy Tokens Now'}
+        {isLoading ? 'Processing...' : `Buy ${EQUIX_TOKEN_SYMBOL} Tokens Now`}
       </Button>
+      
+      <p className="text-xs text-gray-400 text-center mt-2">
+        Payments processed in {STABLECOIN_SYMBOL} stablecoin
+      </p>
     </div>
   );
 };

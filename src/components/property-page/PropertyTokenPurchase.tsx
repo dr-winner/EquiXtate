@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import Web3Service from '@/services/Web3Service';
+import { EQUIX_TOKEN_SYMBOL, STABLECOIN_SYMBOL, calculateTokenValue } from '@/types/property';
 
 interface PropertyTokenPurchaseProps {
   id: string;
@@ -28,7 +29,8 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
   const [tokenAmount, setTokenAmount] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   
-  const totalInvestment = tokenAmount * tokenPrice;
+  // Calculate total investment in USDC based on token amount
+  const totalInvestment = calculateTokenValue(tokenAmount);
   
   const handlePurchase = async () => {
     if (!walletConnected) {
@@ -48,7 +50,7 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
       if (success) {
         toast({
           title: "Transaction Successful",
-          description: `You have successfully purchased ${tokenAmount} tokens of ${name}!`,
+          description: `You have successfully purchased ${tokenAmount.toLocaleString()} ${EQUIX_TOKEN_SYMBOL} tokens of ${name}!`,
         });
         
         // Update property data to reflect token purchase
@@ -68,7 +70,7 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
   
   return (
     <div className="glassmorphism p-4 mb-6">
-      <h3 className="font-orbitron mb-4">Purchase Tokens</h3>
+      <h3 className="font-orbitron mb-4">Purchase {EQUIX_TOKEN_SYMBOL} Tokens</h3>
       
       {!walletConnected ? (
         <div>
@@ -113,7 +115,7 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
             <div className="text-right">
               <p className="text-gray-300">Total cost</p>
               <p className="text-xl font-spacegrotesk text-space-neon-green">
-                {formatPrice(totalInvestment)}
+                {formatPrice(totalInvestment)} {STABLECOIN_SYMBOL}
               </p>
             </div>
           </div>
@@ -123,7 +125,7 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
             onClick={handlePurchase}
             disabled={isLoading || tokenAmount <= 0 || tokenAmount > tokensAvailable}
           >
-            {isLoading ? 'Processing Transaction...' : `Purchase ${tokenAmount} Tokens`}
+            {isLoading ? 'Processing Transaction...' : `Purchase ${tokenAmount.toLocaleString()} ${EQUIX_TOKEN_SYMBOL} Tokens`}
           </Button>
           
           <p className="text-xs text-gray-400 text-center mt-3">

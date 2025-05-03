@@ -21,6 +21,7 @@ export interface PropertyCardProps {
   roi?: number;
   tokensAvailable?: number;
   totalTokenSupply?: number;
+  userTokenBalance?: number; // Added for user profile page
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({

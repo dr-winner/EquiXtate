@@ -104,6 +104,10 @@ class WalletService {
     this.signer = null;
     ContractService.resetContracts();
     
+    // Custom event to notify UI components
+    const event = new CustomEvent('walletDisconnected');
+    window.dispatchEvent(event);
+    
     toast({
       title: "Wallet Disconnected",
       description: "Your wallet has been disconnected.",
@@ -175,6 +179,22 @@ class WalletService {
     } catch (error) {
       console.error("Error getting network:", error);
       return null;
+    }
+  }
+  
+  // Get account balance
+  public async getBalance(): Promise<string> {
+    try {
+      if (!this.provider || !this.walletAddress) {
+        return "0";
+      }
+      
+      const balanceWei = await this.provider.getBalance(this.walletAddress);
+      const balanceEth = ethers.formatEther(balanceWei);
+      return parseFloat(balanceEth).toFixed(4);
+    } catch (error) {
+      console.error("Error getting balance:", error);
+      return "0";
     }
   }
 }

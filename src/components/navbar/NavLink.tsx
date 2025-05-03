@@ -5,16 +5,18 @@ interface NavLinkProps {
   href: string;
   children: React.ReactNode;
   isActive?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const NavLink: React.FC<NavLinkProps> = ({ href, children, isActive, onClick }) => {
   return (
     <a
-      href={`#${href}`}
+      href={href}
       onClick={(e) => {
-        e.preventDefault();
-        onClick();
+        if (onClick) {
+          e.preventDefault();
+          onClick();
+        }
       }}
       className={`font-spacegrotesk flex items-center ${
         isActive 

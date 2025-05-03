@@ -9,13 +9,13 @@ export const formatPropertyAddress = (location: string): string => {
 };
 
 /**
- * Format currency in Ghanaian Cedis
+ * Format currency in USDC
  */
 export const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('en-GH', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'GHS',
-    maximumFractionDigits: 0,
+    currency: 'USD',
+    maximumFractionDigits: 2,
   }).format(price);
 };
 

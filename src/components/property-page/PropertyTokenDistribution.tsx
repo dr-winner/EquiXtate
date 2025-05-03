@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { EQUIX_TOKEN_SYMBOL } from '@/types/property';
 
 interface PropertyTokenDistributionProps {
   tokensAvailable: number;
@@ -17,9 +18,9 @@ const PropertyTokenDistribution: React.FC<PropertyTokenDistributionProps> = ({
   return (
     <div className="glassmorphism p-4 mb-6">
       <div className="flex justify-between items-center mb-1">
-        <h3 className="font-orbitron">Token Distribution</h3>
+        <h3 className="font-orbitron">{EQUIX_TOKEN_SYMBOL} Token Distribution</h3>
         <p className="text-sm font-spacegrotesk text-space-neon-blue">
-          {tokensAvailable} / {totalTokenSupply} available
+          {tokensAvailable.toLocaleString()} / {totalTokenSupply.toLocaleString()} available
         </p>
       </div>
       
@@ -33,15 +34,15 @@ const PropertyTokenDistribution: React.FC<PropertyTokenDistributionProps> = ({
       <div className="grid grid-cols-3 gap-2 text-center text-sm">
         <div>
           <p className="text-gray-400">Tokens Sold</p>
-          <p className="text-space-neon-purple">{tokensSold}</p>
+          <p className="text-space-neon-purple">{tokensSold.toLocaleString()}</p>
         </div>
         <div>
           <p className="text-gray-400">Tokens Available</p>
-          <p className="text-space-neon-blue">{tokensAvailable}</p>
+          <p className="text-space-neon-blue">{tokensAvailable.toLocaleString()}</p>
         </div>
         <div>
           <p className="text-gray-400">Total Supply</p>
-          <p className="text-white">{totalTokenSupply}</p>
+          <p className="text-white">{totalTokenSupply.toLocaleString()}</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { EQUIX_TOKEN_SYMBOL } from '@/types/property';
 
 interface TokenAvailabilityProps {
   tokensAvailable: number;
@@ -16,9 +17,9 @@ const TokenAvailability: React.FC<TokenAvailabilityProps> = ({
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-1">
-        <p className="text-sm text-gray-400 font-inter">Tokens Available</p>
+        <p className="text-sm text-gray-400 font-inter">{EQUIX_TOKEN_SYMBOL} Tokens Available</p>
         <p className="text-sm font-spacegrotesk text-space-neon-blue">
-          {tokensAvailable} / {totalTokenSupply}
+          {tokensAvailable.toLocaleString()} / {totalTokenSupply.toLocaleString()}
         </p>
       </div>
       <div className="w-full bg-space-deep-purple/50 rounded-full h-2 overflow-hidden">
