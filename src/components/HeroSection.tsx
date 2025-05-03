@@ -24,13 +24,15 @@ const HeroSection: React.FC = () => {
       <div className="absolute top-1/5 right-1/3 text-space-neon-blue/30 text-4xl animate-float" style={{ animationDelay: '1.2s' }}>₿</div>
       <div className="absolute bottom-1/4 left-1/4 text-space-neon-purple/30 text-5xl animate-float" style={{ animationDelay: '2.5s' }}>Ξ</div>
       <div className="absolute top-2/3 right-1/4 text-space-neon-green/30 text-3xl animate-float" style={{ animationDelay: '3.2s' }}>◎</div>
+      <div className="absolute top-1/5 left-1/3 text-space-neon-blue/30 text-4xl animate-float" style={{ animationDelay: '1.2s' }}>₿</div>
+      <div className="absolute bottom-1/4 right-1/4 text-space-neon-purple/30 text-5xl animate-float" style={{ animationDelay: '2.5s' }}>Ξ</div>
       
       <div className="container px-4 z-10 pt-10">
         <div className="text-center max-w-5xl mx-auto">
           {/* EquiXtate Logo */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="h-16 w-17 rounded-full bg-gradient-to-r from-space-neon-purple to-space-neon-blue flex items-center justify-center">
+              <div className="h-16 w-24 rounded-full bg-gradient-to-r from-space-neon-purple to-space-neon-blue flex items-center justify-center">
                 <div className="absolute inset-0 rounded-full blur-md bg-gradient-to-r from-space-neon-purple to-space-neon-blue opacity-70"></div>
                 <div className="relative z-10 font-orbitron text-4xl font-bold text-white">
                   <span className="mr-1">Equi</span>
