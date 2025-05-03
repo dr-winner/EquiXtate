@@ -30,18 +30,18 @@ const HeroSection: React.FC = () => {
           {/* EquiXtate Logo */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="h-24 w-24 rounded-full bg-gradient-to-r from-space-neon-purple to-space-neon-blue flex items-center justify-center">
+              <div className="h-16 w-17 rounded-full bg-gradient-to-r from-space-neon-purple to-space-neon-blue flex items-center justify-center">
                 <div className="absolute inset-0 rounded-full blur-md bg-gradient-to-r from-space-neon-purple to-space-neon-blue opacity-70"></div>
                 <div className="relative z-10 font-orbitron text-4xl font-bold text-white">
-                  <span className="mr-1">E</span>
-                  <span className="text-space-neon-green">x</span>
+                  <span className="mr-1">Equi</span>
+                  <span className="text-space-neon-green">X</span>
                 </div>
               </div>
             </div>
           </div>
         
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-bold mb-6 animate-text-flicker">
-            <span className="block text-space-neon-green neon-glow-green">COSMIC</span>
+            {/* <span className="block text-space-neon-green neon-glow-green">COSMIC</span> */}
             <span className="block bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">
               EQUI<span className="text-space-neon-blue font-bold neon-glow">X</span>TATE
             </span>

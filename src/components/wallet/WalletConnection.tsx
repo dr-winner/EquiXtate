@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ethers } from 'ethers';
+import { useNavigate } from 'react-router-dom';
 import { useWalletState } from '@/components/marketplace/hooks/useWalletState';
 import WalletStatus from './WalletStatus';
 import WalletDropdown from './WalletDropdown';
@@ -11,20 +12,25 @@ const WalletConnection: React.FC = () => {
   const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
   const [walletAddress, setWalletAddress] = React.useState<string>('');
   const [balance, setBalance] = React.useState<string>('0');
-
+  const navigate = useNavigate();
+  
   // Get wallet address and network information
   React.useEffect(() => {
     const getWalletInfo = async () => {
-      if (walletConnected) {
-        const address = await window.ethereum.request({ method: 'eth_accounts' });
-        if (address && address.length > 0) {
-          setWalletAddress(address[0]);
-          
-          // Get balance
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const balanceWei = await provider.getBalance(address[0]);
-          const balanceEth = ethers.formatEther(balanceWei);
-          setBalance(parseFloat(balanceEth).toFixed(4));
+      if (walletConnected && window.ethereum) {
+        try {
+          const address = await window.ethereum.request({ method: 'eth_accounts' });
+          if (address && address.length > 0) {
+            setWalletAddress(address[0]);
+            
+            // Get balance
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const balanceWei = await provider.getBalance(address[0]);
+            const balanceEth = ethers.formatEther(balanceWei);
+            setBalance(parseFloat(balanceEth).toFixed(4));
+          }
+        } catch (error) {
+          console.error("Error fetching wallet info:", error);
         }
       }
     };
@@ -64,11 +70,24 @@ const WalletConnection: React.FC = () => {
   const handleConnectWallet = async (walletId: string) => {
     await connectWallet();
     setShowDropdown(false);
+    
+    // If on profile page, refresh the page to ensure data is loaded with the new wallet
+    if (window.location.pathname === '/profile') {
+      // Short delay to allow connection to complete
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
   };
 
   const handleDisconnectWallet = () => {
     disconnectWallet();
     setShowDropdown(false);
+    
+    // If on profile page, redirect to home after wallet disconnect
+    if (window.location.pathname === '/profile') {
+      navigate('/');
+    }
   };
 
   return (

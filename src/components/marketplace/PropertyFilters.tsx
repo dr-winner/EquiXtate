@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { FilterX } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Search } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 
 interface PropertyFiltersProps {
   activeFilter: string;
@@ -20,28 +19,32 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({
 }) => {
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
-        <h2 className="text-3xl font-orbitron text-white">
+      <div className="mb-8">
+        <h2 className="text-2xl md:text-3xl font-orbitron text-white">
           Explore Real Estate
         </h2>
-        
-        <Input 
-          type="text"
-          placeholder="Search properties..."
-          className="max-w-xs bg-space-deep-purple/30 border-space-deep-purple text-white"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
       </div>
       
       <Tabs defaultValue="all" className="mb-8">
-        <TabsList className="bg-space-deep-purple/20 rounded-md p-1 w-full lg:w-max">
+        <TabsList className="bg-space-deep-purple/20 rounded-md p-1 w-full overflow-x-auto flex whitespace-nowrap scrollbar-hide">
           <TabsTrigger value="all" onClick={() => handleFilterChange('all')}>All Listings</TabsTrigger>
           <TabsTrigger value="buy" onClick={() => handleFilterChange('buy')}>Buy</TabsTrigger>
           <TabsTrigger value="rent" onClick={() => handleFilterChange('rent')}>Rent</TabsTrigger>
           <TabsTrigger value="fractional" onClick={() => handleFilterChange('fractional')}>Fractional</TabsTrigger>
           <TabsTrigger value="auction" onClick={() => handleFilterChange('auction')}>Auction</TabsTrigger>
         </TabsList>
+        
+        <div className="mt-4 relative">
+          <div className="relative">
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by location, price or property type..."
+              className="bg-space-deep-purple/20 border-space-neon-blue/30 text-white placeholder:text-gray-400 pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          </div>
+        </div>
         
         {/* Add content for each tab if needed */}
         <TabsContent value="all"></TabsContent>

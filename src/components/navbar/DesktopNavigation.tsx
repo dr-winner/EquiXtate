@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import NavLink from './NavLink';
 
 interface DesktopNavigationProps {
@@ -12,37 +12,52 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   activeSection,
   scrollToSection
 }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <div className="hidden lg:flex items-center space-x-8">
-      <NavLink
-        href="/"
-        isActive={activeSection === 'hero'}
-        onClick={() => scrollToSection('hero')}
-      >
-        Home
-      </NavLink>
+      {isHomePage ? (
+        <>
+          <NavLink
+            href="#hero"
+            isActive={activeSection === 'hero'}
+            onClick={() => scrollToSection('hero')}
+          >
+            Home
+          </NavLink>
+          
+          <NavLink
+            href="#marketplace"
+            isActive={activeSection === 'marketplace'}
+            onClick={() => scrollToSection('marketplace')}
+          >
+            Marketplace
+          </NavLink>
+          
+          <NavLink
+            href="#tokenization"
+            isActive={activeSection === 'tokenization'}
+            onClick={() => scrollToSection('tokenization')}
+          >
+            Tokenization
+          </NavLink>
+        </>
+      ) : (
+        // If not on home page, use regular links without scroll behavior
+        <Link to="/" className="font-spacegrotesk text-gray-300 hover:text-white relative overflow-hidden group transition-all duration-300">
+          <span className="flex items-center">Home</span>
+          <span className="absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 w-0 group-hover:w-full"></span>
+        </Link>
+      )}
       
-      <NavLink
-        href="/#marketplace"
-        isActive={activeSection === 'marketplace'}
-        onClick={() => scrollToSection('marketplace')}
+      <Link 
+        to="/profile" 
+        className={`font-spacegrotesk ${location.pathname === '/profile' ? 'text-white' : 'text-gray-300 hover:text-white'} relative overflow-hidden group transition-all duration-300`}
       >
-        Marketplace
-      </NavLink>
-      
-      <NavLink
-        href="/#tokenization"
-        isActive={activeSection === 'tokenization'}
-        onClick={() => scrollToSection('tokenization')}
-      >
-        Tokenization
-      </NavLink>
-      
-      <NavLink
-        href="/profile"
-      >
-        Profile
-      </NavLink>
+        <span className="flex items-center">Profile</span>
+        <span className={`absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 ${location.pathname === '/profile' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+      </Link>
     </div>
   );
 };

@@ -20,6 +20,7 @@ interface WalletDropdownProps {
     name: string;
     icon: string;
   }>;
+  isMobile?: boolean;
 }
 
 const WalletDropdown: React.FC<WalletDropdownProps> = ({
@@ -31,14 +32,20 @@ const WalletDropdown: React.FC<WalletDropdownProps> = ({
   connectWallet,
   disconnectWallet,
   getNetworkName,
-  walletOptions
+  walletOptions,
+  isMobile = false
 }) => {
   if (!showDropdown) {
     return null;
   }
 
+  // Position dropdown based on device type
+  const positionClass = isMobile 
+    ? "fixed left-4 right-4 top-20 z-50" 
+    : "absolute right-0 mt-2 w-64 z-50";
+
   return (
-    <div className="absolute right-0 mt-2 w-64 rounded-lg z-50 glassmorphism neon-border-purple p-3 animate-fade-in">
+    <div className={`${positionClass} rounded-lg glassmorphism neon-border-purple p-3 animate-fade-in`}>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-white font-orbitron">
           {walletStatus === ConnectionStatus.CONNECTED ? 'Wallet Options' : 'Select Wallet'}
