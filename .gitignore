@@ -25,4 +25,27 @@ dist-ssr
 
 # Environment variables
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*
+!.env.example
 
+# Deployment files
+deployment-info.json
+*.env
+*.pem
+*.key
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+.gitignore
