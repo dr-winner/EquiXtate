@@ -36,9 +36,10 @@ contract PropertyManager is Ownable {
         uint256 timestamp
     );
 
-    constructor(address initialAddress) Ownable(initialAddress) {
-        require(initialAddress != address(0), "Invalid EquiXtate address");
+    constructor(address initialAddress) {
+        require(initialAddress != address(0), "Invalid token address");
         equiXtate = EquiXtate(initialAddress);
+        _transferOwnership(initialAddress);
     }
 
     function registerProperty(

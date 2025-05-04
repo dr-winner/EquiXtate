@@ -33,9 +33,10 @@ contract BuyModule is Ownable, ReentrancyGuard {
     event PropertyBought(bytes32 indexed propertyId, address buyer, uint256 price);
     event PropertyListingExpired(bytes32 indexed propertyId);
 
-    constructor(address initialAddress) Ownable(initialAddress) {
+    constructor(address initialAddress) {
         require(initialAddress != address(0), "Invalid token address");
         equiXtate = EquiXtate(initialAddress);
+        _transferOwnership(initialAddress);
     }
 
     /// @dev Internal helper to hash and validate property IDs

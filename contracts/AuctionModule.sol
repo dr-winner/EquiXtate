@@ -3,72 +3,139 @@ pragma solidity ^0.8.24;
 
 import "./Equixtate.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract AuctionModule is Ownable {
+contract AuctionModule is Ownable, ReentrancyGuard {
     EquiXtate public equiXtate;
+    uint256 public constant MIN_AUCTION_DURATION = 1 days;
+    uint256 public constant MAX_AUCTION_DURATION = 30 days;
+    uint256 public constant MIN_BID_INCREMENT = 5; // 5% minimum bid increment
 
     struct Auction {
-        string propertyId;
-        uint256 minBid;
-        uint256 highestBid;
-        address highestBidder;
+        bytes32 propertyId;
+        address seller;
+        uint256 startingPrice;
+        uint256 currentBid;
+        address currentBidder;
         uint256 endTime;
         bool isActive;
-        address payable seller;
+        bool isFinalized;
     }
 
-    mapping(string => Auction) public auctions;
+    mapping(bytes32 => Auction) public auctions;
 
-    event AuctionStarted(string propertyId, uint256 minBid, uint256 durationDays);
-    event NewBid(string propertyId, address bidder, uint256 amount);
-    event AuctionEnded(string propertyId, address winner, uint256 winningBid);
+    event AuctionCreated(bytes32 indexed propertyId, uint256 startingPrice, uint256 endTime);
+    event BidPlaced(bytes32 indexed propertyId, address indexed bidder, uint256 amount);
+    event AuctionFinalized(bytes32 indexed propertyId, address winner, uint256 amount);
+    event AuctionCancelled(bytes32 indexed propertyId);
 
-    constructor(address initialAddress) Ownable(initialAddress){
+    constructor(address initialAddress) {
+        require(initialAddress != address(0), "Invalid token address");
         equiXtate = EquiXtate(initialAddress);
+        _transferOwnership(initialAddress);
     }
 
-    function startAuction(
-        string memory _propertyId,
-        uint256 _minBid,
-        uint256 _durationDays,
-        address payable _seller
+    function createAuction(
+        bytes32 propertyId,
+        uint256 startingPrice,
+        uint256 duration
     ) external onlyOwner {
-        auctions[_propertyId] = Auction({
-            propertyId: _propertyId,
-            minBid: _minBid,
-            highestBid: 0,
-            highestBidder: address(0),
-            endTime: block.timestamp + (_durationDays * 1 days),
+        require(startingPrice > 0, "Starting price must be > 0");
+        require(
+            duration >= MIN_AUCTION_DURATION && duration <= MAX_AUCTION_DURATION,
+            "Invalid duration"
+        );
+        require(!auctions[propertyId].isActive, "Auction already exists");
+
+        auctions[propertyId] = Auction({
+            propertyId: propertyId,
+            seller: msg.sender,
+            startingPrice: startingPrice,
+            currentBid: startingPrice,
+            currentBidder: address(0),
+            endTime: block.timestamp + duration,
             isActive: true,
-            seller: _seller
+            isFinalized: false
         });
 
-        emit AuctionStarted(_propertyId, _minBid, _durationDays);
+        emit AuctionCreated(propertyId, startingPrice, block.timestamp + duration);
     }
 
-    function placeBid(string memory _propertyId, uint256 _amount) external {
-        Auction storage auction = auctions[_propertyId];
+    function placeBid(bytes32 propertyId) external payable nonReentrant {
+        Auction storage auction = auctions[propertyId];
         require(auction.isActive, "Auction not active");
         require(block.timestamp < auction.endTime, "Auction ended");
-        require(_amount > auction.highestBid && _amount >= auction.minBid, "Bid too low");
+        require(msg.sender != auction.seller, "Seller cannot bid");
 
-        // Refund previous bidder (handled off-chain for now)
-        auction.highestBid = _amount;
-        auction.highestBidder = msg.sender;
+        uint256 minBidAmount = auction.currentBid + (auction.currentBid * MIN_BID_INCREMENT / 100);
+        require(msg.value >= minBidAmount, "Bid too low");
 
-        emit NewBid(_propertyId, msg.sender, _amount);
+        // Refund previous bidder
+        if (auction.currentBidder != address(0)) {
+            payable(auction.currentBidder).transfer(auction.currentBid);
+        }
+
+        auction.currentBid = msg.value;
+        auction.currentBidder = msg.sender;
+
+        emit BidPlaced(propertyId, msg.sender, msg.value);
     }
 
-    function endAuction(string memory _propertyId) external {
-        Auction storage auction = auctions[_propertyId];
-        require(block.timestamp >= auction.endTime, "Auction still ongoing");
-        require(auction.isActive, "Auction already ended");
+    function finalizeAuction(bytes32 propertyId) external nonReentrant {
+        Auction storage auction = auctions[propertyId];
+        require(auction.isActive, "Auction not active");
+        require(block.timestamp >= auction.endTime, "Auction not ended");
+        require(!auction.isFinalized, "Auction already finalized");
 
         auction.isActive = false;
+        auction.isFinalized = true;
 
-        if (auction.highestBid > 0) {
-            equiXtate.transferFrom(auction.highestBidder, auction.seller, auction.highestBid);
-            emit AuctionEnded(_propertyId, auction.highestBidder, auction.highestBid);
+        if (auction.currentBidder != address(0)) {
+            // Transfer funds to seller
+            payable(auction.seller).transfer(auction.currentBid);
+            emit AuctionFinalized(propertyId, auction.currentBidder, auction.currentBid);
+        } else {
+            emit AuctionCancelled(propertyId);
         }
+    }
+
+    function cancelAuction(bytes32 propertyId) external {
+        Auction storage auction = auctions[propertyId];
+        require(auction.isActive, "Auction not active");
+        require(
+            msg.sender == auction.seller || msg.sender == owner(),
+            "Not authorized"
+        );
+        require(auction.currentBidder == address(0), "Bids already placed");
+
+        auction.isActive = false;
+        auction.isFinalized = true;
+
+        emit AuctionCancelled(propertyId);
+    }
+
+    function getAuction(bytes32 propertyId)
+        external
+        view
+        returns (
+            address seller,
+            uint256 startingPrice,
+            uint256 currentBid,
+            address currentBidder,
+            uint256 endTime,
+            bool isActive,
+            bool isFinalized
+        )
+    {
+        Auction storage auction = auctions[propertyId];
+        return (
+            auction.seller,
+            auction.startingPrice,
+            auction.currentBid,
+            auction.currentBidder,
+            auction.endTime,
+            auction.isActive,
+            auction.isFinalized
+        );
     }
 }

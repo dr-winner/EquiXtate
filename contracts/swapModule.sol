@@ -33,10 +33,11 @@ contract SwapModule is Ownable, ReentrancyGuard {
         _;
     }
 
-    constructor(address _sonicToken, address _equiXtate) Ownable(msg.sender) {
+    constructor(address _sonicToken, address _equiXtate) {
         require(_sonicToken != address(0) && _equiXtate != address(0), "Zero address");
         sonicToken = IERC20(_sonicToken);
         equiXtate = EquiXtate(_equiXtate);
+        _transferOwnership(msg.sender);
     }
 
     function swapSonicForETX(uint256 _sonicAmount) external nonReentrant notPaused {
