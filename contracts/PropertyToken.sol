@@ -1,5 +1,6 @@
+
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -45,7 +46,7 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         string memory _propertyLocation,
         uint256 _propertyValue,
         address _propertyManager
-    ) ERC20(_name, _symbol) {
+    ) ERC20(_name, _symbol) Ownable(msg.sender) {
         propertyName = _propertyName;
         propertyLocation = _propertyLocation;
         propertyValue = _propertyValue;
@@ -57,7 +58,6 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         
         // Mint all tokens to the contract initially
         _mint(address(this), PROPERTY_TOKENS);
-        _transferOwnership(msg.sender);
     }
     
     /**
@@ -135,13 +135,5 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
      */
     function updatePropertyValue(uint256 newValue) external onlyOwner {
         propertyValue = newValue;
-    }
-
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
-    }
-
-    function burn(uint256 amount) public {
-        _burn(msg.sender, amount);
     }
 }

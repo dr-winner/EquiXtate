@@ -9,14 +9,7 @@ async function main() {
   // Deploy PropertyToken
   console.log("Deploying PropertyToken...");
   const PropertyToken = await ethers.getContractFactory("PropertyToken");
-  const propertyToken = await PropertyToken.deploy(
-    "EquiXtate Property Token",
-    "EPT",
-    "Sample Property",
-    "123 Main St",
-    ethers.parseEther("1000000"), // 1M USD property value
-    deployer.address
-  );
+  const propertyToken = await PropertyToken.deploy();
   await propertyToken.waitForDeployment();
   console.log("PropertyToken deployed to:", await propertyToken.getAddress());
 

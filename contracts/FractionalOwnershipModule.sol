@@ -20,10 +20,9 @@ contract FractionalOwnershipModule is Ownable {
     event PropertyListed(string indexed propertyId, uint256 valuation, address indexed owner);
     event FractionalTokensPurchased(string indexed propertyId, uint256 amount, address indexed buyer);
 
-    constructor(address initialAddress) {
-        require(initialAddress != address(0), "Invalid token address");
+    constructor(address initialAddress) Ownable(initialAddress){
+        require(initialAddress != address(0), "Invalid token contract");
         equiXtate = EquiXtate(initialAddress);
-        _transferOwnership(initialAddress);
     }
 
     function _validateId(string memory _propertyId) internal pure returns (bytes32) {

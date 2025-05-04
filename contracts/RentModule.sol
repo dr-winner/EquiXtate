@@ -20,10 +20,9 @@ contract RentModule is Ownable {
     event RentSet(string propertyId, address tenant, uint256 rentAmount, uint256 rentDueDate);
     event RentPaid(string propertyId, address tenant, uint256 rentAmount);
 
-    constructor(address initialAddress) {
+    constructor(address initialAddress) Ownable(initialAddress) {
         require(initialAddress != address(0), "Invalid token address");
         equiXtate = EquiXtate(initialAddress);
-        _transferOwnership(initialAddress);
     }
 
     function _hashPropertyId(string memory _propertyId) internal pure returns (bytes32) {
