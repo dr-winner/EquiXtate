@@ -1,34 +1,37 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
-  isActive?: boolean;
-  onClick?: () => void;
+  isTransparent?: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, children, isActive, onClick }) => {
+const NavLink: React.FC<NavLinkProps> = ({ 
+  href, 
+  children,
+  isTransparent = false 
+}) => {
+  const isActive = window.location.pathname === href;
+  const baseClasses = "relative font-medium transition-colors duration-300";
+  const transparentClasses = isTransparent 
+    ? "text-white hover:text-space-neon-blue" 
+    : "text-gray-300 hover:text-space-neon-blue";
+  
+  const activeClasses = isActive 
+    ? "text-space-neon-blue" 
+    : transparentClasses;
+
   return (
-    <a
-      href={href}
-      onClick={(e) => {
-        if (onClick) {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-      className={`font-spacegrotesk flex items-center ${
-        isActive 
-          ? "text-white relative overflow-hidden group transition-all duration-300" 
-          : "text-gray-300 hover:text-white relative overflow-hidden group transition-all duration-300"
-      }`}
-    >
-      <span className="flex items-center">{children}</span>
-      <span className={`absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 ${
-        isActive ? "w-full" : "w-0 group-hover:w-full"
-      }`}></span>
-    </a>
+    <Link to={href} className={`${baseClasses} ${activeClasses}`}>
+      <span className="relative">
+        {children}
+        {isActive && (
+          <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-space-neon-blue rounded-full"></span>
+        )}
+      </span>
+    </Link>
   );
 };
 

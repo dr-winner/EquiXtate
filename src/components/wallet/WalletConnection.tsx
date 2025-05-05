@@ -1,118 +1,116 @@
 
-import React from 'react';
-import { ethers } from 'ethers';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef } from 'react';
 import { useWalletState } from '@/components/marketplace/hooks/useWalletState';
 import WalletStatus from './WalletStatus';
 import WalletDropdown from './WalletDropdown';
+import AuthenticationModal from '../auth/AuthenticationModal';
+import { useAuthenticationModal } from '@/hooks/use-authentication-modal';
 import { ConnectionStatus } from './types';
+import { useWalletConnectionState } from './hooks/useWalletConnectionState';
+import { useWalletConnector } from './hooks/useWalletConnector';
+import { useWalletEventHandler } from './hooks/useWalletEventHandler';
+import { useClickOutside } from './hooks/useClickOutside';
 
 const WalletConnection: React.FC = () => {
-  const { walletConnected, connectWallet, disconnectWallet } = useWalletState();
-  const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
-  const [walletAddress, setWalletAddress] = React.useState<string>('');
-  const [balance, setBalance] = React.useState<string>('0');
-  const navigate = useNavigate();
+  const { walletConnected } = useWalletState();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isOpen: isAuthModalOpen, openModal: openAuthModal, closeModal: closeAuthModal } = useAuthenticationModal();
   
-  // Get wallet address and network information
-  React.useEffect(() => {
-    const getWalletInfo = async () => {
-      if (walletConnected && window.ethereum) {
-        try {
-          const address = await window.ethereum.request({ method: 'eth_accounts' });
-          if (address && address.length > 0) {
-            setWalletAddress(address[0]);
-            
-            // Get balance
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const balanceWei = await provider.getBalance(address[0]);
-            const balanceEth = ethers.formatEther(balanceWei);
-            setBalance(parseFloat(balanceEth).toFixed(4));
-          }
-        } catch (error) {
-          console.error("Error fetching wallet info:", error);
-        }
-      }
-    };
-
-    getWalletInfo();
-  }, [walletConnected]);
+  // Get wallet state from custom hook
+  const {
+    walletStatus,
+    setWalletStatus,
+    walletAddress,
+    setWalletAddress,
+    balance,
+    setBalance,
+    showDropdown,
+    setShowDropdown,
+    isAuthenticated,
+    setIsAuthenticated,
+    isLoading,
+    setIsLoading,
+    connectionAttempts,
+    setConnectionAttempts,
+    fetchWalletInfo,
+    formatAddress,
+    getNetworkName
+  } = useWalletConnectionState();
+  
+  // Get wallet connector methods
+  const {
+    walletOptions,
+    handleConnectWallet,
+    handleDisconnectWallet,
+    handleAuthSuccess
+  } = useWalletConnector({
+    walletConnected,
+    setWalletStatus,
+    setWalletAddress,
+    setIsAuthenticated,
+    setIsLoading,
+    setConnectionAttempts,
+    fetchWalletInfo,
+    setShowDropdown
+  });
+  
+  // Set up wallet event handlers
+  useWalletEventHandler(walletConnected, fetchWalletInfo, handleDisconnectWallet);
+  
+  // Set up click outside handler
+  useClickOutside(dropdownRef, () => setShowDropdown(false));
 
   const handleStatusClick = () => {
-    setShowDropdown(!showDropdown);
-  };
-
-  const walletStatus = walletConnected ? ConnectionStatus.CONNECTED : ConnectionStatus.DISCONNECTED;
-
-  const formatAddress = (address: string) => {
-    if (!address) return '';
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-  };
-
-  const getNetworkName = () => {
-    // Default to Ethereum Mainnet if unknown
-    return 'Ethereum';
-  };
-
-  const walletOptions = [
-    {
-      id: 'metamask',
-      name: 'MetaMask',
-      icon: '🦊'
-    },
-    {
-      id: 'walletconnect',
-      name: 'WalletConnect',
-      icon: '🔗'
-    }
-  ];
-
-  const handleConnectWallet = async (walletId: string) => {
-    await connectWallet();
-    setShowDropdown(false);
-    
-    // If on profile page, refresh the page to ensure data is loaded with the new wallet
-    if (window.location.pathname === '/profile') {
-      // Short delay to allow connection to complete
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+    if (!walletConnected) {
+      // If not connected, show wallet connection options
+      setShowDropdown(!showDropdown);
+    } else if (!isAuthenticated) {
+      // If wallet is connected but user not authenticated, prompt for KYC
+      openAuthModal();
+    } else {
+      // If both connected and authenticated, toggle dropdown 
+      setShowDropdown(!showDropdown);
     }
   };
 
-  const handleDisconnectWallet = () => {
-    disconnectWallet();
-    setShowDropdown(false);
-    
-    // If on profile page, redirect to home after wallet disconnect
-    if (window.location.pathname === '/profile') {
-      navigate('/');
-    }
-  };
+  // Determine wallet status based on loading and connection state
+  const currentWalletStatus = isLoading ? ConnectionStatus.CONNECTING : 
+                       walletConnected ? ConnectionStatus.CONNECTED : 
+                       ConnectionStatus.DISCONNECTED;
 
   return (
-    <div className="relative">
-      <WalletStatus 
-        walletStatus={walletStatus}
-        walletAddress={walletAddress}
-        showDropdown={showDropdown}
-        setShowDropdown={setShowDropdown}
-        formatAddress={formatAddress}
-        onClick={handleStatusClick}
-      />
+    <>
+      <div className="relative" ref={dropdownRef}>
+        <WalletStatus 
+          walletStatus={currentWalletStatus}
+          walletAddress={walletAddress}
+          showDropdown={showDropdown}
+          setShowDropdown={setShowDropdown}
+          formatAddress={formatAddress}
+          onClick={handleStatusClick}
+          isAuthenticated={isAuthenticated}
+        />
+        
+        <WalletDropdown 
+          showDropdown={showDropdown}
+          setShowDropdown={setShowDropdown}
+          walletStatus={currentWalletStatus}
+          walletAddress={walletAddress}
+          balance={balance}
+          connectWallet={handleConnectWallet}
+          disconnectWallet={handleDisconnectWallet}
+          getNetworkName={getNetworkName}
+          walletOptions={walletOptions}
+          isAuthenticated={isAuthenticated}
+        />
+      </div>
       
-      <WalletDropdown 
-        showDropdown={showDropdown}
-        setShowDropdown={setShowDropdown}
-        walletStatus={walletStatus}
-        walletAddress={walletAddress}
-        balance={balance}
-        connectWallet={handleConnectWallet}
-        disconnectWallet={handleDisconnectWallet}
-        getNetworkName={getNetworkName}
-        walletOptions={walletOptions}
+      <AuthenticationModal 
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
+        onAuthSuccess={handleAuthSuccess}
       />
-    </div>
+    </>
   );
 };
 

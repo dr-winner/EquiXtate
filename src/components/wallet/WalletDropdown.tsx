@@ -1,10 +1,18 @@
 
 import React from 'react';
-import { X } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { ConnectionStatus } from './types';
-import WalletOptions from './WalletOptions';
+import WalletConnectOptions from './WalletConnectOptions';
+import WalletMenuItems from './WalletMenuItems';
 import WalletDetails from './WalletDetails';
+import { useWalletDetection } from './hooks/useWalletDetection';
+
+interface WalletOption {
+  id: string;
+  name: string;
+  icon: React.ReactNode | string;
+  mobileSupported?: boolean;
+  description?: string;
+}
 
 interface WalletDropdownProps {
   showDropdown: boolean;
@@ -12,15 +20,11 @@ interface WalletDropdownProps {
   walletStatus: ConnectionStatus;
   walletAddress: string;
   balance: string;
-  connectWallet: (walletId: string) => Promise<void>;
+  connectWallet: (walletId: string) => void;
   disconnectWallet: () => void;
   getNetworkName: () => string;
-  walletOptions: Array<{
-    id: string;
-    name: string;
-    icon: string;
-  }>;
-  isMobile?: boolean;
+  walletOptions: WalletOption[];
+  isAuthenticated?: boolean;
 }
 
 const WalletDropdown: React.FC<WalletDropdownProps> = ({
@@ -33,44 +37,47 @@ const WalletDropdown: React.FC<WalletDropdownProps> = ({
   disconnectWallet,
   getNetworkName,
   walletOptions,
-  isMobile = false
+  isAuthenticated = false
 }) => {
+  const { isMobile } = useWalletDetection();
+  
   if (!showDropdown) {
     return null;
   }
 
-  // Position dropdown based on device type
-  const positionClass = isMobile 
-    ? "fixed left-4 right-4 top-20 z-50" 
-    : "absolute right-0 mt-2 w-64 z-50";
+  const handleBackdropClick = () => {
+    setShowDropdown(false);
+  };
 
   return (
-    <div className={`${positionClass} rounded-lg glassmorphism neon-border-purple p-3 animate-fade-in`}>
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-white font-orbitron">
-          {walletStatus === ConnectionStatus.CONNECTED ? 'Wallet Options' : 'Select Wallet'}
-        </h3>
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          className="h-6 w-6 rounded-full text-gray-400 hover:text-white"
-          onClick={() => setShowDropdown(false)}
-        >
-          <X className="h-4 w-4" />
-        </Button>
+    <>
+      <div className="fixed inset-0 z-10" onClick={handleBackdropClick}></div>
+      <div className="absolute right-0 mt-2 w-72 glassmorphism rounded-lg border border-space-neon-blue/30 z-20">
+        <div className="p-4">
+          {walletStatus === ConnectionStatus.DISCONNECTED ? (
+            <WalletConnectOptions 
+              walletOptions={walletOptions} 
+              connectWallet={connectWallet}
+              isMobile={isMobile}
+            />
+          ) : (
+            <>
+              <WalletDetails 
+                walletAddress={walletAddress}
+                balance={balance}
+                getNetworkName={getNetworkName}
+                isAuthenticated={isAuthenticated}
+              />
+              
+              <WalletMenuItems 
+                setShowDropdown={setShowDropdown}
+                disconnectWallet={disconnectWallet}
+              />
+            </>
+          )}
+        </div>
       </div>
-      
-      {walletStatus === ConnectionStatus.CONNECTED ? (
-        <WalletDetails 
-          walletAddress={walletAddress}
-          balance={balance}
-          getNetworkName={getNetworkName}
-          disconnectWallet={disconnectWallet}
-        />
-      ) : (
-        <WalletOptions walletOptions={walletOptions} connectWallet={connectWallet} />
-      )}
-    </div>
+    </>
   );
 };
 

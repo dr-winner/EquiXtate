@@ -33,6 +33,7 @@ interface PropertyDetailsProps {
   rentalIncome?: number;
   rentalYield?: number;
   propertyManager?: string;
+  minTokenPurchase?: number;  // Added minimum token purchase property
   onClose: () => void;
 }
 
@@ -58,6 +59,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   rentalIncome,
   rentalYield,
   propertyManager,
+  minTokenPurchase = 1,
   onClose
 }) => {
   // Token distribution percentage
@@ -113,7 +115,10 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
                   id={id}
                   tokenPrice={tokenPrice}
                   tokensAvailable={tokensAvailable}
+                  totalTokenSupply={totalTokenSupply}
+                  minTokenPurchase={minTokenPurchase}
                   formatPrice={formatPrice}
+                  propertyPrice={price} /* Add the missing propertyPrice prop */
                 />
                 
                 <InvestmentMetrics 

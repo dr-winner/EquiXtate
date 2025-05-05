@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Wallet, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { Wallet, CheckCircle, AlertCircle, Shield, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ConnectionStatus } from './types';
+import { motion } from 'framer-motion';
 
 interface WalletStatusProps {
   walletStatus: ConnectionStatus;
@@ -10,7 +11,9 @@ interface WalletStatusProps {
   showDropdown: boolean;
   setShowDropdown: (show: boolean) => void;
   formatAddress: (address: string) => string;
-  onClick?: () => void; // Make onClick optional
+  onClick?: () => void;
+  isAuthenticated?: boolean;
+  className?: string;
 }
 
 const WalletStatus: React.FC<WalletStatusProps> = ({
@@ -19,7 +22,9 @@ const WalletStatus: React.FC<WalletStatusProps> = ({
   showDropdown,
   setShowDropdown,
   formatAddress,
-  onClick
+  onClick,
+  isAuthenticated = false,
+  className = ''
 }) => {
   const handleClick = () => {
     if (onClick) {
@@ -29,15 +34,24 @@ const WalletStatus: React.FC<WalletStatusProps> = ({
     }
   };
 
+  const baseClasses = `border transition-all duration-300 group flex items-center gap-2 ${className}`;
+
   switch (walletStatus) {
     case ConnectionStatus.DISCONNECTED:
       return (
         <Button 
           variant="outline" 
-          className="border border-space-neon-blue text-space-neon-blue hover:bg-space-neon-blue/10 hover:text-white transition-all duration-300 group"
+          className={`${baseClasses} border-space-neon-blue text-space-neon-blue hover:bg-space-neon-blue/10 hover:text-white`}
           onClick={handleClick}
+          aria-label="Connect Wallet"
+          data-testid="connect-wallet-button"
         >
-          <Wallet className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+          <motion.span 
+            animate={{ rotate: showDropdown ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Wallet className="h-4 w-4 group-hover:animate-pulse" />
+          </motion.span>
           <span className="hidden sm:inline">Connect Wallet</span>
         </Button>
       );
@@ -47,9 +61,14 @@ const WalletStatus: React.FC<WalletStatusProps> = ({
         <Button 
           variant="outline" 
           disabled
-          className="border border-space-neon-purple text-space-neon-purple cursor-wait"
+          className={`${baseClasses} border-space-neon-purple text-space-neon-purple cursor-wait`}
+          aria-label="Connecting to wallet"
+          data-testid="connecting-wallet-button"
         >
-          <span className="animate-pulse">Connecting...</span>
+          <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}>
+            <Wallet className="h-4 w-4" />
+          </motion.span>
+          <span className="hidden sm:inline animate-pulse">Connecting...</span>
         </Button>
       );
       
@@ -57,11 +76,25 @@ const WalletStatus: React.FC<WalletStatusProps> = ({
       return (
         <Button 
           variant="outline" 
-          className="border border-space-neon-green text-space-neon-green hover:bg-space-neon-green/10 hover:text-white transition-all duration-300 group flex items-center"
+          className={`${baseClasses} ${isAuthenticated ? 'border-space-neon-green text-space-neon-green' : 'border-space-neon-purple text-space-neon-purple'} 
+            hover:bg-space-neon-green/10 hover:text-white`}
           onClick={handleClick}
+          aria-label={isAuthenticated ? "Authenticated user menu" : "Connected wallet menu"}
+          data-testid="connected-wallet-button"
         >
-          <CheckCircle className="mr-2 h-4 w-4" />
+          {isAuthenticated ? (
+            <User className="h-4 w-4" />
+          ) : (
+            <CheckCircle className="h-4 w-4" />
+          )}
           <span className="hidden sm:inline">{formatAddress(walletAddress)}</span>
+          <motion.span 
+            animate={{ rotate: showDropdown ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-xs"
+          >
+            ▼
+          </motion.span>
         </Button>
       );
       
@@ -69,10 +102,12 @@ const WalletStatus: React.FC<WalletStatusProps> = ({
       return (
         <Button 
           variant="outline" 
-          className="border border-red-500 text-red-500 hover:bg-red-500/10 hover:text-white transition-all duration-300 group"
+          className={`${baseClasses} border-red-500 text-red-500 hover:bg-red-500/10 hover:text-white`}
           onClick={handleClick}
+          aria-label="Wallet connection error"
+          data-testid="wallet-error-button"
         >
-          <AlertCircle className="mr-2 h-4 w-4" />
+          <AlertCircle className="h-4 w-4" />
           <span className="hidden sm:inline">Connection Failed</span>
         </Button>
       );

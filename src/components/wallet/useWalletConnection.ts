@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useWalletEvents } from './hooks/useWalletEvents';
 import { useWalletConnector } from './hooks/useWalletConnector';
 import { useInitialConnection } from './hooks/useInitialConnection';
-import { formatAddress, getNetworkName as getNetworkNameUtil, getWalletOptions } from './utils/walletUtils';
+import { formatAddress, getNetworkName as getNetworkNameUtil } from './utils/walletUtils';
 import { ConnectionStatus } from './types';
 import { UseWalletConnectionReturn } from './types/wallet-types';
 
@@ -15,8 +15,6 @@ export const useWalletConnection = (): UseWalletConnectionReturn => {
   const [balance, setBalance] = useState<string>("0");
   const [chainId, setChainId] = useState<string | null>(null);
 
-  const walletOptions = getWalletOptions();
-
   // Initialize wallet event handlers
   const { handleDisconnect } = useWalletEvents(
     setWalletStatus,
@@ -27,15 +25,16 @@ export const useWalletConnection = (): UseWalletConnectionReturn => {
   );
 
   // Initialize wallet connection methods
-  const { connectWallet, disconnectWallet } = useWalletConnector(
+  const { walletOptions, handleConnectWallet, handleDisconnectWallet } = useWalletConnector({
+    walletConnected: walletStatus === ConnectionStatus.CONNECTED,
     setWalletStatus,
     setWalletAddress,
-    setBalance,
-    setChainId,
-    setSelectedWallet,
-    setShowDropdown,
-    handleDisconnect
-  );
+    setIsAuthenticated: () => {}, // Placeholder - will be implemented in parent component
+    setIsLoading: () => {}, // Placeholder - will be implemented in parent component
+    setConnectionAttempts: () => 0, // Placeholder
+    fetchWalletInfo: async () => {}, // Placeholder - will be implemented in parent component
+    setShowDropdown
+  });
 
   // Check initial connection
   useInitialConnection(
@@ -56,8 +55,8 @@ export const useWalletConnection = (): UseWalletConnectionReturn => {
     balance,
     chainId,
     walletOptions,
-    connectWallet,
-    disconnectWallet,
+    connectWallet: handleConnectWallet,
+    disconnectWallet: handleDisconnectWallet,
     formatAddress,
     getNetworkName
   };

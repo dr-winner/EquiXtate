@@ -1,20 +1,23 @@
 
 import React from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 interface MobileMenuButtonProps {
-  mobileMenuOpen: boolean;
-  toggleMobileMenu: () => void;
+  isMenuOpen: boolean;
+  toggleOpen: () => void;
 }
 
-const MobileMenuButton: React.FC<MobileMenuButtonProps> = ({ mobileMenuOpen, toggleMobileMenu }) => {
+const MobileMenuButton: React.FC<MobileMenuButtonProps> = ({
+  isMenuOpen,
+  toggleOpen,
+}) => {
   return (
-    <button 
-      className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-space-deep-purple/50 transition-colors"
-      onClick={toggleMobileMenu}
-      aria-label="Toggle menu"
+    <button
+      className="ml-4 md:hidden text-white hover:text-space-neon-blue transition-colors"
+      onClick={toggleOpen}
+      aria-label={isMenuOpen ? "Close menu" : "Open menu"}
     >
-      {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      <Menu className="h-6 w-6" />
     </button>
   );
 };

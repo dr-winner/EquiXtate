@@ -8,14 +8,13 @@ export enum PropertyType {
 
 // EquiX token model
 export interface EquiXToken {
-  // 50 EquiX = $1 in value
-  // 1 EquiX = $0.02
-  readonly tokenValue: 0.02; // in USD
+  // 1 EquiX = $5 in value
+  readonly tokenValue: 5; // in USD
   readonly symbol: 'EquiX';
 }
 
 // Token pricing constants
-export const EQUIX_TOKEN_VALUE = 0.02; // $0.02 per token (50 tokens = $1)
+export const EQUIX_TOKEN_VALUE = 5; // $5 per token (previously $0.02)
 export const EQUIX_TOKEN_SYMBOL = 'EquiX';
 export const STABLECOIN_SYMBOL = 'USDC';
 

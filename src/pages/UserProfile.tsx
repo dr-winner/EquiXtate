@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import StarField from '@/components/StarField';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,11 +10,25 @@ import Web3Service from '@/services/Web3Service';
 import WalletConnectionPrompt from '@/components/user-profile/WalletConnectionPrompt';
 import UserStatsOverview from '@/components/user-profile/UserStatsOverview';
 import ProfileTabs from '@/components/user-profile/ProfileTabs';
+import { Button } from '@/components/ui/button';
+import { Plus, Upload } from 'lucide-react';
+import PropertyUploadModal from '@/components/property/PropertyUploadModal';
+import { useAuthenticationModal } from '@/hooks/use-authentication-modal';
+import { toast } from '@/components/ui/use-toast';
 
 const UserProfile = () => {
   const { walletConnected, connectWallet } = useWalletState();
+  const { openModal: openAuthModal } = useAuthenticationModal();
   const userProperties = useUserProperties(walletConnected);
   const walletAddress = Web3Service.getWalletAddress() || '';
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
+  
+  // Check if user is authenticated
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated');
+    setIsAuthenticated(authStatus === 'true');
+  }, []);
 
   // Mock data - this would come from API/blockchain in a real implementation
   const userStats = {
@@ -46,8 +60,55 @@ const UserProfile = () => {
   // User avatar image - using a reliable Unsplash image
   const userAvatarImage = "https://images.unsplash.com/photo-1599566150163-29194dcaad36";
 
+  const handlePropertyUpload = () => {
+    if (!walletConnected) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to upload properties.",
+      });
+      return;
+    }
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please complete verification to upload properties.",
+      });
+      openAuthModal();
+      return;
+    }
+    
+    setUploadModalOpen(true);
+  };
+
   if (!walletConnected) {
     return <WalletConnectionPrompt connectWallet={connectWallet} />;
+  }
+
+  if (walletConnected && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-space-black text-white">
+        <StarField />
+        <Navbar />
+        
+        <div className="container mx-auto px-4 py-24">
+          <div className="glassmorphism neon-border-blue p-8 rounded-lg text-center max-w-lg mx-auto">
+            <h1 className="text-2xl font-orbitron mb-4">Identity Verification Required</h1>
+            <p className="mb-6 text-gray-300">
+              To access your profile and invest in properties, you'll need to complete our KYC verification process.
+            </p>
+            <Button 
+              onClick={() => openAuthModal()}
+              className="cosmic-btn py-2 px-6"
+            >
+              Verify Identity
+            </Button>
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -56,6 +117,22 @@ const UserProfile = () => {
       <Navbar />
       
       <main className="container mx-auto px-4 py-24">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-orbitron">
+            <span className="bg-clip-text text-transparent bg-neon-gradient neon-glow-blue">
+              Investor Dashboard
+            </span>
+          </h1>
+          
+          <Button 
+            onClick={handlePropertyUpload}
+            className="cosmic-btn px-4 py-2 flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            <span>List Property</span>
+          </Button>
+        </div>
+        
         <div className="flex flex-col md:flex-row items-start gap-8 mb-12">
           <UserStatsOverview 
             walletAddress={walletAddress}
@@ -78,6 +155,18 @@ const UserProfile = () => {
           />
         </div>
       </main>
+      
+      <PropertyUploadModal 
+        isOpen={uploadModalOpen} 
+        onClose={() => setUploadModalOpen(false)}
+        onUploadSuccess={() => {
+          toast({
+            title: "Property Submitted",
+            description: "Your property has been submitted for verification.",
+          });
+          setUploadModalOpen(false);
+        }}
+      />
       
       <Footer />
     </div>

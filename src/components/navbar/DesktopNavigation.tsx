@@ -1,64 +1,59 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import NavLink from './NavLink';
+import { Button } from '@/components/ui/button';
+
+interface FeaturedPropertyProps {
+  // Define the interface based on the actual properties needed
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  // Add other properties as needed
+}
+
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  isTransparent?: boolean;
+}
 
 interface DesktopNavigationProps {
-  activeSection: string;
-  scrollToSection: (sectionId: string) => void;
+  menuItems: { href: string; label: string }[];
+  isTransparent: boolean;
+  isAuthenticated: boolean;
+  featuredProperties?: FeaturedPropertyProps[];
+  customStyle?: string;
 }
 
 const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
-  activeSection,
-  scrollToSection
+  menuItems,
+  isTransparent,
+  isAuthenticated,
+  featuredProperties,
+  customStyle,
 }) => {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-
   return (
-    <div className="hidden lg:flex items-center space-x-8">
-      {isHomePage ? (
-        <>
+    <nav
+      className={`hidden md:flex items-center space-x-8 ${customStyle ? customStyle : ''}`}
+    >
+      {menuItems.map((item) => {
+        // Skip the profile link if user is not authenticated
+        if (item.href === '/profile' && !isAuthenticated) {
+          return null;
+        }
+        
+        return (
           <NavLink
-            href="#hero"
-            isActive={activeSection === 'hero'}
-            onClick={() => scrollToSection('hero')}
+            key={item.href}
+            href={item.href}
+            isTransparent={isTransparent}
           >
-            Home
+            {item.label}
           </NavLink>
-          
-          <NavLink
-            href="#marketplace"
-            isActive={activeSection === 'marketplace'}
-            onClick={() => scrollToSection('marketplace')}
-          >
-            Marketplace
-          </NavLink>
-          
-          <NavLink
-            href="#tokenization"
-            isActive={activeSection === 'tokenization'}
-            onClick={() => scrollToSection('tokenization')}
-          >
-            Tokenization
-          </NavLink>
-        </>
-      ) : (
-        // If not on home page, use regular links without scroll behavior
-        <Link to="/" className="font-spacegrotesk text-gray-300 hover:text-white relative overflow-hidden group transition-all duration-300">
-          <span className="flex items-center">Home</span>
-          <span className="absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 w-0 group-hover:w-full"></span>
-        </Link>
-      )}
-      
-      <Link 
-        to="/profile" 
-        className={`font-spacegrotesk ${location.pathname === '/profile' ? 'text-white' : 'text-gray-300 hover:text-white'} relative overflow-hidden group transition-all duration-300`}
-      >
-        <span className="flex items-center">Profile</span>
-        <span className={`absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 ${location.pathname === '/profile' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-      </Link>
-    </div>
+        );
+      })}
+    </nav>
   );
 };
 

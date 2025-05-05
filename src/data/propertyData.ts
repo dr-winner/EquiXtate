@@ -7,7 +7,7 @@ export const properties = [
     id: '0x3d8e45a1c51bf05eb23be868d6ec26e050650f09a23af8161',
     name: 'Cantonments Luxury Apartments',
     location: 'Accra, Ghana',
-    image: 'https://unsplash.com/photos/a-living-room-filled-with-furniture-and-a-large-window-ZY5_ucKU72I',
+    image: 'https://source.unsplash.com/featured/?ghana,luxury,apartment',
     images: [
       'https://source.unsplash.com/featured/?ghana,luxury,apartment',
       'https://source.unsplash.com/featured/?ghana,apartment,interior',

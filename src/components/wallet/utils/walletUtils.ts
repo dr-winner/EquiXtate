@@ -1,3 +1,4 @@
+
 export const formatAddress = (address: string): string => {
   if (!address) return '';
   return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
@@ -17,8 +18,6 @@ export const getNetworkName = (chainId: string | null): string => {
     case 80001: return "Mumbai Testnet";
     case 56: return "BSC Mainnet";
     case 97: return "BSC Testnet";
-    case 148: return "Sonic Labs Testnet";
-    case 149: return "Sonic Labs Mainnet";
     default: return `Chain ID: ${chainIdDecimal}`;
   }
 };

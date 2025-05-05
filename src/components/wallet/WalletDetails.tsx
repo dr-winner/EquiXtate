@@ -1,47 +1,48 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
+import { Shield } from 'lucide-react';
 
 interface WalletDetailsProps {
   walletAddress: string;
   balance: string;
   getNetworkName: () => string;
-  disconnectWallet: () => void;
+  isAuthenticated?: boolean;
 }
 
 const WalletDetails: React.FC<WalletDetailsProps> = ({
   walletAddress,
   balance,
   getNetworkName,
-  disconnectWallet
+  isAuthenticated = false
 }) => {
   return (
-    <div className="space-y-2">
-      <div className="p-3 border border-space-deep-purple rounded-md bg-space-deep-purple/30">
-        <p className="text-gray-300 text-xs">Connected Address</p>
-        <p className="text-space-neon-green font-mono text-sm break-all">{walletAddress}</p>
-        
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <div>
-            <p className="text-gray-300 text-xs">Balance</p>
-            <p className="text-space-neon-blue font-mono text-sm">{balance} ETH</p>
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-orbitron text-white">Wallet Details</h3>
+        {isAuthenticated && (
+          <div className="flex items-center px-2 py-1 bg-space-neon-green/20 text-space-neon-green rounded-full text-xs">
+            <Shield className="h-3 w-3 mr-1" />
+            Verified
           </div>
-          <div>
-            <p className="text-gray-300 text-xs">Network</p>
-            <p className="text-space-neon-purple font-mono text-sm">
-              {getNetworkName()}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
       
-      <Button 
-        className="w-full bg-gradient-to-r from-space-neon-purple to-red-500 hover:opacity-90"
-        onClick={disconnectWallet}
-      >
-        Disconnect Wallet
-      </Button>
-    </div>
+      <div className="space-y-1 mb-4">
+        <p className="text-sm text-gray-400">Address</p>
+        <p className="text-white font-mono text-sm bg-space-deep-purple/30 p-2 rounded">{walletAddress}</p>
+      </div>
+      
+      <div className="flex justify-between mb-4">
+        <div>
+          <p className="text-sm text-gray-400">Balance</p>
+          <p className="text-white">{balance} ETH</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-400">Network</p>
+          <p className="text-white">{getNetworkName()}</p>
+        </div>
+      </div>
+    </>
   );
 };
 

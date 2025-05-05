@@ -2,6 +2,7 @@
 import WalletService from './web3/WalletService';
 import PropertyTokenService from './web3/PropertyTokenService';
 import GovernanceService from './web3/GovernanceService';
+import PropertyService from './web3/PropertyService';
 import ContractService from './web3/ContractService';
 
 // Main Web3Service facade
@@ -20,9 +21,22 @@ class Web3Service {
   public buyPropertyTokens = PropertyTokenService.buyPropertyTokens.bind(PropertyTokenService);
   public getAvailableTokens = PropertyTokenService.getAvailableTokens.bind(PropertyTokenService);
   
+  // New Property service methods
+  public getPropertyDetails = PropertyService.getPropertyDetails.bind(PropertyService);
+  public createProperty = PropertyService.createProperty.bind(PropertyService);
+  public getUserTokenBalance = PropertyService.getUserTokenBalance.bind(PropertyService);
+  public distributeRentalIncome = PropertyService.distributeRentalIncome.bind(PropertyService);
+  public claimRentalIncome = PropertyService.claimRentalIncome.bind(PropertyService);
+  public createAuction = PropertyService.createAuction.bind(PropertyService);
+  public placeBid = PropertyService.placeBid.bind(PropertyService);
+  public endAuction = PropertyService.endAuction.bind(PropertyService);
+  
   // Governance methods
   public getGovernanceProposals = GovernanceService.getGovernanceProposals.bind(GovernanceService);
   public voteOnProposal = GovernanceService.voteOnProposal.bind(GovernanceService);
+  public createProposal = GovernanceService.createProposal.bind(GovernanceService);
+  public executeProposal = GovernanceService.executeProposal.bind(GovernanceService);
+  public cancelProposal = GovernanceService.cancelProposal.bind(GovernanceService);
 }
 
 // Export singleton instance

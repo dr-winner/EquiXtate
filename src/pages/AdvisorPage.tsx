@@ -26,6 +26,17 @@ const AdvisorPage: React.FC = () => {
     e.preventDefault();
     handleSendMessage(input);
   };
+  
+  // Add keyboard event handler for Enter key
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Submit on Enter without Shift key
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input.trim() && !isLoading) {
+        handleSendMessage(input);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-space-black text-white">
@@ -83,6 +94,7 @@ const AdvisorPage: React.FC = () => {
                 placeholder="Ask about real estate investing..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="resize-none bg-space-deep-purple/20 border-space-neon-blue/50 rounded-lg flex-1"
                 disabled={isLoading}
               />
