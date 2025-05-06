@@ -66,6 +66,7 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
     setEmail("");
     setPassword("");
     setVerificationComplete(false);
+    setActiveTab("login");
     onClose();
   };
 
@@ -111,7 +112,11 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
   // Success verification completed screen
   if (verificationComplete) {
     return (
-      <Dialog open={isOpen} onOpenChange={handleCancel}>
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+          handleCancel();
+        }
+      }}>
         <DialogContent className="sm:max-w-[500px] glassmorphism border-space-neon-blue/30">
           <VerificationSuccess />
         </DialogContent>
