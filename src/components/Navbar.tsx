@@ -6,7 +6,8 @@ import DesktopNavigation from './navbar/DesktopNavigation';
 import MobileMenuButton from './navbar/MobileMenuButton';
 import MobileMenu from './navbar/MobileMenu';
 import WalletConnection from './wallet/WalletConnection';
-import Web3Service from '@/services/Web3Service';
+import AdminService from '@/services/AdminService';
+import { Shield } from 'lucide-react';
 
 interface FeaturedPropertyProps {
   id: string;
@@ -14,11 +15,6 @@ interface FeaturedPropertyProps {
   location: string;
   price: number;
   // Add other properties as needed
-}
-
-interface MobileMenuButtonProps {
-  toggleOpen: () => void;
-  isMenuOpen: boolean;
 }
 
 interface NavbarProps {
@@ -33,14 +29,15 @@ const Navbar: React.FC<NavbarProps> = ({
   const { scrolled } = useScrollEffect();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Menu items
-  const menuItems = [
+  const [menuItems, setMenuItems] = useState([
     { href: '/', label: 'Home' },
     { href: '/marketplace', label: 'Marketplace' },
     { href: '/governance', label: 'Governance' },
     { href: '/profile', label: 'Profile' },
-  ];
+  ]);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -50,9 +47,31 @@ const Navbar: React.FC<NavbarProps> = ({
 
     checkAuth();
 
+    // Check if user is admin
+    const checkAdminStatus = async () => {
+      const adminStatus = await AdminService.checkAdminAccess();
+      setIsAdmin(adminStatus);
+      
+      // If admin, add admin link to menu if it doesn't exist
+      if (adminStatus) {
+        setMenuItems(prevItems => {
+          const adminItem = { href: '/admin', label: 'Admin' };
+          // Check if admin link already exists
+          const adminExists = prevItems.some(item => item.href === '/admin');
+          if (!adminExists) {
+            return [...prevItems, adminItem];
+          }
+          return prevItems;
+        });
+      }
+    };
+    
+    checkAdminStatus();
+
     // Listen for authentication status changes
     const handleAuthChange = () => {
       checkAuth();
+      checkAdminStatus();
     };
 
     window.addEventListener('authStatusChanged', handleAuthChange);
@@ -92,6 +111,11 @@ const Navbar: React.FC<NavbarProps> = ({
 
           {/* Wallet Connection */}
           <div className="flex items-center">
+            {isAdmin && (
+              <div className="mr-3 text-green-400 flex items-center" title="Admin Access">
+                <Shield className="h-5 w-5" />
+              </div>
+            )}
             <WalletConnection />
             <MobileMenuButton
               isMenuOpen={isMenuOpen}

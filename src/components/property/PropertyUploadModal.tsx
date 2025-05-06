@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, ChevronRight, FileImage, FileText, Loader2, MapPin, Upload } from 'lucide-react';
+import { Check, ChevronRight, FileImage, FileText, Loader2, MapPin, Upload, X } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 interface PropertyUploadModalProps {
@@ -41,6 +41,7 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
   const [propertyImages, setPropertyImages] = useState<File[]>([]);
   const [propertyDocuments, setPropertyDocuments] = useState<File[]>([]);
   const [deedDocument, setDeedDocument] = useState<File | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -71,7 +72,45 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
     }
   };
   
+  const removeImage = (index: number) => {
+    setPropertyImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const removeDocument = (index: number) => {
+    setPropertyDocuments(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const removeDeedDocument = () => {
+    setDeedDocument(null);
+    // Reset the input value
+    const input = document.getElementById('deed') as HTMLInputElement;
+    if (input) input.value = '';
+  };
+  
   const moveToNextStep = () => {
+    // Validation for each step
+    if (currentStep === 1) {
+      // Check required fields in step 1
+      if (!propertyData.name || !propertyData.type || !propertyData.location || !propertyData.price) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields marked with *",
+          variant: "destructive"
+        });
+        return;
+      }
+    } else if (currentStep === 2) {
+      // Check if images are uploaded
+      if (propertyImages.length < 1) {
+        toast({
+          title: "Images Required",
+          description: "Please upload at least one property image",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(prev => prev + 1);
     }
@@ -83,7 +122,47 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
     }
   };
   
+  const handleCancel = () => {
+    // Reset form state to initial values
+    setCurrentStep(1);
+    setPropertyData({
+      name: '',
+      type: '',
+      location: '',
+      description: '',
+      price: '',
+      bedrooms: '',
+      bathrooms: '',
+      squareFootage: '',
+      listingType: 'sale',
+    });
+    setPropertyImages([]);
+    setPropertyDocuments([]);
+    setDeedDocument(null);
+    setTermsAccepted(false);
+    onClose();
+  };
+  
   const handleSubmit = async () => {
+    // Validation for final step
+    if (!deedDocument) {
+      toast({
+        title: "Missing Document",
+        description: "Property deed document is required",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!termsAccepted) {
+      toast({
+        title: "Terms Required",
+        description: "Please confirm that you're the legal owner of this property",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       setIsLoading(true);
       
@@ -139,7 +218,9 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Property Name</Label>
+                <Label htmlFor="name" className="flex items-center">
+                  Property Name <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Input 
                   id="name" 
                   name="name"
@@ -147,15 +228,19 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                   onChange={handleInputChange}
                   placeholder="e.g. Modern Downtown Apartment"
                   className="bg-space-deep-purple/30 border-space-neon-blue/30"
+                  required
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="type">Property Type</Label>
+                  <Label htmlFor="type" className="flex items-center">
+                    Property Type <span className="text-red-500 ml-1">*</span>
+                  </Label>
                   <Select 
                     value={propertyData.type} 
                     onValueChange={(value) => handleSelectChange('type', value)}
+                    required
                   >
                     <SelectTrigger className="bg-space-deep-purple/30 border-space-neon-blue/30">
                       <SelectValue placeholder="Select type" />
@@ -171,10 +256,13 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="listingType">Listing Type</Label>
+                  <Label htmlFor="listingType" className="flex items-center">
+                    Listing Type <span className="text-red-500 ml-1">*</span>
+                  </Label>
                   <Select 
                     value={propertyData.listingType} 
                     onValueChange={(value) => handleSelectChange('listingType', value)}
+                    required
                   >
                     <SelectTrigger className="bg-space-deep-purple/30 border-space-neon-blue/30">
                       <SelectValue placeholder="Select listing type" />
@@ -189,7 +277,9 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location" className="flex items-center">
+                  Location <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   <Input 
@@ -199,12 +289,15 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                     onChange={handleInputChange}
                     placeholder="e.g. 123 Main St, Accra, Ghana"
                     className="bg-space-deep-purple/30 border-space-neon-blue/30 pl-10"
+                    required
                   />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="price">Property Value (in USDC)</Label>
+                <Label htmlFor="price" className="flex items-center">
+                  Property Value (in USDC) <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Input 
                   id="price" 
                   name="price"
@@ -213,12 +306,15 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                   onChange={handleInputChange}
                   placeholder="e.g. 100000"
                   className="bg-space-deep-purple/30 border-space-neon-blue/30"
+                  required
                 />
               </div>
               
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="bedrooms">Bedrooms</Label>
+                  <Label htmlFor="bedrooms">
+                    Bedrooms
+                  </Label>
                   <Input 
                     id="bedrooms" 
                     name="bedrooms"
@@ -231,7 +327,9 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="bathrooms">Bathrooms</Label>
+                  <Label htmlFor="bathrooms">
+                    Bathrooms
+                  </Label>
                   <Input 
                     id="bathrooms" 
                     name="bathrooms"
@@ -244,7 +342,9 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="squareFootage">Square Footage</Label>
+                  <Label htmlFor="squareFootage">
+                    Square Footage
+                  </Label>
                   <Input 
                     id="squareFootage" 
                     name="squareFootage"
@@ -258,7 +358,9 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">
+                  Description
+                </Label>
                 <Textarea 
                   id="description" 
                   name="description"
@@ -282,82 +384,126 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
             
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="images">Property Images (min. 5)</Label>
+                <Label htmlFor="images" className="flex items-center">
+                  Property Images <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <div className="border-2 border-dashed border-space-neon-blue/50 rounded-lg p-6 text-center cursor-pointer hover:border-space-neon-blue transition-colors">
-                  <FileImage className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                  <p className="text-gray-400 mb-2">Drag and drop or click to upload</p>
-                  <p className="text-xs text-gray-500 mb-2">Upload high-quality images (.jpg, .png)</p>
-                  
-                  <Input id="images" type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
-                  <Button 
-                    type="button" 
-                    onClick={() => document.getElementById('images')?.click()}
-                    variant="outline"
-                    className="border-space-neon-blue text-space-neon-blue"
-                  >
-                    <Upload className="mr-2 h-4 w-4" /> Select Files
-                  </Button>
-                  
-                  {propertyImages.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm text-space-neon-green mb-2">
-                        {propertyImages.length} image(s) selected
-                      </p>
+                  {propertyImages.length > 0 ? (
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <p className="text-sm text-space-neon-green">
+                          {propertyImages.length} image(s) uploaded
+                        </p>
+                        <Button 
+                          type="button" 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => document.getElementById('images')?.click()}
+                          className="border-space-neon-blue text-space-neon-blue"
+                        >
+                          <Upload className="mr-1 h-3 w-3" /> Add More
+                        </Button>
+                      </div>
                       <div className="grid grid-cols-3 gap-2">
-                        {propertyImages.slice(0, 3).map((image, idx) => (
-                          <div key={idx} className="relative h-16 bg-space-deep-purple/50 rounded overflow-hidden">
+                        {propertyImages.map((image, idx) => (
+                          <div key={idx} className="relative group h-24 bg-space-deep-purple/50 rounded overflow-hidden">
                             <img 
                               src={URL.createObjectURL(image)}
                               alt={`Property ${idx + 1}`}
                               className="h-full w-full object-cover"
                             />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                              <button 
+                                type="button"
+                                onClick={() => removeImage(idx)}
+                                className="bg-red-500/70 hover:bg-red-500 p-1 rounded-full"
+                              >
+                                <X className="h-4 w-4 text-white" />
+                              </button>
+                            </div>
                           </div>
                         ))}
-                        {propertyImages.length > 3 && (
-                          <div className="h-16 flex items-center justify-center bg-space-deep-purple/50 rounded">
-                            <span className="text-sm">+{propertyImages.length - 3} more</span>
-                          </div>
-                        )}
                       </div>
                     </div>
+                  ) : (
+                    <>
+                      <FileImage className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                      <p className="text-gray-400 mb-2">Drag and drop or click to upload</p>
+                      <p className="text-xs text-gray-500 mb-2">Upload high-quality images (.jpg, .png)</p>
+                      <Button 
+                        type="button" 
+                        onClick={() => document.getElementById('images')?.click()}
+                        variant="outline" 
+                        className="mt-2 border-space-neon-blue text-space-neon-blue"
+                      >
+                        <Upload className="mr-2 h-4 w-4" /> Select Files
+                      </Button>
+                    </>
                   )}
+                  <Input id="images" type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="documents">Supporting Documents</Label>
+                <Label htmlFor="documents">
+                  Supporting Documents
+                </Label>
                 <div className="border-2 border-dashed border-space-neon-purple/50 rounded-lg p-6 text-center cursor-pointer hover:border-space-neon-purple transition-colors">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                  <p className="text-gray-400 mb-2">Drag and drop or click to upload</p>
-                  <p className="text-xs text-gray-500 mb-2">Upload property tax records, floor plans, etc. (.pdf, .doc)</p>
-                  
-                  <Input id="documents" type="file" multiple accept=".pdf,.doc,.docx" onChange={handleDocumentUpload} className="hidden" />
-                  <Button 
-                    type="button" 
-                    onClick={() => document.getElementById('documents')?.click()}
-                    variant="outline"
-                    className="border-space-neon-purple text-space-neon-purple"
-                  >
-                    <Upload className="mr-2 h-4 w-4" /> Select Files
-                  </Button>
-                  
-                  {propertyDocuments.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm text-space-neon-green">
-                        {propertyDocuments.length} document(s) selected
-                      </p>
-                      <ul className="text-left text-xs mt-2 space-y-1">
-                        {propertyDocuments.slice(0, 3).map((doc, idx) => (
-                          <li key={idx} className="text-gray-300">
-                            <Check className="inline-block h-3 w-3 mr-1 text-space-neon-green" /> {doc.name}
-                          </li>
+                  {propertyDocuments.length > 0 ? (
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <p className="text-sm text-space-neon-green">
+                          {propertyDocuments.length} document(s) uploaded
+                        </p>
+                        <Button 
+                          type="button" 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => document.getElementById('documents')?.click()}
+                          className="border-space-neon-purple text-space-neon-purple"
+                        >
+                          <Upload className="mr-1 h-3 w-3" /> Add More
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        {propertyDocuments.map((doc, idx) => (
+                          <div key={idx} className="bg-space-black/50 p-3 rounded-lg flex justify-between items-center">
+                            <div className="flex items-center">
+                              <div className="bg-space-neon-purple/20 p-2 rounded-md mr-3">
+                                <FileText className="h-4 w-4 text-space-neon-purple" />
+                              </div>
+                              <div className="text-left">
+                                <p className="text-sm text-white truncate max-w-[200px]">{doc.name}</p>
+                                <p className="text-xs text-gray-400">{(doc.size / 1024).toFixed(2)} KB</p>
+                              </div>
+                            </div>
+                            <button 
+                              type="button"
+                              onClick={() => removeDocument(idx)}
+                              className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-space-deep-purple/50"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
                         ))}
-                        {propertyDocuments.length > 3 && (
-                          <li className="text-gray-300">+ {propertyDocuments.length - 3} more files</li>
-                        )}
-                      </ul>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                      <p className="text-gray-400 mb-2">Drag and drop or click to upload</p>
+                      <p className="text-xs text-gray-500 mb-2">Upload property tax records, floor plans, etc. (.pdf, .doc)</p>
+                      <Button 
+                        type="button" 
+                        onClick={() => document.getElementById('documents')?.click()}
+                        variant="outline" 
+                        className="mt-2 border-space-neon-purple text-space-neon-purple"
+                      >
+                        <Upload className="mr-2 h-4 w-4" /> Select Files
+                      </Button>
+                    </>
                   )}
+                  <Input id="documents" type="file" multiple accept=".pdf,.doc,.docx" onChange={handleDocumentUpload} className="hidden" />
                 </div>
               </div>
             </div>
@@ -378,26 +524,42 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                   Property Deed Document <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <div className="border-2 border-dashed border-space-neon-green/50 rounded-lg p-6 text-center cursor-pointer hover:border-space-neon-green transition-colors">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                  <p className="text-gray-400 mb-2">Upload legal deed documentation</p>
-                  <p className="text-xs text-gray-500 mb-2">This will be verified with government land records</p>
-                  
-                  <Input id="deed" type="file" accept=".pdf,.doc,.docx" onChange={handleDeedUpload} className="hidden" />
-                  <Button 
-                    type="button" 
-                    onClick={() => document.getElementById('deed')?.click()}
-                    variant="outline"
-                    className="border-space-neon-green text-space-neon-green"
-                  >
-                    <Upload className="mr-2 h-4 w-4" /> Upload Deed
-                  </Button>
-                  
-                  {deedDocument && (
-                    <div className="mt-4">
-                      <p className="text-sm text-space-neon-green flex items-center justify-center">
-                        <Check className="h-4 w-4 mr-1" /> {deedDocument.name}
-                      </p>
+                  {deedDocument ? (
+                    <div className="bg-space-black/50 p-3 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="bg-space-neon-green/20 p-2 rounded-md mr-3">
+                            <FileText className="h-5 w-5 text-space-neon-green" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm text-white font-medium truncate">{deedDocument.name}</p>
+                            <p className="text-xs text-gray-400">{(deedDocument.size / 1024).toFixed(2)} KB</p>
+                          </div>
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={removeDeedDocument}
+                          className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-space-deep-purple/50"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                      <p className="text-gray-400 mb-2">Upload legal deed documentation</p>
+                      <p className="text-xs text-gray-500 mb-2">This will be verified with government land records</p>
+                      <Input id="deed" type="file" accept=".pdf,.doc,.docx" onChange={handleDeedUpload} className="hidden" />
+                      <Button 
+                        type="button" 
+                        onClick={() => document.getElementById('deed')?.click()}
+                        variant="outline"
+                        className="border-space-neon-green text-space-neon-green"
+                      >
+                        <Upload className="mr-2 h-4 w-4" /> Upload Deed
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
@@ -425,9 +587,17 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
               </div>
               
               <div className="flex items-center">
-                <input type="checkbox" id="terms" className="mr-2" />
-                <Label htmlFor="terms" className="text-sm">
+                <input 
+                  type="checkbox" 
+                  id="terms" 
+                  className="mr-2" 
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  required
+                />
+                <Label htmlFor="terms" className="text-sm flex items-center">
                   I confirm that all information provided is accurate and I am the legal owner of this property
+                  <span className="text-red-500 ml-1">*</span>
                 </Label>
               </div>
             </div>
@@ -440,8 +610,16 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleCancel}>
       <DialogContent className="sm:max-w-[600px] glassmorphism border-space-neon-blue/30">
+        <button 
+          onClick={handleCancel} 
+          className="absolute top-4 right-4 p-1 rounded-full hover:bg-space-deep-purple/50 transition-colors"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4 text-gray-400" />
+        </button>
+
         <DialogHeader>
           {renderStepIndicators()}
           {renderStepContent()}

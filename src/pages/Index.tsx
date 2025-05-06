@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import StarField from '@/components/StarField';
 import Navbar from '@/components/Navbar';
@@ -108,26 +107,7 @@ const Index = () => {
         <div className="relative">
           <HeroSection />
           
-          {/* Search Bar positioned below the hero CTAs */}
-          <div className="absolute bottom-8 left-0 right-0 z-10">
-            <div className="container mx-auto px-4">
-              <form 
-                onSubmit={handleSearch}
-                className="flex w-full max-w-3xl mx-auto glassmorphism p-2 rounded-lg border border-space-neon-blue/30"
-              >
-                <Input 
-                  type="text" 
-                  placeholder="Search by location, price, or property type..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-0 text-white placeholder:text-gray-400 flex-grow"
-                />
-                <Button type="submit" className="cosmic-btn py-2 px-4 ml-2">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </form>
-            </div>
-          </div>
+          {/* Removed the carousel section */}
         </div>
         
         <AboutSection />

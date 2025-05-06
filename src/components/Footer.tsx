@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { Instagram, Twitter, Linkedin, Github } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
@@ -34,18 +36,22 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-orbitron font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
-              {['Marketplace', 'Properties', 'How it works', 'FAQ', 'About us'].map((item, index) => (
-                <FooterLink key={index} href="#">{item}</FooterLink>
-              ))}
+              <FooterLink to="/marketplace">Marketplace</FooterLink>
+              <FooterLink to="/marketplace">Properties</FooterLink>
+              <FooterLink to="/tokenization">How it works</FooterLink>
+              <FooterLink to="/help">FAQ</FooterLink>
+              <FooterLink to="/about">About us</FooterLink>
             </ul>
           </div>
           
           <div>
             <h3 className="text-lg font-orbitron font-semibold mb-4 text-white">Resources</h3>
             <ul className="space-y-2">
-              {['Documentation', 'Whitepaper', 'Token Economics', 'Privacy Policy', 'Terms of Service'].map((item, index) => (
-                <FooterLink key={index} href="#">{item}</FooterLink>
-              ))}
+              <FooterLink to="/docs">Documentation</FooterLink>
+              <FooterLink to="/whitepaper">Whitepaper</FooterLink>
+              <FooterLink to="/tokenomics">Token Economics</FooterLink>
+              <FooterLink to="/privacy">Privacy Policy</FooterLink>
+              <FooterLink to="/terms">Terms of Service</FooterLink>
             </ul>
           </div>
           
@@ -72,15 +78,9 @@ const Footer: React.FC = () => {
             © 2025 EquiXtate. All rights reserved. Powered by Sonic Lab.
           </p>
           <div className="flex space-x-4">
-            {['Privacy Policy', 'Terms of Service', 'Cookies Settings'].map((item, index) => (
-              <a
-                key={index}
-                href="#"
-                className="text-gray-400 hover:text-space-neon-blue text-sm font-inter transition-colors duration-200"
-              >
-                {item}
-              </a>
-            ))}
+            <FooterLink to="/privacy" className="text-sm">Privacy Policy</FooterLink>
+            <FooterLink to="/terms" className="text-sm">Terms of Service</FooterLink>
+            <FooterLink to="/cookies" className="text-sm">Cookies Settings</FooterLink>
           </div>
         </div>
       </div>
@@ -99,15 +99,15 @@ const SocialIcon: React.FC<{ icon: React.ReactNode }> = ({ icon }) => {
   );
 };
 
-const FooterLink: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => {
+const FooterLink: React.FC<{ to: string; children: React.ReactNode; className?: string }> = ({ to, children, className }) => {
   return (
     <li>
-      <a
-        href={href}
-        className="text-gray-400 hover:text-space-neon-blue transition-colors duration-200 font-inter"
+      <Link
+        to={to}
+        className={`text-gray-400 hover:text-space-neon-blue transition-colors duration-200 font-inter ${className || ''}`}
       >
         {children}
-      </a>
+      </Link>
     </li>
   );
 };

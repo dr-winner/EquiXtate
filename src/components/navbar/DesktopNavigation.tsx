@@ -1,7 +1,7 @@
-
 import React from 'react';
 import NavLink from './NavLink';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface FeaturedPropertyProps {
   // Define the interface based on the actual properties needed
@@ -33,6 +33,20 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   featuredProperties,
   customStyle,
 }) => {
+  const navigate = useNavigate();
+
+  const handleNavClick = (href: string) => {
+    if (href === '/marketplace') {
+      // Scroll to marketplace section
+      const marketplaceSection = document.getElementById('marketplace');
+      if (marketplaceSection) {
+        marketplaceSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      navigate(href);
+    }
+  };
+
   return (
     <nav
       className={`hidden md:flex items-center space-x-8 ${customStyle ? customStyle : ''}`}
@@ -44,13 +58,15 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         }
         
         return (
-          <NavLink
+          <button
             key={item.href}
-            href={item.href}
-            isTransparent={isTransparent}
+            onClick={() => handleNavClick(item.href)}
+            className={`text-sm font-medium transition-colors ${
+              isTransparent ? 'text-white hover:text-space-neon-blue' : 'text-gray-300 hover:text-white'
+            }`}
           >
             {item.label}
-          </NavLink>
+          </button>
         );
       })}
     </nav>

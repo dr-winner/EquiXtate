@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 
 const StarField: React.FC = () => {
@@ -24,7 +23,7 @@ const StarField: React.FC = () => {
     const stars: Star[] = [];
     const shootingStars: ShootingStar[] = [];
     const cryptoSymbols: CryptoSymbol[] = [];
-    const numStars = Math.floor(canvas.width * canvas.height / 10000); // Adjust density
+    const numStars = Math.floor(canvas.width * canvas.height / 20000); // Reduced density
     
     interface Star {
       x: number;
@@ -69,9 +68,9 @@ const StarField: React.FC = () => {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5,
-        opacity: Math.random(),
-        speed: 0.2 + Math.random() * 0.3,
+        radius: Math.random() * 1.2, // Reduced max size
+        opacity: Math.random() * 0.8, // Reduced max opacity
+        speed: 0.1 + Math.random() * 0.2, // Reduced speed
         cyclePosition: Math.random() * 2 * Math.PI
       });
     }
@@ -110,106 +109,116 @@ const StarField: React.FC = () => {
     // Animation
     let animationFrameId: number;
     let frameCount = 0;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let lastFrameTime = performance.now();
+    const targetFPS = 30; // Limit to 30 FPS
+    const frameInterval = 1000 / targetFPS;
+    
+    const draw = (currentTime: number) => {
+      const elapsed = currentTime - lastFrameTime;
       
-      // Draw blurred crypto symbols
-      cryptoSymbols.forEach(symbol => {
-        ctx.save();
-        ctx.translate(symbol.x, symbol.y);
-        ctx.rotate(symbol.rotation);
+      if (elapsed > frameInterval) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Apply blur effect
-        ctx.filter = `blur(${symbol.blur}px)`;
-        ctx.font = `${symbol.size}px Arial`;
-        ctx.fillStyle = `${symbol.color}${Math.floor(symbol.opacity * 255).toString(16).padStart(2, '0')}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(symbol.symbol, 0, 0);
-        
-        // Update position and rotation
-        symbol.rotation += symbol.rotationSpeed;
-        symbol.y += symbol.speed;
-        symbol.x += Math.sin(frameCount / 100) * 0.3;
-        
-        // Reset if off screen
-        if (symbol.y > canvas.height + symbol.size) {
-          symbol.y = -symbol.size;
-          symbol.x = Math.random() * canvas.width;
-        }
-        
-        ctx.restore();
-      });
-      
-      // Draw stars with twinkling effect
-      stars.forEach(star => {
-        star.cyclePosition += star.speed / 100;
-        const flickerOpacity = star.opacity * (0.7 + 0.3 * Math.sin(star.cyclePosition));
-        
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${flickerOpacity})`;
-        ctx.fill();
-      });
-      
-      // Handle shooting stars
-      if (frameCount % 100 === 0 && Math.random() > 0.7) {
-        shootingStars.push(createShootingStar());
-      }
-      
-      shootingStars.forEach(star => {
-        if (!star.active) return;
-        
-        star.timeToLive -= 1;
-        if (star.timeToLive <= 0) {
-          star.active = false;
-          return;
-        }
-        
-        // Update position
-        star.x += Math.cos(star.angle) * star.speed;
-        star.y += Math.sin(star.angle) * star.speed;
-        
-        // Add to trail
-        star.trail.push({x: star.x, y: star.y});
-        if (star.trail.length > 20) star.trail.shift();
-        
-        // Draw trail
-        ctx.beginPath();
-        ctx.moveTo(star.trail[0].x, star.trail[0].y);
-        star.trail.forEach(point => {
-          ctx.lineTo(point.x, point.y);
+        // Draw blurred crypto symbols
+        cryptoSymbols.forEach(symbol => {
+          ctx.save();
+          ctx.translate(symbol.x, symbol.y);
+          ctx.rotate(symbol.rotation);
+          
+          // Apply blur effect
+          ctx.filter = `blur(${symbol.blur}px)`;
+          ctx.font = `${symbol.size}px Arial`;
+          ctx.fillStyle = `${symbol.color}${Math.floor(symbol.opacity * 255).toString(16).padStart(2, '0')}`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(symbol.symbol, 0, 0);
+          
+          // Update position and rotation
+          symbol.rotation += symbol.rotationSpeed;
+          symbol.y += symbol.speed;
+          symbol.x += Math.sin(frameCount / 100) * 0.3;
+          
+          // Reset if off screen
+          if (symbol.y > canvas.height + symbol.size) {
+            symbol.y = -symbol.size;
+            symbol.x = Math.random() * canvas.width;
+          }
+          
+          ctx.restore();
         });
         
-        const gradient = ctx.createLinearGradient(
-          star.trail[0].x, star.trail[0].y,
-          star.x, star.y
-        );
-        gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
-        gradient.addColorStop(1, `rgba(255, 255, 255, ${star.opacity})`);
+        // Draw stars with twinkling effect
+        stars.forEach(star => {
+          star.cyclePosition += star.speed / 100;
+          const flickerOpacity = star.opacity * (0.7 + 0.3 * Math.sin(star.cyclePosition));
+          
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${flickerOpacity})`;
+          ctx.fill();
+        });
         
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        // Handle shooting stars
+        if (frameCount % 100 === 0 && Math.random() > 0.7) {
+          shootingStars.push(createShootingStar());
+        }
         
-        // Remove if off screen
-        if (star.x > canvas.width || star.y > canvas.height) {
-          star.active = false;
+        shootingStars.forEach(star => {
+          if (!star.active) return;
+          
+          star.timeToLive -= 1;
+          if (star.timeToLive <= 0) {
+            star.active = false;
+            return;
+          }
+          
+          // Update position
+          star.x += Math.cos(star.angle) * star.speed;
+          star.y += Math.sin(star.angle) * star.speed;
+          
+          // Add to trail
+          star.trail.push({x: star.x, y: star.y});
+          if (star.trail.length > 20) star.trail.shift();
+          
+          // Draw trail
+          ctx.beginPath();
+          ctx.moveTo(star.trail[0].x, star.trail[0].y);
+          star.trail.forEach(point => {
+            ctx.lineTo(point.x, point.y);
+          });
+          
+          const gradient = ctx.createLinearGradient(
+            star.trail[0].x, star.trail[0].y,
+            star.x, star.y
+          );
+          gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
+          gradient.addColorStop(1, `rgba(255, 255, 255, ${star.opacity})`);
+          
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // Remove if off screen
+          if (star.x > canvas.width || star.y > canvas.height) {
+            star.active = false;
+          }
+        });
+        
+        // Clean up inactive shooting stars
+        for (let i = shootingStars.length - 1; i >= 0; i--) {
+          if (!shootingStars[i].active) {
+            shootingStars.splice(i, 1);
+          }
         }
-      });
-      
-      // Clean up inactive shooting stars
-      for (let i = shootingStars.length - 1; i >= 0; i--) {
-        if (!shootingStars[i].active) {
-          shootingStars.splice(i, 1);
-        }
+        
+        lastFrameTime = currentTime;
+        frameCount++;
       }
       
-      frameCount++;
       animationFrameId = requestAnimationFrame(draw);
     };
     
-    draw();
+    animationFrameId = requestAnimationFrame(draw);
     
     return () => {
       window.removeEventListener('resize', setCanvasDimensions);

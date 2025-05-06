@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 
 // Import our new component files
 import LoginForm from './forms/LoginForm';
@@ -61,6 +60,15 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
     }, 1500);
   };
 
+  const handleCancel = () => {
+    // Reset form state to initial values before closing
+    setCurrentStep(1);
+    setEmail("");
+    setPassword("");
+    setVerificationComplete(false);
+    onClose();
+  };
+
   const renderRegistrationStep = () => {
     switch(currentStep) {
       case 1:
@@ -103,7 +111,7 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
   // Success verification completed screen
   if (verificationComplete) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={handleCancel}>
         <DialogContent className="sm:max-w-[500px] glassmorphism border-space-neon-blue/30">
           <VerificationSuccess />
         </DialogContent>
@@ -112,7 +120,11 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        handleCancel();
+      }
+    }}>
       <DialogContent className="sm:max-w-[500px] glassmorphism border-space-neon-blue/30">
         <DialogHeader>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

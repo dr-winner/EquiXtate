@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, History, HelpCircle, Settings, LogOut } from 'lucide-react';
 
 interface WalletMenuItemsProps {
@@ -12,6 +12,8 @@ const WalletMenuItems: React.FC<WalletMenuItemsProps> = ({
   setShowDropdown,
   disconnectWallet
 }) => {
+  const navigate = useNavigate();
+  
   const menuItems = [
     {
       icon: <User className="h-4 w-4 mr-2 text-space-neon-blue" />,
@@ -51,7 +53,13 @@ const WalletMenuItems: React.FC<WalletMenuItemsProps> = ({
       
       <button
         className="w-full py-2 px-3 flex items-center bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors mt-4"
-        onClick={disconnectWallet}
+        onClick={() => {
+          disconnectWallet();
+          // If we're on a protected route, navigate back to home
+          if (['/profile', '/transactions', '/settings', '/help'].includes(window.location.pathname)) {
+            navigate('/');
+          }
+        }}
       >
         <LogOut className="h-4 w-4 mr-2" />
         <span>Disconnect</span>

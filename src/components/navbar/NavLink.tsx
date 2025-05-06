@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps {
   href: string;
@@ -13,7 +13,8 @@ const NavLink: React.FC<NavLinkProps> = ({
   children,
   isTransparent = false 
 }) => {
-  const isActive = window.location.pathname === href;
+  const location = useLocation();
+  const isActive = location.pathname === href;
   const baseClasses = "relative font-medium transition-colors duration-300";
   const transparentClasses = isTransparent 
     ? "text-white hover:text-space-neon-blue" 

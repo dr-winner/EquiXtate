@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Building, Coins, Users, Lock, Banknote } from 'lucide-react';
@@ -105,8 +104,8 @@ const TokenizationSection: React.FC = () => {
                 <div className="relative w-full max-w-md">
                   <div className="absolute inset-0 bg-space-neon-purple/30 rounded-lg blur-xl"></div>
                   <img
-                    src="https://source.unsplash.com/random/600x400/?blockchain,technology"
-                    alt="Blockchain Technology"
+                    src="https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=600&h=400&fit=crop"
+                    alt="Blockchain Real Estate Tokenization"
                     className="w-full h-auto relative z-10 rounded-lg border border-space-neon-purple/50"
                   />
                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-space-neon-green/20 rounded-full blur-xl"></div>

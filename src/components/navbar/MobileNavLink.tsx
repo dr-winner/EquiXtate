@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface MobileNavLinkProps {
   href: string;
@@ -8,13 +9,15 @@ interface MobileNavLinkProps {
   isActive?: boolean;
 }
 
-const MobileNavLink: React.FC<MobileNavLinkProps> = ({ href, children, onClick, isActive }) => {
+const MobileNavLink: React.FC<MobileNavLinkProps> = ({ href, children, onClick, isActive: forcedActive }) => {
+  const location = useLocation();
+  const isActive = forcedActive !== undefined ? forcedActive : location.pathname === href;
+  
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       onClick={(e) => {
         if (onClick) {
-          e.preventDefault();
           onClick();
         }
       }}
@@ -25,7 +28,7 @@ const MobileNavLink: React.FC<MobileNavLinkProps> = ({ href, children, onClick, 
       } transition-all duration-300`}
     >
       {children}
-    </a>
+    </Link>
   );
 };
 
