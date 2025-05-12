@@ -1,221 +1,145 @@
-
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title PropertyToken
- * @dev ERC20 token representing fractional ownership of a real estate property
- * @custom:dev-run-script ./scripts/deploy_property_token.js
+ * @dev ERC20 token representing fractional ownership of a property
  */
-contract PropertyToken is ERC20, ERC20Burnable, Ownable {
+contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
+    uint256 public pricePerToken; // Price in USDC (using 6 decimals)
+    uint256 public constant TOKEN_DECIMALS = 18;
+    uint256 public constant PROPERTY_TOKENS = 10000 * 10 ** 18; // 10,000 tokens total
+    uint256 public constant TOKENS_PER_USDC = 50; // 50 tokens per USDC
+
+    address public propertyManager;
+    address public propertyAddress;
+
+    // Token distribution
+    uint256 public tokensForSale;
+    uint256 public tokensSold;
+
     // Property details
-    string public propertyId;
+    string public propertyName;
     string public propertyLocation;
-    string public propertyType;
-    uint256 public propertyValuation;
-    uint256 public tokenPrice;
-    uint256 public maxTokenSupply;
-    
-    // Distribution details
-    uint256 public availableTokens;
-    mapping(address => bool) public whitelist;
-    
-    // Revenue distribution
-    uint256 public accumulatedRevenue;
-    mapping(address => uint256) public lastRevenueDistribution;
-    mapping(address => uint256) public unclaimedRevenue;
-    
-    // Governance
-    struct Proposal {
-        uint256 id;
-        string description;
-        uint256 votesFor;
-        uint256 votesAgainst;
-        uint256 deadline;
-        bool executed;
-        mapping(address => bool) hasVoted;
-    }
-    
-    uint256 public proposalCount;
-    mapping(uint256 => Proposal) public proposals;
-    
+    uint256 public propertyValue;
+
+    // Rental income distribution
+    mapping(address => uint256) public rentalIncomeEntitled;
+    mapping(address => uint256) public rentalIncomeClaimed;
+    uint256 public totalRentalIncome;
+
     // Events
-    event TokensPurchased(address indexed buyer, uint256 amount, uint256 cost);
-    event RevenueDistributed(uint256 amount);
-    event RevenueWithdrawn(address indexed holder, uint256 amount);
-    event ProposalCreated(uint256 indexed proposalId, string description, address creator);
-    event VoteCast(uint256 indexed proposalId, address voter, bool inFavor);
-    event ProposalExecuted(uint256 indexed proposalId);
-    
-    // Modifiers
-    modifier onlyTokenHolder() {
-        require(balanceOf(msg.sender) > 0, "Not a token holder");
-        _;
-    }
-    
-    modifier proposalExists(uint256 _proposalId) {
-        require(_proposalId < proposalCount, "Proposal does not exist");
-        _;
-    }
-    
+    event TokensPurchased(address buyer, uint256 amount, uint256 cost);
+    event TokensSold(address seller, uint256 amount, uint256 proceeds);
+    event RentalIncomeAdded(uint256 amount);
+    event RentalIncomeClaimed(address user, uint256 amount);
+
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _propertyId,
+        string memory _propertyName,
         string memory _propertyLocation,
-        string memory _propertyType,
-        uint256 _propertyValuation,
-        uint256 _tokenPrice,
-        uint256 _maxTokenSupply
-    ) ERC20(_name, _symbol) {
-        propertyId = _propertyId;
+        uint256 _propertyValue,
+        address _propertyManager
+    ) ERC20(_name, _symbol) Ownable(msg.sender) {
+        propertyName = _propertyName;
         propertyLocation = _propertyLocation;
-        propertyType = _propertyType;
-        propertyValuation = _propertyValuation;
-        tokenPrice = _tokenPrice;
-        maxTokenSupply = _maxTokenSupply;
-        availableTokens = _maxTokenSupply;
+        propertyValue = _propertyValue;
+        propertyManager = _propertyManager;
+
+        // Initialize token distribution
+        tokensForSale = PROPERTY_TOKENS;
+        pricePerToken = (10 ** 6) / TOKENS_PER_USDC; // Price in USDC (6 decimals)
+
+        // Mint all tokens to the contract initially
+        _mint(address(this), PROPERTY_TOKENS);
     }
-    
+
     /**
-     * @dev Purchase tokens for a property
-     * @param _tokenAmount Number of tokens to purchase
+     * @dev Purchase property tokens with USDC
+     * @param amount Amount of tokens to purchase
+     * @param usdcAmount Amount of USDC to spend
      */
-    function purchaseTokens(uint256 _tokenAmount) external payable {
-        require(availableTokens >= _tokenAmount, "Not enough tokens available");
-        require(msg.value >= tokenPrice * _tokenAmount, "Insufficient funds sent");
-        
+    function purchaseTokens(
+        uint256 amount,
+        uint256 usdcAmount
+    ) external nonReentrant {
+        require(
+            amount <= tokensForSale,
+            "Not enough tokens available for sale"
+        );
+
+        // Calculate cost in USDC
+        uint256 cost = amount / TOKENS_PER_USDC;
+        require(usdcAmount >= cost, "Insufficient USDC amount");
+
+        // require(IERC20(usdcAddress).transferFrom(msg.sender, address(this), cost), "USDC transfer failed");
+
         // Transfer tokens to buyer
-        _mint(msg.sender, _tokenAmount);
-        availableTokens -= _tokenAmount;
-        
-        // Emit event
-        emit TokensPurchased(msg.sender, _tokenAmount, msg.value);
+        require(
+            IERC20(address(this)).transfer(msg.sender, amount),
+            "Token transfer failed"
+        );
+
+        // Update state
+        tokensForSale -= amount;
+        tokensSold += amount;
+
+        emit TokensPurchased(msg.sender, amount, cost);
     }
-    
+
     /**
-     * @dev Distribute revenue to token holders
+     * @dev Distribute rental income to token holders
+     * @param amount Amount of rental income to distribute in USDC
      */
-    function distributeRevenue() external payable onlyOwner {
-        require(msg.value > 0, "No revenue to distribute");
-        require(totalSupply() > 0, "No token holders");
-        
-        accumulatedRevenue += msg.value;
-        emit RevenueDistributed(msg.value);
+    function distributeRentalIncome(uint256 amount) external onlyOwner {
+        totalRentalIncome += amount;
+
+        emit RentalIncomeAdded(amount);
     }
-    
+
     /**
-     * @dev Withdraw accrued revenue
+     * @dev Claim rental income
      */
-    function withdrawRevenue() external onlyTokenHolder {
-        uint256 amount = calculateUnclaimedRevenue(msg.sender);
-        require(amount > 0, "No unclaimed revenue");
-        
-        lastRevenueDistribution[msg.sender] = accumulatedRevenue;
-        payable(msg.sender).transfer(amount);
-        
-        emit RevenueWithdrawn(msg.sender, amount);
+    function claimRentalIncome() external nonReentrant {
+        uint256 userBalance = balanceOf(msg.sender);
+        require(userBalance > 0, "No tokens owned");
+
+        uint256 userShare = (userBalance * totalRentalIncome) / totalSupply();
+        uint256 claimableAmount = userShare - rentalIncomeClaimed[msg.sender];
+        require(claimableAmount > 0, "No rental income to claim");
+
+        rentalIncomeClaimed[msg.sender] += claimableAmount;
+
+        // require(IERC20(usdcAddress).transfer(msg.sender, claimableAmount), "USDC transfer failed");
+
+        emit RentalIncomeClaimed(msg.sender, claimableAmount);
     }
-    
+
     /**
-     * @dev Calculate unclaimed revenue for an address
-     * @param _holder Address of the token holder
-     * @return Amount of unclaimed revenue
+     * @dev Get unclaimed rental income for a user
+     * @param user Address of the user
+     * @return Unclaimed rental income in USDC
      */
-    function calculateUnclaimedRevenue(address _holder) public view returns (uint256) {
-        uint256 ownershipPercentage = (balanceOf(_holder) * 1e18) / totalSupply();
-        uint256 totalRevenue = accumulatedRevenue - lastRevenueDistribution[_holder];
-        
-        return (totalRevenue * ownershipPercentage) / 1e18;
+    function getUnclaimedRentalIncome(
+        address user
+    ) external view returns (uint256) {
+        uint256 userBalance = balanceOf(user);
+        if (userBalance == 0) return 0;
+
+        uint256 userShare = (userBalance * totalRentalIncome) / totalSupply();
+        return userShare - rentalIncomeClaimed[user];
     }
-    
+
     /**
-     * @dev Create a governance proposal
-     * @param _description Description of the proposal
-     * @param _votingPeriod Voting period in days
+     * @dev Update property value
+     * @param newValue New property value
      */
-    function createProposal(string calldata _description, uint256 _votingPeriod) external onlyTokenHolder {
-        require(bytes(_description).length > 0, "Description cannot be empty");
-        require(_votingPeriod > 0, "Voting period must be greater than 0");
-        
-        uint256 proposalId = proposalCount;
-        Proposal storage newProposal = proposals[proposalId];
-        
-        newProposal.id = proposalId;
-        newProposal.description = _description;
-        newProposal.deadline = block.timestamp + (_votingPeriod * 1 days);
-        
-        proposalCount++;
-        
-        emit ProposalCreated(proposalId, _description, msg.sender);
-    }
-    
-    /**
-     * @dev Vote on a proposal
-     * @param _proposalId ID of the proposal
-     * @param _inFavor True if voting in favor, false if against
-     */
-    function vote(uint256 _proposalId, bool _inFavor) external onlyTokenHolder proposalExists(_proposalId) {
-        Proposal storage proposal = proposals[_proposalId];
-        
-        require(block.timestamp < proposal.deadline, "Voting period has ended");
-        require(!proposal.hasVoted[msg.sender], "Already voted");
-        
-        proposal.hasVoted[msg.sender] = true;
-        uint256 voteWeight = balanceOf(msg.sender);
-        
-        if (_inFavor) {
-            proposal.votesFor += voteWeight;
-        } else {
-            proposal.votesAgainst += voteWeight;
-        }
-        
-        emit VoteCast(_proposalId, msg.sender, _inFavor);
-    }
-    
-    /**
-     * @dev Execute a proposal if it has passed
-     * @param _proposalId ID of the proposal
-     */
-    function executeProposal(uint256 _proposalId) external onlyOwner proposalExists(_proposalId) {
-        Proposal storage proposal = proposals[_proposalId];
-        
-        require(block.timestamp >= proposal.deadline, "Voting still in progress");
-        require(!proposal.executed, "Proposal already executed");
-        require(proposal.votesFor > proposal.votesAgainst, "Proposal not approved");
-        
-        proposal.executed = true;
-        
-        emit ProposalExecuted(_proposalId);
-    }
-    
-    /**
-     * @dev Update token price (only owner)
-     * @param _newPrice New token price
-     */
-    function updateTokenPrice(uint256 _newPrice) external onlyOwner {
-        require(_newPrice > 0, "Price must be greater than 0");
-        tokenPrice = _newPrice;
-    }
-    
-    /**
-     * @dev Add addresses to whitelist (for presale)
-     * @param _addresses Array of addresses to whitelist
-     */
-    function addToWhitelist(address[] calldata _addresses) external onlyOwner {
-        for (uint i = 0; i < _addresses.length; i++) {
-            whitelist[_addresses[i]] = true;
-        }
-    }
-    
-    /**
-     * @dev Withdraw contract balance (only owner)
-     */
-    function withdrawFunds() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+    function updatePropertyValue(uint256 newValue) external onlyOwner {
+        propertyValue = newValue;
     }
 }

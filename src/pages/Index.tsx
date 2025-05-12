@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import StarField from '@/components/StarField';
 import Navbar from '@/components/Navbar';
@@ -6,7 +7,7 @@ import MarketplaceSection from '@/components/MarketplaceSection';
 import TokenizationSection from '@/components/TokenizationSection';
 import Footer from '@/components/Footer';
 import { properties } from '@/data/propertyData';
-import { formatPrice, stringToPropertyType } from '@/utils/propertyUtils';
+import { stringToPropertyType } from '@/utils/propertyUtils';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
@@ -14,15 +15,15 @@ import { useInView } from 'react-intersection-observer';
 import FeaturedProperties from '@/components/home/FeaturedProperties';
 import InvestmentOpportunities from '@/components/home/InvestmentOpportunities';
 import GovernanceSection from '@/components/home/GovernanceSection';
-import CTASection from '@/components/home/CTASection';
 import AboutSection from '@/components/home/AboutSection';
 import Web3Service from '@/services/Web3Service';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationModal from '@/components/auth/AuthenticationModal';
 import { useAuthenticationModal } from '@/hooks/use-authentication-modal';
+import { ethers } from 'krnl-sdk';
+import { KERNEL_ID } from '@/krnl/1529/config';
+import { executeKrnl } from '@/krnl/1529';
 
 const Index = () => {
   // For scroll animation
@@ -31,31 +32,36 @@ const Index = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const navigate = useNavigate();
   const { isOpen: isAuthModalOpen, openModal: openAuthModal } = useAuthenticationModal();
 
+
+
+
+
   useEffect(() => {
     if (inView) {
       controls.start('visible');
     }
   }, [controls, inView]);
-  
+
   useEffect(() => {
     // Check if user is authenticated and wallet is connected
     const checkAuth = async () => {
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
       setIsAuthenticated(authStatus);
-      
+
       const connected = await Web3Service.isWalletConnected();
       setWalletConnected(connected);
     };
-    
+
     checkAuth();
   }, []);
+
 
   // Get featured properties and enhance them with additional properties
   const featuredProperties = properties
@@ -68,7 +74,7 @@ const Index = () => {
       ownershipPercentage: 10 / 1000, // 10 tokens out of 1000 total = 1%
       rentalYield: property.roi || Math.floor(Math.random() * 5) + 5, // Random 5-10% if not specified
     }));
-    
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -76,15 +82,15 @@ const Index = () => {
       navigate(`/?search=${encodeURIComponent(searchQuery)}`);
     }
   };
-  
+
   const handleConnectWallet = async () => {
     try {
       await Web3Service.connectWallet();
       setWalletConnected(true);
-      
+
       // Check if user is already authenticated
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
-      
+
       if (!authStatus) {
         // Show authentication modal if not authenticated
         setTimeout(() => {
@@ -98,20 +104,21 @@ const Index = () => {
     }
   };
 
+
   return (
     <div className="min-h-screen bg-space-black text-white overflow-hidden">
       <StarField />
       <Navbar />
-      
+
       <main>
         <div className="relative">
           <HeroSection />
-          
+
           {/* Removed the carousel section */}
         </div>
-        
+
         <AboutSection />
-        
+
         <motion.div
           id="marketplace"
           ref={ref}
@@ -125,16 +132,16 @@ const Index = () => {
         >
           <MarketplaceSection />
         </motion.div>
-        
+
         <section id="tokenization">
           <TokenizationSection />
         </section>
-        
+
         {/* Using our components */}
         <FeaturedProperties featuredProperties={featuredProperties} />
         <InvestmentOpportunities />
         <GovernanceSection />
-        
+
         {/* Enhanced CTA section with wallet connection */}
         <section className="py-20 relative overflow-hidden">
           <div className="container mx-auto px-4">
@@ -147,22 +154,22 @@ const Index = () => {
                     </span>
                   </h2>
                   <p className="text-gray-300 mb-6 max-w-xl">
-                    Join thousands of investors who are already revolutionizing the Ghana real estate market through 
+                    Join thousands of investors who are already revolutionizing the Ghana real estate market through
                     blockchain technology and fractional ownership. Start with as little as 10 EquiX tokens.
                   </p>
                   <div className="flex flex-wrap gap-4">
-                    <Button 
+                    <Button
                       onClick={handleConnectWallet}
                       className="cosmic-btn py-3 px-6"
                     >
-                      {walletConnected 
-                        ? isAuthenticated 
-                          ? "View Dashboard" 
+                      {walletConnected
+                        ? isAuthenticated
+                          ? "View Dashboard"
                           : "Complete Verification"
                         : "Connect Wallet"
                       }
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth' })}
                       className="border border-space-neon-blue py-3 px-6 rounded-lg text-space-neon-blue hover:bg-space-neon-blue/10 transition-colors"
                     >
@@ -170,7 +177,7 @@ const Index = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="lg:w-1/3">
                   <div className="relative three-d-card">
                     <div className="absolute inset-0 bg-neon-gradient rounded-xl blur-lg opacity-20"></div>
@@ -186,16 +193,16 @@ const Index = () => {
           </div>
         </section>
       </main>
-      
-      <AuthenticationModal 
+
+      <AuthenticationModal
         isOpen={isAuthModalOpen}
-        onClose={() => {}}
+        onClose={() => { }}
         onAuthSuccess={() => {
           setIsAuthenticated(true);
           localStorage.setItem('isAuthenticated', 'true');
         }}
       />
-      
+
       <Footer />
     </div>
   );
