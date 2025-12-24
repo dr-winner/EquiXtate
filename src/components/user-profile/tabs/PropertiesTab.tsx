@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropertyCard from '@/components/PropertyCard';
 import { PropertyCardProps } from '@/components/PropertyCard';
+import { Button } from "@/components/ui/button";
 
 interface PropertiesTabProps {
   userProperties: PropertyCardProps[];
@@ -23,13 +24,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ userProperties }) => {
         </div>
       ) : (
         <div className="text-center py-10">
-          <p className="text-gray-400 mb-4">You don't own any property tokens yet.</p>
-          <button 
-            onClick={() => navigate('/')}
-            className="px-6 py-2 bg-space-neon-green rounded-md text-black font-bold hover:bg-opacity-80 transition-all"
-          >
-            Explore Properties
-          </button>
+          <p className="text-muted-foreground mb-4">You don't own any property tokens yet.</p>
+          <Button onClick={() => navigate('/')}>Explore Properties</Button>
         </div>
       )}
     </>

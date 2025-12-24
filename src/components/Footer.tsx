@@ -57,10 +57,15 @@ const Footer: React.FC = () => {
             <div className="relative">
               <input
                 type="email"
+                aria-label="Email address for newsletter subscription"
                 placeholder="Your email address"
-                className="w-full bg-space-deep-purple/50 border border-space-neon-blue/30 rounded-lg py-2 px-4 text-white placeholder:text-gray-500 focus:outline-none focus:border-space-neon-blue"
+                className="w-full bg-space-neon-blue/20 border border-space-neon-green rounded-lg py-2 px-4 text-white placeholder:text-space-neon-green focus:outline-none focus:border-space-neon-green focus:ring-2 focus:ring-space-neon-purple"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-space-neon-blue text-white rounded px-3 py-1 text-sm font-spacegrotesk hover:bg-space-neon-purple transition-colors duration-300">
+              <button
+                type="submit"
+                aria-label="Subscribe to newsletter"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-space-neon-green text-black rounded px-3 py-1 text-sm font-spacegrotesk hover:bg-space-neon-blue transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-space-neon-purple"
+              >
                 Subscribe
               </button>
             </div>

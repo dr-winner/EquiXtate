@@ -1,10 +1,18 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const StarField: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isClient, setIsClient] = useState(false);
+  
+    // Only render on client for better SSR/hydration
+    useEffect(() => {
+      setIsClient(true);
+    }, []);
   
   useEffect(() => {
+      if (!isClient) return;
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -76,18 +84,18 @@ const StarField: React.FC = () => {
       });
     }
     
-    // Generate crypto symbols
-    for (let i = 0; i < 15; i++) {
+    // Generate crypto symbols (reduced for performance)
+    for (let i = 0; i < 6; i++) {
       cryptoSymbols.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         symbol: symbols[Math.floor(Math.random() * symbols.length)],
-        opacity: 0.05 + Math.random() * 0.15,
-        size: 20 + Math.random() * 40,
-        speed: 0.2 + Math.random() * 0.4,
+        opacity: 0.03 + Math.random() * 0.08,
+        size: 20 + Math.random() * 30,
+        speed: 0.15 + Math.random() * 0.25,
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.01,
-        blur: 5 + Math.random() * 10,
+        rotationSpeed: (Math.random() - 0.5) * 0.008,
+        blur: 8 + Math.random() * 12,
         color: colors[Math.floor(Math.random() * colors.length)]
       });
     }
@@ -152,8 +160,8 @@ const StarField: React.FC = () => {
         ctx.fill();
       });
       
-      // Handle shooting stars
-      if (frameCount % 100 === 0 && Math.random() > 0.7) {
+      // Handle shooting stars (reduced frequency)
+      if (frameCount % 200 === 0 && Math.random() > 0.8) {
         shootingStars.push(createShootingStar());
       }
       
@@ -215,12 +223,13 @@ const StarField: React.FC = () => {
       window.removeEventListener('resize', setCanvasDimensions);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isClient]);
   
   return (
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+      style={{ willChange: 'transform', opacity: isClient ? 1 : 0 }}
     />
   );
 };

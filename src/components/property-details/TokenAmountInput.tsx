@@ -17,6 +17,9 @@ const TokenAmountInput: React.FC<TokenAmountInputProps> = ({
       <button 
         className="bg-space-deep-purple/50 text-white w-8 h-8 flex items-center justify-center rounded-l-md"
         onClick={() => setTokenAmount(Math.max(1, tokenAmount - 1))}
+        aria-label="Decrease token amount"
+        type="button"
+        
       >-</button>
       
       <input 
@@ -31,6 +34,8 @@ const TokenAmountInput: React.FC<TokenAmountInputProps> = ({
       <button 
         className="bg-space-deep-purple/50 text-white w-8 h-8 flex items-center justify-center rounded-r-md"
         onClick={() => setTokenAmount(Math.min(tokensAvailable, tokenAmount + 1))}
+        aria-label="Increase token amount"
+        type="button"
       >+</button>
     </div>
   );

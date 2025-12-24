@@ -45,7 +45,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         </>
       ) : (
         // If not on home page, use regular links without scroll behavior
-        <Link to="/" className="font-spacegrotesk text-gray-300 hover:text-white relative overflow-hidden group transition-all duration-300">
+        <Link
+          to="/"
+          className="font-spacegrotesk text-space-neon-blue hover:text-white relative overflow-hidden group transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-space-neon-purple"
+          aria-label="Home"
+        >
           <span className="flex items-center">Home</span>
           <span className="absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 w-0 group-hover:w-full"></span>
         </Link>
@@ -53,7 +57,8 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
       
       <Link 
         to="/profile" 
-        className={`font-spacegrotesk ${location.pathname === '/profile' ? 'text-white' : 'text-gray-300 hover:text-white'} relative overflow-hidden group transition-all duration-300`}
+        className={`font-spacegrotesk ${location.pathname === '/profile' ? 'text-white' : 'text-space-neon-blue hover:text-white'} relative overflow-hidden group transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-space-neon-purple`}
+        aria-label="Profile"
       >
         <span className="flex items-center">Profile</span>
         <span className={`absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 ${location.pathname === '/profile' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>

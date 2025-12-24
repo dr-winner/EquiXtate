@@ -21,20 +21,20 @@ const MetricCard: React.FC<MetricCardProps> = ({
   subtitle 
 }) => {
   return (
-    <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+    <Card className="glassmorphism">
       <CardHeader className="p-3">
-        <CardTitle className="text-sm text-gray-300">{title}</CardTitle>
+        <CardTitle className="text-sm text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent className="p-3 pt-0">
         <div className="flex items-center gap-2">
-          <p className={`text-xl font-orbitron ${iconColor}`}>
+          <p className={`text-xl font-semibold ${iconColor}`}>
             {value}
           </p>
           {percentChange !== undefined && Icon && (
             <Icon className={`${iconColor} h-4 w-4`} />
           )}
         </div>
-        {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
       </CardContent>
     </Card>
   );

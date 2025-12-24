@@ -36,13 +36,14 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        // Refined palette for a clean, trustworthy look
         space: {
-          'black': '#0a0a1a',
-          'deep-purple': '#1A1F2C',
-          'neon-blue': '#33C3F0',
-          'neon-purple': '#9b87f5',
+          'black': '#0b0f19',
+          'deep-purple': '#0f172a',
+          'neon-blue': '#3B82F6',
+          'neon-purple': '#6366F1',
           'neon-pink': '#D946EF',
-          'neon-green': '#00f5d4',
+          'neon-green': '#10B981',
           'bright-orange': '#F97316',
         },
         primary: {
@@ -141,9 +142,9 @@ export default {
         'button-gradient': 'linear-gradient(90deg, #9b87f5, #D946EF)',
       },
       boxShadow: {
-        'neon': '0 0 5px rgba(51,195,240,0.5), 0 0 20px rgba(51,195,240,0.3)',
-        'neon-purple': '0 0 5px rgba(155,135,245,0.5), 0 0 20px rgba(155,135,245,0.3)',
-        'neon-green': '0 0 5px rgba(0,245,212,0.5), 0 0 20px rgba(0,245,212,0.3)',
+        'neon': '0 4px 20px rgba(15, 23, 42, 0.25)',
+        'neon-purple': '0 4px 18px rgba(99, 102, 241, 0.25)',
+        'neon-green': '0 4px 18px rgba(16, 185, 129, 0.25)',
       }
     }
   },

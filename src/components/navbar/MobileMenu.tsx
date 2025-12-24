@@ -56,7 +56,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                 </MobileNavLink>
               </>
             ) : (
-              <Link to="/" className="font-spacegrotesk flex items-center py-2 px-4 rounded-lg text-gray-300 hover:text-white hover:bg-space-deep-purple/30 transition-all duration-300">
+              <Link
+                to="/"
+                className="font-spacegrotesk flex items-center py-2 px-4 rounded-lg text-gray-300 hover:text-white hover:bg-space-deep-purple/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-space-neon-purple"
+                aria-label="Home"
+              >
                 Home
               </Link>
             )}

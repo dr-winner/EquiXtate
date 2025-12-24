@@ -26,58 +26,58 @@ const UserStatsOverview: React.FC<UserStatsProps> = ({
   userAvatarImage
 }) => {
   return (
-    <div className="w-full md:w-1/3 glassmorphism neon-border-purple p-6 rounded-lg">
+    <div className="glassmorphism p-6 rounded-lg">
       <div className="flex items-center gap-4 mb-6">
-        <Avatar className="w-20 h-20 border-2 border-space-neon-purple">
+        <Avatar className="w-16 h-16 ring-2 ring-primary/20">
           <AvatarImage src={userAvatarImage} />
-          <AvatarFallback className="bg-space-deep-purple text-white text-xl">
+          <AvatarFallback className="bg-muted text-foreground text-lg">
             {walletAddress?.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-2xl font-orbitron">Your Profile</h1>
-          <p className="text-space-neon-blue font-mono text-sm break-all">
+          <h1 className="text-xl font-semibold">Your Profile</h1>
+          <p className="ds-body-sm text-muted-foreground break-all">
             {walletAddress}
           </p>
-          <Badge className="mt-2 bg-space-neon-purple">EquiX Investor</Badge>
+          <Badge variant="secondary" className="mt-2">EquiX Investor</Badge>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+      <div className="grid grid-cols-2 gap-4 mb-2">
+        <Card className="glassmorphism">
           <CardHeader className="p-3">
-            <CardTitle className="text-sm text-gray-300">Total EquiX</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Total EquiX</CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <p className="text-xl text-space-neon-green font-orbitron">{totalTokensOwned.toLocaleString()}</p>
-            <p className="text-xs text-gray-400">≈ {formatPrice(calculateTokenValue(totalTokensOwned))} {STABLECOIN_SYMBOL}</p>
+            <p className="text-2xl font-semibold">{totalTokensOwned.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">≈ {formatPrice(calculateTokenValue(totalTokensOwned))} {STABLECOIN_SYMBOL}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+        <Card className="glassmorphism">
           <CardHeader className="p-3">
-            <CardTitle className="text-sm text-gray-300">Holdings Value</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Holdings Value</CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <p className="text-xl text-amber-400 font-orbitron">{formatPrice(totalHoldingsValue)} {STABLECOIN_SYMBOL}</p>
+            <p className="text-2xl font-semibold">{formatPrice(totalHoldingsValue)} {STABLECOIN_SYMBOL}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+        <Card className="glassmorphism">
           <CardHeader className="p-3">
-            <CardTitle className="text-sm text-gray-300">Rental Income</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Rental Income</CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <p className="text-xl text-space-neon-blue font-orbitron">{formatPrice(rentalIncome)} {STABLECOIN_SYMBOL}</p>
+            <p className="text-2xl font-semibold">{formatPrice(rentalIncome)} {STABLECOIN_SYMBOL}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+        <Card className="glassmorphism">
           <CardHeader className="p-3">
-            <CardTitle className="text-sm text-gray-300">Governance</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Governance</CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <p className="text-xl text-space-neon-purple font-orbitron">{governanceInfluence}</p>
+            <p className="text-2xl font-semibold">{governanceInfluence}</p>
           </CardContent>
         </Card>
       </div>

@@ -1,20 +1,23 @@
 
 import React from 'react';
+import { useAccount } from 'wagmi';
 import StarField from '@/components/StarField';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useUserProperties } from '@/components/marketplace/hooks/useUserProperties';
 import { useWalletState } from '@/components/marketplace/hooks/useWalletState';
 import { EQUIX_TOKEN_VALUE, STABLECOIN_SYMBOL } from '@/types/property';
-import Web3Service from '@/services/Web3Service';
 import WalletConnectionPrompt from '@/components/user-profile/WalletConnectionPrompt';
 import UserStatsOverview from '@/components/user-profile/UserStatsOverview';
 import ProfileTabs from '@/components/user-profile/ProfileTabs';
+import Section from '@/components/layout/Section';
+import PageContainer from '@/components/layout/PageContainer';
 
 const UserProfile = () => {
+  const { isConnected, address } = useAccount();
   const { walletConnected, connectWallet } = useWalletState();
   const userProperties = useUserProperties(walletConnected);
-  const walletAddress = Web3Service.getWalletAddress() || '';
+  const walletAddress = address || '';
 
   // Mock data - this would come from API/blockchain in a real implementation
   const userStats = {
@@ -55,28 +58,36 @@ const UserProfile = () => {
       <StarField />
       <Navbar />
       
-      <main className="container mx-auto px-4 py-24">
-        <div className="flex flex-col md:flex-row items-start gap-8 mb-12">
-          <UserStatsOverview 
-            walletAddress={walletAddress}
-            totalTokensOwned={userStats.totalTokensOwned}
-            totalHoldingsValue={userStats.totalHoldingsValue}
-            rentalIncome={userStats.rentalIncome}
-            governanceInfluence={userStats.governanceInfluence}
-            calculateTokenValue={calculateTokenValue}
-            userAvatarImage={userAvatarImage}
-          />
+      <main>
+        <Section spacing="normal">
+          <PageContainer>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-4">
+                <UserStatsOverview 
+                  walletAddress={walletAddress}
+                  totalTokensOwned={userStats.totalTokensOwned}
+                  totalHoldingsValue={userStats.totalHoldingsValue}
+                  rentalIncome={userStats.rentalIncome}
+                  governanceInfluence={userStats.governanceInfluence}
+                  calculateTokenValue={calculateTokenValue}
+                  userAvatarImage={userAvatarImage}
+                />
+              </div>
 
-          <ProfileTabs 
-            userProperties={userProperties}
-            transactionHistory={transactionHistory}
-            governanceProposals={governanceProposals}
-            stakedTokens={userStats.stakedTokens}
-            rewardsEarned={userStats.rewardsEarned}
-            calculateTokenValue={calculateTokenValue}
-            totalTokensOwned={userStats.totalTokensOwned}
-          />
-        </div>
+              <div className="lg:col-span-8">
+                <ProfileTabs 
+                  userProperties={userProperties}
+                  transactionHistory={transactionHistory}
+                  governanceProposals={governanceProposals}
+                  stakedTokens={userStats.stakedTokens}
+                  rewardsEarned={userStats.rewardsEarned}
+                  calculateTokenValue={calculateTokenValue}
+                  totalTokensOwned={userStats.totalTokensOwned}
+                />
+              </div>
+            </div>
+          </PageContainer>
+        </Section>
       </main>
       
       <Footer />

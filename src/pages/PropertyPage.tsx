@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Share2 } from 'lucide-react';
+import { useAccount } from 'wagmi';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import Web3Service from '@/services/Web3Service';
 import { formatPrice, stringToPropertyType } from '@/utils/propertyUtils';
 import { handleShare } from '@/utils/buttonUtils';
+import PageContainer from '@/components/layout/PageContainer';
+import Section from '@/components/layout/Section';
+import StickyAside from '@/components/layout/StickyAside';
 
 // Import refactored components
 import PropertyHeader from '@/components/property-page/PropertyHeader';
@@ -24,8 +27,8 @@ import { properties } from '@/data/propertyData';
 const PropertyPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isConnected } = useAccount();
   const [property, setProperty] = useState<any>(null);
-  const [walletConnected, setWalletConnected] = useState(false);
   
   useEffect(() => {
     // In a real app, this would fetch property data from the blockchain
@@ -43,29 +46,13 @@ const PropertyPage: React.FC = () => {
       });
       navigate('/');
     }
-    
-    // Check if wallet is already connected
-    const checkWalletConnection = async () => {
-      const connected = await Web3Service.isWalletConnected();
-      setWalletConnected(connected);
-    };
-    
-    checkWalletConnection();
   }, [id, navigate]);
   
   const handleConnectWallet = async () => {
-    try {
-      const connected = await Web3Service.connectWallet();
-      if (connected) {
-        setWalletConnected(true);
-        toast({
-          title: "Wallet Connected",
-          description: "Your wallet has been successfully connected"
-        });
-      }
-    } catch (error) {
-      console.error('Error connecting wallet:', error);
-    }
+    toast({
+      title: "Connect Wallet",
+      description: "Please use the Connect button in the navigation bar"
+    });
   };
   
   const handlePurchaseComplete = (tokenAmount: number) => {
@@ -89,83 +76,93 @@ const PropertyPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-space-black text-white pt-20 pb-20">
-      <div className="container mx-auto px-4">
-        <PropertyHeader title={property.name} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left column - Images and property details */}
-          <div>
-            <PropertyImageGallery 
-              images={property.images || [property.image]}
-              name={property.name}
-              type={property.type}
-            />
-            
-            <PropertyDetailsList 
-              location={property.location}
-              squareFeet={property.squareFeet}
-              bedrooms={property.bedrooms}
-              bathrooms={property.bathrooms}
-              yearBuilt={property.yearBuilt}
-              ownerCount={property.ownerCount}
-            />
-          </div>
-          
-          {/* Right column - Property info and purchase */}
-          <div>
-            <h1 className="text-3xl font-orbitron font-bold mb-2">{property.name}</h1>
-            
-            <div className="flex items-center mb-6">
-              <span className="text-gray-300">{property.location}</span>
+      <Section spacing="normal">
+        <PageContainer>
+          <PropertyHeader title={property.name} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left content */}
+            <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+              <PropertyImageGallery 
+                images={property.images || [property.image]}
+                name={property.name}
+                type={property.type}
+              />
+
+              <PropertyDetailsList 
+                location={property.location}
+                squareFeet={property.squareFeet}
+                bedrooms={property.bedrooms}
+                bathrooms={property.bathrooms}
+                yearBuilt={property.yearBuilt}
+                ownerCount={property.ownerCount}
+              />
+
+              <PropertyDescription 
+                description={property.description}
+                features={property.features}
+                id={property.id}
+              />
             </div>
-            
-            <PropertyPriceInfo 
-              price={property.price} 
-              tokenPrice={property.tokenPrice} 
-              formatPrice={formatPrice}
-            />
-            
-            <PropertyTokenDistribution 
-              tokensAvailable={property.tokensAvailable}
-              totalTokenSupply={property.totalTokenSupply}
-            />
-            
-            <PropertyInvestmentMetrics 
-              roi={property.roi}
-              rentalYield={property.rentalYield}
-              rentalIncome={property.rentalIncome}
-            />
-            
-            <PropertyTokenPurchase 
-              id={property.id}
-              name={property.name}
-              tokenPrice={property.tokenPrice}
-              tokensAvailable={property.tokensAvailable}
-              walletConnected={walletConnected}
-              handleConnectWallet={handleConnectWallet}
-              formatPrice={formatPrice}
-              onPurchaseComplete={handlePurchaseComplete}
-            />
-            
-            <div className="flex justify-end">
-              <Button 
-                variant="outline" 
-                className="text-space-neon-blue border-space-neon-blue mr-2" 
-                onClick={() => handleShare(property.name, window.location.href)}
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </Button>
+
+            {/* Right sticky aside */}
+            <div className="lg:col-span-5 xl:col-span-4">
+              <StickyAside>
+                <div className="space-y-6">
+                  <div className="glassmorphism p-5">
+                    <h1 className="text-2xl font-semibold mb-1">{property.name}</h1>
+                    <p className="ds-body-sm text-muted-foreground">{property.location}</p>
+                  </div>
+
+                  <div className="glassmorphism p-5">
+                    <PropertyPriceInfo 
+                      price={property.price} 
+                      tokenPrice={property.tokenPrice} 
+                      formatPrice={formatPrice}
+                    />
+                  </div>
+
+                  <div className="glassmorphism p-5">
+                    <PropertyTokenDistribution 
+                      tokensAvailable={property.tokensAvailable}
+                      totalTokenSupply={property.totalTokenSupply}
+                    />
+                  </div>
+
+                  <div className="glassmorphism p-5">
+                    <PropertyInvestmentMetrics 
+                      roi={property.roi}
+                      rentalYield={property.rentalYield}
+                      rentalIncome={property.rentalIncome}
+                    />
+                  </div>
+
+                  <div className="glassmorphism p-5">
+                    <PropertyTokenPurchase 
+                      id={property.id}
+                      name={property.name}
+                      tokenPrice={property.tokenPrice}
+                      tokensAvailable={property.tokensAvailable}
+                      walletConnected={isConnected}
+                      handleConnectWallet={handleConnectWallet}
+                      formatPrice={formatPrice}
+                      onPurchaseComplete={handlePurchaseComplete}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleShare(property.name, window.location.href)}
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </StickyAside>
             </div>
           </div>
-        </div>
-        
-        <PropertyDescription 
-          description={property.description}
-          features={property.features}
-          id={property.id}
-        />
-      </div>
+        </PageContainer>
+      </Section>
     </div>
   );
 };

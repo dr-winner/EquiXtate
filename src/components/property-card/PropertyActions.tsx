@@ -48,11 +48,11 @@ const PropertyActions: React.FC<PropertyActionsProps> = ({ id, ownerCount }) => 
     <div className="pt-4 border-t border-gray-700 flex justify-between items-center">
       <div className="flex items-center">
         <Users className="w-4 h-4 mr-1 text-space-neon-purple" />
-        <span className="text-sm text-gray-300 font-inter">{ownerCount} token holders</span>
+        <span className="text-sm text-space-neon-blue font-inter">{ownerCount} token holders</span>
       </div>
       
       <Button 
-        className="flex items-center text-space-neon-blue hover:text-space-neon-green transition-colors duration-300"
+        className="flex items-center text-space-neon-green hover:text-space-neon-blue transition-colors duration-300"
         onClick={handleBuyTokens}
         disabled={isLoading}
         variant="ghost"

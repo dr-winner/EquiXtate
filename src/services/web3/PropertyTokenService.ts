@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import { toast } from "@/components/ui/use-toast";
 import WalletService from './WalletService';
 import ContractService from './ContractService';
+import { parseWeb3Error } from '@/utils/web3Errors';
+import { logger } from '@/utils/logger';
 
 class PropertyTokenService {
   // Get property token balance
@@ -18,7 +20,7 @@ class PropertyTokenService {
       const balance = await contract.balanceOf(walletAddress, propertyId);
       return Number(balance);
     } catch (error) {
-      console.error("Error getting token balance:", error);
+      logger.error("Error getting token balance", error, { propertyId });
       return 0;
     }
   }
@@ -31,6 +33,12 @@ class PropertyTokenService {
       if (!contract || !WalletService.getSigner()) {
         throw new Error("Contract or wallet not initialized");
       }
+      
+      // Show pending toast
+      const toastId = toast({
+        title: "Transaction Pending",
+        description: `Processing purchase of ${amount} tokens...`,
+      }).id;
       
       // Get token price
       const tokenPrice = await contract.tokenPrice(propertyId);
@@ -49,13 +57,16 @@ class PropertyTokenService {
         description: `You have purchased ${amount} tokens of property #${propertyId}`,
       });
       
+      logger.info('Token purchase completed', { propertyId, amount, txHash: tx.hash });
       return true;
     } catch (error: any) {
-      console.error("Error buying tokens:", error);
+      const parsed = parseWeb3Error(error);
+      logger.error("Error buying tokens", error, { propertyId, amount });
+      
       toast({
         variant: "destructive",
-        title: "Purchase Failed",
-        description: error.message || "Failed to purchase property tokens",
+        title: parsed.title,
+        description: parsed.message,
       });
       return false;
     }
@@ -75,7 +86,7 @@ class PropertyTokenService {
       
       return [Number(available), Number(total)];
     } catch (error) {
-      console.error("Error getting available tokens:", error);
+      logger.error("Error getting available tokens", error, { propertyId });
       return [0, 0];
     }
   }

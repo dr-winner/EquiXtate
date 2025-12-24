@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from '@/components/ui/use-toast';
+import { Button } from "@/components/ui/button";
 
 interface GovernanceProposal {
   id: number;
@@ -27,34 +28,28 @@ const GovernanceTab: React.FC<GovernanceTabProps> = ({ proposals }) => {
   
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-orbitron mb-4">Active Governance Proposals</h3>
+      <h3 className="text-xl font-semibold mb-4">Active Governance Proposals</h3>
       <div className="grid gap-4">
         {proposals.map((proposal) => (
-          <Card key={proposal.id} className="bg-space-deep-purple/30 border-space-deep-purple">
+          <Card key={proposal.id} className="glassmorphism">
             <CardHeader>
-              <CardTitle className="flex justify-between">
+              <CardTitle className="flex justify-between items-center">
                 <span>{proposal.title}</span>
-                <Badge className="bg-green-500">{proposal.status}</Badge>
+                <Badge variant="secondary">{proposal.status}</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-center text-sm mb-4">
                 <p>Ends: {proposal.votingEnds}</p>
-                <p>Your Voting Power: <span className="text-space-neon-purple">{proposal.votingPower} votes</span></p>
+                <p>Your Voting Power: <span className="text-primary/80">{proposal.votingPower} votes</span></p>
               </div>
               <div className="flex gap-3">
-                <button 
-                  onClick={() => handleVote(proposal.id)}
-                  className="flex-1 px-4 py-2 bg-green-600 rounded-md text-white hover:bg-green-700 transition-all"
-                >
+                <Button className="flex-1" onClick={() => handleVote(proposal.id)}>
                   Vote For
-                </button>
-                <button 
-                  onClick={() => handleVote(proposal.id)}
-                  className="flex-1 px-4 py-2 bg-red-600 rounded-md text-white hover:bg-red-700 transition-all"
-                >
+                </Button>
+                <Button variant="destructive" className="flex-1" onClick={() => handleVote(proposal.id)}>
                   Vote Against
-                </button>
+                </Button>
               </div>
             </CardContent>
           </Card>

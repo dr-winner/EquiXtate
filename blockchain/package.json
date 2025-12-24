@@ -1,0 +1,49 @@
+{
+  "name": "equix-blockchain",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "compile": "NODE_PATH=./node_modules hardhat compile",
+    "clean": "NODE_PATH=./node_modules hardhat clean",
+    "test": "NODE_PATH=./node_modules hardhat test",
+    "deploy:local": "NODE_PATH=./node_modules hardhat run --network hardhat scripts/deploy.ts",
+    "deploy:sonic": "NODE_PATH=./node_modules hardhat run --network sonicTestnet scripts/deploy.ts",
+    "deploy:sonic:upgradeable": "NODE_PATH=./node_modules hardhat run --network sonicTestnet scripts/deploy-upgradeable.ts",
+    "deploy:sonic:mainnet": "NODE_PATH=./node_modules hardhat run --network sonicMainnet scripts/deploy.ts",
+    "deploy:sepolia": "NODE_PATH=./node_modules hardhat run --network sepolia scripts/deploy.ts",
+    "deploy:amoy": "NODE_PATH=./node_modules hardhat run --network polygonAmoy scripts/deploy.ts",
+    "verify:sonic": "NODE_PATH=./node_modules hardhat verify --network sonicTestnet",
+    "export-abis": "NODE_PATH=./node_modules tsx scripts/export-abis.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-ignition": "^0.15.15",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.14",
+    "@nomicfoundation/hardhat-network-helpers": "^1.1.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.0",
+    "@nomicfoundation/ignition-core": "^0.15.14",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^24.10.1",
+    "chai": "^4.3.0",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.27.0",
+    "hardhat-gas-reporter": "^2.3.0",
+    "solidity-coverage": "^0.8.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
+    "typechain": "^8.3.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^1.5.0",
+    "@openzeppelin/contracts": "^4.9.6",
+    "@openzeppelin/contracts-upgradeable": "^4.9.6",
+    "@openzeppelin/hardhat-upgrades": "^2.4.0",
+    "dotenv": "^16.4.5"
+  }
+}

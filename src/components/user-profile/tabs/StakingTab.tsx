@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatPrice } from '@/utils/propertyUtils';
 import { STABLECOIN_SYMBOL } from '@/types/property';
 
@@ -17,29 +18,29 @@ const StakingTab: React.FC<StakingTabProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+      <Card className="glassmorphism">
         <CardHeader>
           <CardTitle>Staking Overview</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <p className="text-gray-300">Total Staked EquiX</p>
-              <p className="font-orbitron text-space-neon-purple">{stakedTokens.toLocaleString()}</p>
+              <p className="text-muted-foreground">Total Staked EquiX</p>
+              <p className="font-semibold">{stakedTokens.toLocaleString()}</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-gray-300">Staked Value</p>
-              <p className="font-orbitron text-space-neon-purple">
+              <p className="text-muted-foreground">Staked Value</p>
+              <p className="font-semibold">
                 {formatPrice(calculateTokenValue(stakedTokens))} {STABLECOIN_SYMBOL}
               </p>
             </div>
             <div className="flex justify-between">
-              <p className="text-gray-300">Current APR</p>
-              <p className="font-orbitron text-space-neon-green">7.5%</p>
+              <p className="text-muted-foreground">Current APR</p>
+              <p className="font-semibold">7.5%</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-gray-300">Rewards Earned</p>
-              <p className="font-orbitron text-amber-400">
+              <p className="text-muted-foreground">Rewards Earned</p>
+              <p className="font-semibold">
                 {formatPrice(rewardsEarned)} {STABLECOIN_SYMBOL}
               </p>
             </div>
@@ -47,23 +48,19 @@ const StakingTab: React.FC<StakingTabProps> = ({
         </CardContent>
       </Card>
       
-      <Card className="bg-space-deep-purple/30 border-space-deep-purple">
+      <Card className="glassmorphism">
         <CardHeader>
           <CardTitle>Staking Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div className="flex gap-3">
-              <button className="flex-1 px-4 py-3 bg-space-neon-blue rounded-md text-white hover:bg-opacity-80 transition-all">
-                Stake Tokens
-              </button>
-              <button className="flex-1 px-4 py-3 bg-space-neon-purple rounded-md text-white hover:bg-opacity-80 transition-all">
-                Unstake Tokens
-              </button>
+              <Button className="flex-1">Stake Tokens</Button>
+              <Button variant="secondary" className="flex-1">Unstake Tokens</Button>
             </div>
-            <button className="w-full px-4 py-3 bg-amber-400 rounded-md text-black font-bold hover:bg-opacity-80 transition-all">
+            <Button className="w-full" variant="secondary">
               Claim Rewards ({formatPrice(rewardsEarned)} {STABLECOIN_SYMBOL})
-            </button>
+            </Button>
           </div>
         </CardContent>
       </Card>

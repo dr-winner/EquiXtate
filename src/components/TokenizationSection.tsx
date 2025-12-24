@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { fadeSlideUp } from '@/styles/motion-presets';
 import { Building, Coins, Users, Lock, Banknote } from 'lucide-react';
 
 const TokenizationSection: React.FC = () => {
@@ -51,9 +52,10 @@ const TokenizationSection: React.FC = () => {
             <motion.div
               key={index}
               className="glassmorphism p-6 relative overflow-hidden group"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              initial="hidden"
+              whileInView="visible"
+              variants={fadeSlideUp}
+              transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-space-neon-purple/20 to-space-neon-blue/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

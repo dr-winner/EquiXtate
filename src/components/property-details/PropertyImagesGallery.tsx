@@ -38,6 +38,10 @@ const PropertyImagesGallery: React.FC<PropertyImagesGalleryProps> = ({
           src={displayImages[selectedImage]} 
           alt={name} 
           className="w-full h-full object-cover"
+          width={800}
+          height={600}
+          loading="lazy"
+          decoding="async"
           onError={(e) => {
             // If image fails to load, replace with a fallback
             const target = e.target as HTMLImageElement;
@@ -66,6 +70,10 @@ const PropertyImagesGallery: React.FC<PropertyImagesGalleryProps> = ({
               src={image} 
               alt={`${name} ${index + 1}`} 
               className="w-full h-full object-cover aspect-[4/3]"
+              width={200}
+              height={150}
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 // If image fails to load, replace with a fallback
                 const target = e.target as HTMLImageElement;

@@ -50,6 +50,10 @@ const PropertyImage: React.FC<PropertyImageProps> = ({ image, name, type, roi, i
         src={imageToDisplay} 
         alt={name}
         className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
+        width={800}
+        height={450}
+        loading="lazy"
+        decoding="async"
         style={{ transform: isHovered && !isMobile ? 'scale(1.05)' : 'scale(1)' }}
         onError={() => setImageError(true)}
       />

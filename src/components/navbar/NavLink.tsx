@@ -18,11 +18,12 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children, isActive, onClick }) 
           onClick();
         }
       }}
-      className={`font-spacegrotesk flex items-center ${
+      className={`font-spacegrotesk flex items-center focus:outline-none focus:ring-2 focus:ring-space-neon-purple ${
         isActive 
           ? "text-white relative overflow-hidden group transition-all duration-300" 
-          : "text-gray-300 hover:text-white relative overflow-hidden group transition-all duration-300"
+          : "text-space-neon-blue hover:text-white relative overflow-hidden group transition-all duration-300"
       }`}
+      aria-label={typeof children === 'string' ? children : undefined}
     >
       <span className="flex items-center">{children}</span>
       <span className={`absolute bottom-0 left-0 h-0.5 bg-space-neon-green transition-all duration-300 ${

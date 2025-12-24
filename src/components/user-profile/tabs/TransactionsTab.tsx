@@ -22,23 +22,20 @@ const TransactionsTab: React.FC<TransactionsTabProps> = ({ transactions }) => {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-space-deep-purple">
-            <TableHead className="text-gray-300">Date</TableHead>
-            <TableHead className="text-gray-300">Transaction</TableHead>
-            <TableHead className="text-gray-300">Property</TableHead>
-            <TableHead className="text-gray-300">Tokens</TableHead>
-            <TableHead className="text-gray-300">Amount</TableHead>
+          <TableRow>
+            <TableHead className="text-muted-foreground">Date</TableHead>
+            <TableHead className="text-muted-foreground">Transaction</TableHead>
+            <TableHead className="text-muted-foreground">Property</TableHead>
+            <TableHead className="text-muted-foreground">Tokens</TableHead>
+            <TableHead className="text-muted-foreground">Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {transactions.map((tx, index) => (
-            <TableRow key={index} className="border-space-deep-purple">
+            <TableRow key={index}>
               <TableCell>{tx.date}</TableCell>
               <TableCell>
-                <Badge className={tx.type === 'Purchase' ? 'bg-space-neon-green' : 
-                               tx.type === 'Sale' ? 'bg-red-500' : 
-                               tx.type === 'Rent Collection' ? 'bg-amber-400' : 
-                               'bg-space-neon-purple'}>
+                <Badge variant={tx.type === 'Sale' ? 'destructive' : tx.type === 'Rent Collection' ? 'secondary' : tx.type === 'Governance Reward' ? 'outline' : 'default'}>
                   {tx.type}
                 </Badge>
               </TableCell>

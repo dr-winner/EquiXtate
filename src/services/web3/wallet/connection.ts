@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import { toast } from "@/components/ui/use-toast";
 import WalletProvider from './provider';
 import ContractService from '../ContractService';
+import { parseWeb3Error } from '@/utils/web3Errors';
+import { logger } from '@/utils/logger';
 
 class WalletConnection {
   public async initialize(): Promise<boolean> {
@@ -24,12 +26,13 @@ class WalletConnection {
           });
           
           ContractService.initializeContracts(signer);
+          logger.info('Wallet initialized', { address: accounts[0] });
           return true;
         }
       }
       return false;
     } catch (error) {
-      console.error("Failed to initialize WalletConnection:", error);
+      logger.error("Failed to initialize WalletConnection", error);
       return false;
     }
   }
@@ -81,9 +84,11 @@ class WalletConnection {
       // Set up event listeners for wallet events
       this.setupEventListeners();
       
+      logger.info('Wallet connected successfully', { address: accounts[0] });
       return accounts[0];
     } catch (error: any) {
-      console.error("Error connecting wallet:", error);
+      const parsed = parseWeb3Error(error);
+      logger.error("Error connecting wallet", error);
       
       if (error.code === 4001) {
         // User rejected request
@@ -94,8 +99,8 @@ class WalletConnection {
       } else {
         toast({
           variant: "destructive",
-          title: "Connection Failed",
-          description: error.message || "Could not connect to wallet",
+          title: parsed.title,
+          description: parsed.message,
         });
       }
       return null;

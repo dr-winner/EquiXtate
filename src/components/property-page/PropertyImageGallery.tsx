@@ -17,6 +17,10 @@ const PropertyImageGallery: React.FC<PropertyImageGalleryProps> = ({ images, nam
           src={images?.[selectedImage] || images[0]} 
           alt={name} 
           className="w-full h-full object-cover"
+          width={800}
+          height={600}
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute top-3 right-3 bg-space-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full font-orbitron text-sm border border-space-neon-purple">
           {type}
@@ -39,6 +43,10 @@ const PropertyImageGallery: React.FC<PropertyImageGalleryProps> = ({ images, nam
                 src={image} 
                 alt={`${name} ${index + 1}`} 
                 className="w-full h-full object-cover aspect-[4/3]"
+                width={200}
+                height={150}
+                loading="lazy"
+                decoding="async"
               />
             </div>
           ))}

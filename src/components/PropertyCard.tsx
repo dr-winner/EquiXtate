@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { fadeSlideUp, cardHover } from '@/styles/motion-presets';
 import PropertyImage from './property-card/PropertyImage';
 import PropertyTitle from './property-card/PropertyTitle';
 import PropertyPriceInfo from './property-card/PropertyPriceInfo';
@@ -41,14 +42,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
   return (
     <motion.div
-      className="space-card h-full"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{
-        y: -5,
-        transition: { duration: 0.3 }
-      }}
+      className="space-card h-full group"
+      initial="hidden"
+      animate="visible"
+      variants={fadeSlideUp}
+      whileHover={cardHover}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -60,21 +58,31 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         isHovered={isHovered}
       />
       
-      <div className="p-5">
+      <div className="p-5 flex flex-col gap-3">
         <PropertyTitle name={name} location={location} />
         
-        <PropertyPriceInfo 
-          price={price}
-          tokenPrice={tokenPrice}
-          formatPrice={formatPrice}
-        />
+        <div className="flex items-start justify-between gap-4">
+          <PropertyPriceInfo 
+            price={price}
+            tokenPrice={tokenPrice}
+            formatPrice={formatPrice}
+          />
+          {roi !== undefined && (
+            <div className="text-right">
+              <span className="ds-label">ROI</span>
+              <p className="text-sm font-medium text-space-neon-green">{roi.toFixed(1)}%</p>
+            </div>
+          )}
+        </div>
         
         <TokenAvailability 
           tokensAvailable={tokensAvailable}
           totalTokenSupply={totalTokenSupply}
         />
         
-        <PropertyActions id={id} ownerCount={ownerCount} />
+        <div className="mt-2">
+          <PropertyActions id={id} ownerCount={ownerCount} />
+        </div>
       </div>
     </motion.div>
   );

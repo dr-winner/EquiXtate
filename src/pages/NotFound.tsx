@@ -1,8 +1,15 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 
 const NotFound = () => {
   const location = useLocation();
+  useDocumentMeta('Page Not Found — EquiXtate', 'The page you are looking for does not exist.', {
+    url: typeof window !== 'undefined' ? window.location.href : undefined,
+    image: '/assets/images/house-logo.png',
+    canonical: typeof window !== 'undefined' ? window.location.href : undefined,
+    type: 'website',
+  });
 
   useEffect(() => {
     console.error(

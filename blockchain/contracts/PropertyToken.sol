@@ -1,16 +1,18 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title PropertyToken
  * @dev ERC20 token representing fractional ownership of a property
  */
 contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
+    using SafeERC20 for ERC20;
     uint256 public pricePerToken; // Price in USDC (using 6 decimals)
     uint256 public constant TOKEN_DECIMALS = 18;
     uint256 public constant PROPERTY_TOKENS = 10000 * 10**18; // 10,000 tokens total
@@ -46,11 +48,12 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         string memory _propertyLocation,
         uint256 _propertyValue,
         address _propertyManager
-    ) ERC20(_name, _symbol) Ownable(msg.sender) {
+    ) ERC20(_name, _symbol) {
         propertyName = _propertyName;
         propertyLocation = _propertyLocation;
         propertyValue = _propertyValue;
         propertyManager = _propertyManager;
+        _transferOwnership(msg.sender);
         
         // Initialize token distribution
         tokensForSale = PROPERTY_TOKENS;
@@ -77,7 +80,7 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         // require(IERC20(usdcAddress).transferFrom(msg.sender, address(this), cost), "USDC transfer failed");
         
         // Transfer tokens to buyer
-        require(IERC20(address(this)).transfer(msg.sender, amount), "Token transfer failed");
+        ERC20(address(this)).safeTransfer(msg.sender, amount);
         
         // Update state
         tokensForSale -= amount;

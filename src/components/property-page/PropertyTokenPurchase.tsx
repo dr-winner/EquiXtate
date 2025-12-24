@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import Web3Service from '@/services/Web3Service';
 import { EQUIX_TOKEN_SYMBOL, STABLECOIN_SYMBOL, calculateTokenValue } from '@/types/property';
 
 interface PropertyTokenPurchaseProps {
@@ -44,8 +43,9 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
     
     setIsLoading(true);
     try {
-      // In a real application, this would trigger an actual blockchain transaction
-      const success = await Web3Service.buyPropertyTokens(id, tokenAmount);
+      // Call smart contract to buy tokens
+      const PropertyTokenService = (await import('@/services/web3/PropertyTokenService')).default;
+      const success = await PropertyTokenService.buyPropertyTokens(id, tokenAmount);
       
       if (success) {
         toast({
@@ -91,6 +91,8 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
                 <button
                   className="bg-space-deep-purple/50 text-white w-8 h-8 flex items-center justify-center rounded-l-md"
                   onClick={() => setTokenAmount(Math.max(1, tokenAmount - 1))}
+                  aria-label="Decrease token amount"
+                  type="button"
                 >-</button>
                 
                 <input
@@ -108,6 +110,8 @@ const PropertyTokenPurchase: React.FC<PropertyTokenPurchaseProps> = ({
                 <button
                   className="bg-space-deep-purple/50 text-white w-8 h-8 flex items-center justify-center rounded-r-md"
                   onClick={() => setTokenAmount(Math.min(tokensAvailable, tokenAmount + 1))}
+                  aria-label="Increase token amount"
+                  type="button"
                 >+</button>
               </div>
             </div>

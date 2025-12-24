@@ -40,9 +40,9 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
   totalTokensOwned
 }) => {
   return (
-    <div className="w-full md:w-2/3 glassmorphism neon-border-green p-6 rounded-lg">
+    <div className="glassmorphism p-6 rounded-lg">
       <Tabs defaultValue="properties" className="w-full">
-        <TabsList className="mb-6 w-full grid grid-cols-5 bg-space-deep-purple/40">
+        <TabsList className="mb-6 w-full grid grid-cols-5">
           <TabsTrigger value="properties">Properties</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="governance">Governance</TabsTrigger>

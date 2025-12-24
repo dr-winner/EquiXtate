@@ -3,6 +3,8 @@ import { toast } from "@/components/ui/use-toast";
 import ContractService from './ContractService';
 import WalletService from './WalletService';
 import { GovernanceProposal } from './types';
+import { parseWeb3Error } from '@/utils/web3Errors';
+import { logger } from '@/utils/logger';
 
 class GovernanceService {
   // Get governance proposals
@@ -15,6 +17,7 @@ class GovernanceService {
       }
       
       const proposals = await contract.getProposals();
+      logger.debug('Fetched governance proposals', { count: proposals.length });
       return proposals.map((proposal: any) => ({
         id: Number(proposal[0]),
         description: proposal[1],
@@ -25,7 +28,7 @@ class GovernanceService {
         executed: proposal[6]
       }));
     } catch (error) {
-      console.error("Error getting governance proposals:", error);
+      logger.error("Error getting governance proposals", error);
       return [];
     }
   }
@@ -39,6 +42,11 @@ class GovernanceService {
         throw new Error("Governance contract not initialized or wallet not connected");
       }
       
+      toast({
+        title: "Transaction Pending",
+        description: `Submitting your vote on proposal #${proposalId}...`,
+      });
+      
       const tx = await contract.castVote(proposalId, support);
       await tx.wait();
       
@@ -47,13 +55,16 @@ class GovernanceService {
         description: `Your vote has been recorded for proposal #${proposalId}`,
       });
       
+      logger.info('Governance vote cast', { proposalId, support });
       return true;
     } catch (error: any) {
-      console.error("Error voting on proposal:", error);
+      const parsed = parseWeb3Error(error);
+      logger.error("Error voting on proposal", error, { proposalId });
+      
       toast({
         variant: "destructive",
-        title: "Voting Failed",
-        description: error.message || "Failed to cast your vote",
+        title: parsed.title,
+        description: parsed.message,
       });
       return false;
     }

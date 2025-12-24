@@ -7,9 +7,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+pnpm-workspace.yaml
+
+# Build outputs
 dist
 dist-ssr
+build
 *.local
 
 # Editor directories and files
@@ -25,4 +30,43 @@ dist-ssr
 
 # Environment variables
 .env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Blockchain / Hardhat
+blockchain/node_modules
+blockchain/dist
+blockchain/artifacts
+blockchain/cache
+blockchain/coverage
+blockchain/typechain-types
+blockchain/.env
+blockchain/.env.local
+
+# Contract deployment artifacts
+deployments
+ignition/deployments
+
+# Testing
+coverage
+.nyc_output
+
+# Package manager lock files (optional - uncomment if you want to commit these)
+# package-lock.json
+# pnpm-lock.yaml
+# yarn.lock
+
+# Bun
+bun.lockb
 

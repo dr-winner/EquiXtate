@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import WalletConnection from './WalletConnection';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useScrollEffect } from './navbar/hooks/useScrollEffect';
 import NavbarLogo from './navbar/NavbarLogo';
 import DesktopNavigation from './navbar/DesktopNavigation';
 import MobileMenuButton from './navbar/MobileMenuButton';
 import MobileMenu from './navbar/MobileMenu';
+import PageContainer from '@/components/layout/PageContainer';
 
 const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,28 +28,28 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'glassmorphism py-2' : 'py-4'
-    }`}>
-      <div className="container mx-auto flex items-center justify-between px-4">
-        <NavbarLogo />
-
-        <DesktopNavigation 
-          activeSection={activeSection}
-          scrollToSection={scrollToSection}
-        />
-
-        <div className="flex items-center space-x-2">
-          <WalletConnection />
-          
-          <MobileMenuButton 
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md transition-colors duration-200 ${
+        scrolled ? 'bg-background/80 border-b border-border/40 shadow-sm' : 'bg-transparent'
+      }`}
+    >
+      <PageContainer padded width="wide" className="h-16 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <NavbarLogo />
+          <DesktopNavigation
+            activeSection={activeSection}
+            scrollToSection={scrollToSection}
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <ConnectButton />
+          <MobileMenuButton
             mobileMenuOpen={mobileMenuOpen}
             toggleMobileMenu={toggleMobileMenu}
           />
         </div>
-      </div>
-
-      <MobileMenu 
+      </PageContainer>
+      <MobileMenu
         mobileMenuOpen={mobileMenuOpen}
         activeSection={activeSection}
         scrollToSection={scrollToSection}

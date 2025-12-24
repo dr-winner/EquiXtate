@@ -23,7 +23,7 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ stakedTokens, totalTokensOw
           value={`${portfolioGrowth.toFixed(2)}%`}
           percentChange={portfolioGrowth}
           icon={portfolioGrowth > 0 ? TrendingUp : TrendingDown}
-          iconColor={portfolioGrowth > 0 ? "text-space-neon-green" : "text-red-500"}
+          iconColor={portfolioGrowth > 0 ? "text-primary" : "text-destructive"}
           subtitle="Last 6 months"
         />
 
@@ -32,7 +32,7 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ stakedTokens, totalTokensOw
           value={`${propertyGrowth.toFixed(2)}%`}
           percentChange={propertyGrowth}
           icon={propertyGrowth > 0 ? TrendingUp : TrendingDown}
-          iconColor={propertyGrowth > 0 ? "text-amber-400" : "text-red-500"}
+          iconColor={propertyGrowth > 0 ? "text-primary" : "text-destructive"}
           subtitle="Last 6 months"
         />
 
@@ -40,7 +40,7 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ stakedTokens, totalTokensOw
           title="Token Utilization"
           value={`${totalTokensOwned > 0 ? ((stakedTokens / totalTokensOwned) * 100).toFixed(1) : 0}%`}
           icon={ChartLine}
-          iconColor="text-space-neon-purple"
+          iconColor="text-primary"
           subtitle="Staked vs. Owned"
         />
       </div>

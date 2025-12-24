@@ -1,6 +1,6 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -37,8 +37,9 @@ contract PropertyMarketplace is Ownable, ReentrancyGuard {
     event TokensPurchased(address indexed buyer, address indexed tokenAddress, uint256 amount, uint256 cost);
     event TokensSold(address indexed seller, address indexed tokenAddress, uint256 amount, uint256 proceeds);
     
-    constructor(address _usdcToken) Ownable(msg.sender) {
+    constructor(address _usdcToken) {
         usdcToken = _usdcToken;
+        _transferOwnership(msg.sender);
     }
     
     /**

@@ -45,20 +45,19 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   return (
     <div
-      className="fixed bottom-24 right-6 z-50 w-80 md:w-96 glassmorphism neon-border-green rounded-lg shadow-xl overflow-hidden"
+      className="fixed bottom-24 right-6 z-50 w-80 md:w-96 glassmorphism rounded-lg shadow-2xl overflow-hidden border border-border"
       style={chatWindowStyles}
     >
-      <div className="p-4 bg-space-deep-purple/50 flex items-center justify-between border-b border-space-neon-blue/30">
-        <div className="flex items-center">
-          <MessageCircle className="w-5 h-5 mr-2 text-space-neon-blue" />
-          <h3 className="text-lg font-orbitron text-white">AI Investment Advisor</h3>
+      <div className="p-4 bg-background/80 backdrop-blur-sm flex items-center justify-between border-b border-border">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold">AI Investment Advisor</h3>
         </div>
         {isMobile && (
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(false)}
-            className="text-gray-300"
           >
             <X size={18} />
           </Button>
