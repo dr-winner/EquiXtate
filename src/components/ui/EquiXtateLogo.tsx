@@ -51,10 +51,24 @@ const EquiXtateLogo: React.FC<EquiXtateLogoProps> = ({
     <div className="flex items-center">
       {/* Logo Image - Buildings and Houses */}
       <div className={`${sizeClasses[size]} mr-2 flex-shrink-0`}>
+        <img
+          src="/images/equixtate-logo.png"
+          alt="EquiXtate Logo"
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            // Fallback to SVG if image doesn't exist
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = target.nextElementSibling as HTMLElement;
+            if (fallback) fallback.style.display = 'block';
+          }}
+        />
+        {/* Fallback SVG - will show if image doesn't exist */}
         <svg
           viewBox="0 0 200 150"
-          className="w-full h-full"
+          className="w-full h-full hidden"
           xmlns="http://www.w3.org/2000/svg"
+          style={{ display: 'none' }}
         >
           {/* Background */}
           <rect width="200" height="150" fill="#000000" />
