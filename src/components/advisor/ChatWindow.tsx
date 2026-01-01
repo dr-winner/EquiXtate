@@ -6,6 +6,7 @@ import { Message } from '@/hooks/useAIAdvisor';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import QuickTopics from './QuickTopics';
+import { isGroqApiKeyAvailable } from '@/utils/envConfig';
 
 interface ChatWindowProps {
   isOpen: boolean;
@@ -76,6 +77,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       />
       
       <QuickTopics setInput={setInput} />
+      
+      {!isGroqApiKeyAvailable() && (
+        <div className="bg-red-500/20 border-t border-red-500/50 p-2">
+          <p className="text-xs text-red-400 text-center">
+            API Key Missing Please add your GROQ API key in the .env file to access the AI advisor.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

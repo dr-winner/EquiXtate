@@ -12,14 +12,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <div className="flex items-center mb-4">
-              <div className="flex items-center mr-2">
-                <span className="relative w-5 h-5 bg-space-neon-purple rounded-full">
-                  <span className="absolute inset-0 rounded-full bg-space-neon-purple animate-ping opacity-50"></span>
-                </span>
-              </div>
-              <h2 className="text-xl font-orbitron font-bold bg-clip-text text-transparent bg-neon-gradient">
-                EQUI<span className="text-space-neon-blue font-bold">X</span><span className="text-white">TATE</span>
-              </h2>
+              <EquiXtateLogo size="small" variant="light" showText={true} />
             </div>
             <p className="text-gray-400 mb-6 font-inter">
               Revolutionizing real estate through blockchain technology. Own, trade, 

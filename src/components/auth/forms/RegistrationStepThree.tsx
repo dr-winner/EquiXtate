@@ -1,12 +1,31 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const RegistrationStepThree: React.FC = () => {
-  const [addressProofFile, setAddressProofFile] = useState<File | null>(null);
+interface RegistrationStepThreeProps {
+  address: string;
+  setAddress: (address: string) => void;
+  phone: string;
+  setPhone: (phone: string) => void;
+  addressProofFile: File | null;
+  setAddressProofFile: (file: File | null) => void;
+  termsAccepted: boolean;
+  setTermsAccepted: (accepted: boolean) => void;
+}
+
+const RegistrationStepThree: React.FC<RegistrationStepThreeProps> = ({
+  address,
+  setAddress,
+  phone,
+  setPhone,
+  addressProofFile,
+  setAddressProofFile,
+  termsAccepted,
+  setTermsAccepted
+}) => {
 
   const handleAddressProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -75,6 +94,8 @@ const RegistrationStepThree: React.FC = () => {
           <Input 
             id="address" 
             placeholder="Enter your full address" 
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             className="bg-space-deep-purple/30 border-space-neon-blue/30"
             required
           />
@@ -86,14 +107,23 @@ const RegistrationStepThree: React.FC = () => {
           </Label>
           <Input 
             id="phone" 
+            type="tel"
             placeholder="Enter your phone number" 
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="bg-space-deep-purple/30 border-space-neon-blue/30"
             required
           />
         </div>
         
         <div className="flex items-center space-x-2">
-          <input type="checkbox" id="terms" required />
+          <input 
+            type="checkbox" 
+            id="terms" 
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            required 
+          />
           <Label htmlFor="terms" className="text-sm flex items-center">
             I confirm all information provided is accurate and consent to KYC verification
             <span className="text-red-500 ml-1">*</span>

@@ -37,7 +37,7 @@ const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { isOpen: isAuthModalOpen, openModal: openAuthModal } = useAuthenticationModal();
+  const { isOpen: isAuthModalOpen, openModal: openAuthModal, closeModal: closeAuthModal } = useAuthenticationModal();
 
 
 
@@ -196,7 +196,7 @@ const Index = () => {
 
       <AuthenticationModal
         isOpen={isAuthModalOpen}
-        onClose={() => { }}
+        onClose={closeAuthModal}
         onAuthSuccess={() => {
           setIsAuthenticated(true);
           localStorage.setItem('isAuthenticated', 'true');

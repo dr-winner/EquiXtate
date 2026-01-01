@@ -73,13 +73,64 @@ const AdvisorPage: React.FC = () => {
                   className={`mb-4 ${msg.isUser ? 'ml-auto' : 'mr-auto'} max-w-[80%]`}
                 >
                   <div
-                    className={`p-3 rounded-lg ${
+                    className={`p-4 rounded-lg ${
                       msg.isUser
                         ? 'bg-space-neon-blue/20 text-white ml-auto'
                         : 'bg-space-deep-purple/50 text-gray-100'
                     }`}
                   >
-                    {msg.content}
+                    {msg.isUser ? (
+                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    ) : (
+                      <div className="text-sm space-y-1 prose prose-invert max-w-none">
+                        {msg.content.split('\n').map((line, lineIndex) => {
+                          const trimmed = line.trim();
+                          if (trimmed.startsWith('### ')) {
+                            return (
+                              <h3 key={lineIndex} className="text-base font-semibold text-space-neon-blue mt-3 mb-2">
+                                {trimmed.substring(4)}
+                              </h3>
+                            );
+                          } else if (trimmed.startsWith('## ')) {
+                            return (
+                              <h2 key={lineIndex} className="text-lg font-bold text-space-neon-purple mt-4 mb-2">
+                                {trimmed.substring(3)}
+                              </h2>
+                            );
+                          } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                            return (
+                              <p key={lineIndex} className="ml-4 list-disc list-inside">
+                                • {trimmed.substring(2)}
+                              </p>
+                            );
+                          } else if (/^\d+\.\s/.test(trimmed)) {
+                            return (
+                              <p key={lineIndex} className="ml-4">
+                                {trimmed}
+                              </p>
+                            );
+                          } else if (trimmed === '') {
+                            return <br key={lineIndex} />;
+                          } else {
+                            const parts = trimmed.split(/(\*\*[^*]+\*\*)/g);
+                            return (
+                              <p key={lineIndex} className="text-sm leading-relaxed mb-2">
+                                {parts.map((part, partIndex) => {
+                                  if (part.startsWith('**') && part.endsWith('**')) {
+                                    return (
+                                      <strong key={partIndex} className="font-semibold text-space-neon-blue">
+                                        {part.slice(2, -2)}
+                                      </strong>
+                                    );
+                                  }
+                                  return part;
+                                })}
+                              </p>
+                            );
+                          }
+                        })}
+                      </div>
+                    )}
                   </div>
                   <p className={`text-xs text-gray-400 mt-1 ${msg.isUser ? 'text-right' : ''}`}>
                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

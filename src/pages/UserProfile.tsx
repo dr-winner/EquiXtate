@@ -19,8 +19,6 @@ import { toast } from '@/components/ui/use-toast';
 const UserProfile = () => {
   const { walletConnected, connectWallet } = useWalletState();
   const { openModal: openAuthModal } = useAuthenticationModal();
-  const userProperties = useUserProperties(walletConnected);
-  const walletAddress = Web3Service.getWalletAddress() || '';
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
   
@@ -30,35 +28,16 @@ const UserProfile = () => {
     setIsAuthenticated(authStatus === 'true');
   }, []);
 
-  // Mock data - this would come from API/blockchain in a real implementation
-  const userStats = {
-    totalTokensOwned: userProperties.reduce((sum, prop) => sum + (prop.userTokenBalance || 0), 0),
-    totalHoldingsValue: userProperties.reduce((sum, prop) => sum + ((prop.userTokenBalance || 0) * prop.tokenPrice), 0),
-    rentalIncome: 2450.75,
-    governanceInfluence: userProperties.length > 0 ? 'Active' : 'None',
-    stakedTokens: 12500,
-    rewardsEarned: 175.50,
-  };
-
-  // Mock transaction history
-  const transactionHistory = [
-    { date: '2025-04-28', type: 'Purchase', property: 'Lakeview Apartment', tokens: 150, amount: 15.0 },
-    { date: '2025-04-15', type: 'Rent Collection', property: 'Downtown Studio', tokens: 0, amount: 125.5 },
-    { date: '2025-03-22', type: 'Sale', property: 'Beachfront Villa', tokens: 75, amount: 7.5 },
-    { date: '2025-03-10', type: 'Governance Reward', property: 'N/A', tokens: 25, amount: 2.5 }
-  ];
-
-  // Mock governance proposals
-  const governanceProposals = [
-    { id: 1, title: 'Property Renovation Fund', status: 'Active', votingEnds: '2025-05-15', votingPower: 150 },
-    { id: 2, title: 'New Property Acquisition', status: 'Active', votingEnds: '2025-05-20', votingPower: 150 }
-  ];
-
-  // Calculate token value in USDC
-  const calculateTokenValue = (tokens: number): number => tokens * EQUIX_TOKEN_VALUE;
-
-  // User avatar image - using a reliable Unsplash image
-  const userAvatarImage = "https://images.unsplash.com/photo-1599566150163-29194dcaad36";
+  // Only fetch user properties if wallet is connected
+  const userProperties = useUserProperties(walletConnected);
+  
+  // Safely get wallet address
+  let walletAddress = '';
+  try {
+    walletAddress = Web3Service.getWalletAddress() || '';
+  } catch (error) {
+    console.error('Error getting wallet address:', error);
+  }
 
   const handlePropertyUpload = () => {
     if (!walletConnected) {
@@ -111,6 +90,39 @@ const UserProfile = () => {
     );
   }
 
+  // Mock data - this would come from API/blockchain in a real implementation
+  const userStats = {
+    totalTokensOwned: userProperties.reduce((sum, prop) => sum + (prop.userTokenBalance || 0), 0),
+    totalHoldingsValue: userProperties.reduce((sum, prop) => sum + ((prop.userTokenBalance || 0) * prop.tokenPrice), 0),
+    rentalIncome: 2450.75,
+    governanceInfluence: userProperties.length > 0 ? 'Active' : 'None',
+    stakedTokens: 12500,
+    rewardsEarned: 175.50,
+  };
+
+  // Mock transaction history
+  const transactionHistory = [
+    { date: '2025-04-28', type: 'Purchase', property: 'Lakeview Apartment', tokens: 150, amount: 15.0 },
+    { date: '2025-04-15', type: 'Rent Collection', property: 'Downtown Studio', tokens: 0, amount: 125.5 },
+    { date: '2025-03-22', type: 'Sale', property: 'Beachfront Villa', tokens: 75, amount: 7.5 },
+    { date: '2025-03-10', type: 'Governance Reward', property: 'N/A', tokens: 25, amount: 2.5 }
+  ];
+
+  // Mock governance proposals
+  const governanceProposals = [
+    { id: 1, title: 'Property Renovation Fund', status: 'Active', votingEnds: '2025-05-15', votingPower: 150 },
+    { id: 2, title: 'New Property Acquisition', status: 'Active', votingEnds: '2025-05-20', votingPower: 150 }
+  ];
+
+  // Calculate token value in USDC
+  const calculateTokenValue = (tokens: number): number => tokens * EQUIX_TOKEN_VALUE;
+
+  // User avatar image - using a reliable Unsplash image
+  const userAvatarImage = "https://images.unsplash.com/photo-1599566150163-29194dcaad36";
+
+  // Ensure userProperties is always an array
+  const safeUserProperties = Array.isArray(userProperties) ? userProperties : [];
+
   return (
     <div className="min-h-screen bg-space-black text-white">
       <StarField />
@@ -145,7 +157,7 @@ const UserProfile = () => {
           />
 
           <ProfileTabs 
-            userProperties={userProperties}
+            userProperties={safeUserProperties}
             transactionHistory={transactionHistory}
             governanceProposals={governanceProposals}
             stakedTokens={userStats.stakedTokens}

@@ -5,6 +5,7 @@ import { Search, ChevronRight } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/components/ui/use-toast";
+import EquiXtateLogo from "@/components/ui/EquiXtateLogo";
 
 const HeroSection: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -53,15 +54,7 @@ const HeroSection: React.FC = () => {
         <div className="text-center max-w-5xl mx-auto">
           {/* EquiXtate Logo */}
           <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="h-20 w-22 rounded-full bg-gradient-to-r from-space-neon-purple to-space-neon-blue flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full blur-md bg-gradient-to-r from-space-neon-purple to-space-neon-blue opacity-70"></div>
-                <div className="relative z-10 font-orbitron text-4xl font-bold text-white">
-                  <span className="mr-1">Equi</span>
-                  <span className="text-space-neon-green">X</span>
-                </div>
-              </div>
-            </div>
+            <EquiXtateLogo size="large" variant="light" showText={false} />
           </div>
         
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-bold mb-6 animate-text-flicker">
@@ -100,7 +93,7 @@ const HeroSection: React.FC = () => {
           </div>
           
           {/* Improved search bar with form handling */}
-          {/* <div className="max-w-2xl mx-auto mt-12">
+          <div className="max-w-2xl mx-auto mt-12">
             <form onSubmit={handleSearchSubmit} className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-space-neon-purple to-space-neon-blue rounded-lg blur opacity-50"></div>
               <div className="relative flex items-center glassmorphism p-2 rounded-lg">
@@ -120,7 +113,7 @@ const HeroSection: React.FC = () => {
                 </Button>
               </div>
             </form>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

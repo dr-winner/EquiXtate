@@ -97,13 +97,29 @@ export function useAIAdvisor() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant", // Updated to supported model
         messages: [
           {
             role: "system",
             content: `You are an expert real estate investment advisor named EquiXtate Advisor specializing in tokenized real estate and blockchain-based property investments.
-            
-Provide detailed, accurate, and specific advice about:
+
+**IMPORTANT FORMATTING RULES:**
+- Always structure your responses using Markdown formatting
+- Use **bold** for key terms and important points
+- Use ## for main section headings
+- Use ### for subsections
+- Use bullet points (-) or numbered lists (1.) for lists
+- Keep paragraphs short (2-3 sentences max)
+- Use line breaks between sections for readability
+- Format responses to be scannable and visually organized
+
+**Response Structure:**
+1. Start with a brief 1-2 sentence overview
+2. Break down information into clear sections with headings
+3. Use bullet points for benefits, features, or lists
+4. End with a brief summary or actionable insight
+
+**Topics you cover:**
 - Real estate tokenization mechanisms and benefits
 - Fractional ownership structures in real estate
 - Blockchain applications in property markets
@@ -113,7 +129,7 @@ Provide detailed, accurate, and specific advice about:
 - Market trend analysis with data-driven insights
 - Risk assessment for different tokenization models
 
-Use concrete examples, specific numbers when appropriate, and reference real-world applications. Avoid generic advice. Your responses should be informative but concise (150-200 words maximum).`
+Use concrete examples, specific numbers when appropriate, and reference real-world applications. Avoid generic advice. Keep responses concise but comprehensive (200-300 words). Always format using Markdown for better readability.`
           },
           ...contextMessages,
           {
@@ -129,10 +145,36 @@ Use concrete examples, specific numbers when appropriate, and reference real-wor
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("Groq API Error:", errorData);
+      
+      // Provide more helpful error messages
+      let errorMessage = errorData?.error?.message || "Unknown error";
+      
+      if (response.status === 401) {
+        errorMessage = "Invalid API Key. Please check your GROQ API key in the .env file. Make sure you've replaced 'your_groq_api_key_here' with your actual API key from https://console.groq.com/";
+        console.error("❌ Invalid API Key detected!");
+        console.error("📝 To fix:");
+        console.error("   1. Get your API key from: https://console.groq.com/");
+        console.error("   2. Open .env file in project root");
+        console.error("   3. Replace 'your_groq_api_key_here' with your actual key");
+        console.error("   4. Restart the dev server");
+      } else if (response.status === 400) {
+        // Check if it's a model deprecation error
+        if (errorData?.error?.message?.includes('decommissioned') || 
+            errorData?.error?.message?.includes('no longer supported')) {
+          errorMessage = "The AI model has been updated. Please refresh the page to use the latest model.";
+          console.error("⚠️ Model deprecation detected. The code has been updated to use a supported model.");
+          console.error("Please refresh your browser to load the updated model configuration.");
+        } else {
+          errorMessage = errorData?.error?.message || "Invalid request. Please check your input.";
+        }
+      } else if (response.status === 429) {
+        errorMessage = "Rate limit exceeded. Please try again in a moment.";
+      } else if (response.status >= 500) {
+        errorMessage = "GROQ API server error. Please try again later.";
+      }
+      
       throw new Error(
-        `API request failed with status ${response.status}: ${
-          errorData?.error?.message || "Unknown error"
-        }`
+        `API request failed with status ${response.status}: ${errorMessage}`
       );
     }
     

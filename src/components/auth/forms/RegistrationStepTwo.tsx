@@ -1,13 +1,23 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, UserCheck, X } from "lucide-react";
 
-const RegistrationStepTwo: React.FC = () => {
-  const [idDocument, setIdDocument] = useState<File | null>(null);
-  const [selfieImage, setSelfieImage] = useState<File | null>(null);
+interface RegistrationStepTwoProps {
+  idDocument: File | null;
+  setIdDocument: (file: File | null) => void;
+  selfieImage: File | null;
+  setSelfieImage: (file: File | null) => void;
+}
+
+const RegistrationStepTwo: React.FC<RegistrationStepTwoProps> = ({
+  idDocument,
+  setIdDocument,
+  selfieImage,
+  setSelfieImage
+}) => {
 
   const handleIdUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
