@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { BrowserProvider } from 'ethers';
 import { useWalletEvents } from './hooks/useWalletEvents';
 import { useWalletConnector } from './hooks/useWalletConnector';
 import { useInitialConnection } from './hooks/useInitialConnection';
@@ -14,6 +15,9 @@ export const useWalletConnection = (): UseWalletConnectionReturn => {
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [balance, setBalance] = useState<string>("0");
   const [chainId, setChainId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [connectionAttempts, setConnectionAttempts] = useState<number>(0);
 
   // Initialize wallet event handlers
   const { handleDisconnect } = useWalletEvents(
@@ -24,15 +28,33 @@ export const useWalletConnection = (): UseWalletConnectionReturn => {
     setSelectedWallet
   );
 
+  // Fetch wallet info (balance, network, etc.)
+  const fetchWalletInfo = async () => {
+    try {
+      if (walletAddress && window.ethereum) {
+        const provider = new BrowserProvider(window.ethereum);
+        const balance = await provider.getBalance(walletAddress);
+        const network = await provider.getNetwork();
+        
+        setBalance((Number(balance) / 1e18).toFixed(4));
+        setChainId(network.chainId.toString());
+      }
+    } catch (error) {
+      console.error("Error fetching wallet info:", error);
+    }
+  };
+
   // Initialize wallet connection methods
   const { walletOptions, handleConnectWallet, handleDisconnectWallet } = useWalletConnector({
     walletConnected: walletStatus === ConnectionStatus.CONNECTED,
     setWalletStatus,
     setWalletAddress,
-    setIsAuthenticated: () => {}, // Placeholder - will be implemented in parent component
-    setIsLoading: () => {}, // Placeholder - will be implemented in parent component
-    setConnectionAttempts: () => 0, // Placeholder
-    fetchWalletInfo: async () => {}, // Placeholder - will be implemented in parent component
+    setIsAuthenticated,
+    setIsLoading,
+    setConnectionAttempts: (callback: (prev: number) => number) => {
+      setConnectionAttempts(callback);
+    },
+    fetchWalletInfo,
     setShowDropdown
   });
 

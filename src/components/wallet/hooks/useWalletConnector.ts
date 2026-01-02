@@ -11,6 +11,7 @@ interface WalletConnectorProps {
   walletConnected: boolean;
   setWalletStatus: (status: ConnectionStatus) => void;
   setWalletAddress: (address: string) => void;
+  setBalance: (balance: string) => void;
   setIsAuthenticated: (isAuth: boolean) => void;
   setIsLoading: (isLoading: boolean) => void;
   setConnectionAttempts: (callback: (prev: number) => number) => void;
@@ -22,6 +23,7 @@ export const useWalletConnector = ({
   walletConnected,
   setWalletStatus,
   setWalletAddress,
+  setBalance,
   setIsAuthenticated,
   setIsLoading,
   setConnectionAttempts,
@@ -184,19 +186,55 @@ export const useWalletConnector = ({
   }, [connectionTimeout, fetchWalletInfo, isMobile, detectedWallets, openAuthModal, setConnectionAttempts, setIsAuthenticated, setIsLoading, setShowDropdown, setWalletStatus, setWalletAddress]);
 
   const handleDisconnectWallet = useCallback(() => {
-    console.log("Disconnecting wallet");
-    Web3Service.disconnectWallet();
-    setWalletStatus(ConnectionStatus.DISCONNECTED);
-    setShowDropdown(false);
-    setIsAuthenticated(false);
-    setWalletAddress('');
-    localStorage.removeItem('isAuthenticated');
-    
-    // If on profile page, redirect to home after wallet disconnect
-    if (window.location.pathname === '/profile') {
-      navigate('/');
+    try {
+      console.log("Disconnecting wallet");
+      
+      // Close dropdown FIRST - this is critical
+      setShowDropdown(false);
+      
+      // Disconnect from Web3Service
+      Web3Service.disconnectWallet();
+      
+      // Update local state immediately - use functional updates to ensure they happen
+      setWalletStatus(ConnectionStatus.DISCONNECTED);
+      setIsAuthenticated(false);
+      setWalletAddress('');
+      setBalance('0');
+      localStorage.removeItem('isAuthenticated');
+      
+      // Clear any wallet-related state
+      console.log("Wallet state cleared");
+      
+      // Dispatch custom event to notify other components
+      const event = new CustomEvent('walletDisconnected');
+      window.dispatchEvent(event);
+      
+      // Show success toast
+      toast({
+        title: "Wallet Disconnected",
+        description: "Your wallet has been disconnected successfully.",
+      });
+      
+      // If on profile page, redirect to home after wallet disconnect
+      if (window.location.pathname === '/profile') {
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+      
+      // Even on error, ensure dropdown is closed and state is reset
+      setShowDropdown(false);
+      setWalletStatus(ConnectionStatus.DISCONNECTED);
+      
+      toast({
+        variant: "destructive",
+        title: "Disconnect Error",
+        description: "There was an issue disconnecting your wallet. Please try again.",
+      });
     }
-  }, [navigate, setIsAuthenticated, setShowDropdown, setWalletAddress, setWalletStatus]);
+  }, [navigate, setIsAuthenticated, setShowDropdown, setWalletAddress, setWalletStatus, setBalance]);
 
   // Handle authentication success
   const handleAuthSuccess = useCallback(() => {

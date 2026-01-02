@@ -2,6 +2,7 @@
 import React from 'react';
 import { Instagram, Twitter, Linkedin, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import EquiXtateLogo from '@/components/ui/EquiXtateLogo';
 
 const Footer: React.FC = () => {
   return (

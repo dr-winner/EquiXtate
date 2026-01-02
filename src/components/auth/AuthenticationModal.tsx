@@ -332,7 +332,11 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
             <TabsContent value="login">
               <form onSubmit={handleSubmit}>
                 <DialogTitle className="text-2xl font-orbitron mb-6">Welcome Back</DialogTitle>
-                <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
+                <LoginForm 
+                  onSubmit={handleSubmit} 
+                  isLoading={isLoading} 
+                  onAuthSuccess={onAuthSuccess}
+                />
               </form>
             </TabsContent>
             

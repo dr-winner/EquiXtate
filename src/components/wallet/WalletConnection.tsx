@@ -47,6 +47,7 @@ const WalletConnection: React.FC = () => {
     walletConnected,
     setWalletStatus,
     setWalletAddress,
+    setBalance,
     setIsAuthenticated,
     setIsLoading,
     setConnectionAttempts,
@@ -92,6 +93,7 @@ const WalletConnection: React.FC = () => {
         />
         
         <WalletDropdown 
+          key={`dropdown-${currentWalletStatus}-${showDropdown}`}
           showDropdown={showDropdown}
           setShowDropdown={setShowDropdown}
           walletStatus={currentWalletStatus}

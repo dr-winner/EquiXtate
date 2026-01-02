@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import SocialLoginButtons from '../SocialLoginButtons';
 
 interface LoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
+  onAuthSuccess?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading, onAuthSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -64,6 +66,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading }) => {
           Sign In
         </Button>
       </div>
+      
+      <SocialLoginButtons onSuccess={onAuthSuccess} />
     </form>
   );
 };

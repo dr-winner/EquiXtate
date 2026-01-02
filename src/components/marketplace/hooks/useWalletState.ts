@@ -24,13 +24,24 @@ export const useWalletState = () => {
       }
     };
 
+    // Listen for custom wallet disconnected event
+    const handleWalletDisconnected = () => {
+      setWalletConnected(false);
+    };
+
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
-      
-      return () => {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      };
     }
+    
+    // Listen for custom disconnect event
+    window.addEventListener('walletDisconnected', handleWalletDisconnected);
+    
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+      window.removeEventListener('walletDisconnected', handleWalletDisconnected);
+    };
   }, []);
   
   const connectWallet = async () => {
