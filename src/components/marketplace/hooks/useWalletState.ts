@@ -1,82 +1,34 @@
 
-import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import Web3Service from '@/services/Web3Service';
-import { toast } from "@/components/ui/use-toast";
+import { useWallet } from '@/hooks/useWallet';
 
+/**
+ * Wallet state hook for marketplace components
+ * This is a wrapper around the unified useWallet hook for backward compatibility
+ */
 export const useWalletState = () => {
-  const [walletConnected, setWalletConnected] = useState<boolean>(false);
-  
-  useEffect(() => {
-    const checkWalletConnection = async () => {
-      const connected = await Web3Service.isWalletConnected();
-      setWalletConnected(connected);
-    };
-    
-    checkWalletConnection();
-    
-    // Set up event listeners for wallet events
-    const handleAccountsChanged = (accounts: string[]) => {
-      if (accounts.length > 0) {
-        setWalletConnected(true);
-      } else {
-        setWalletConnected(false);
-      }
-    };
-
-    // Listen for custom wallet disconnected event
-    const handleWalletDisconnected = () => {
-      setWalletConnected(false);
-    };
-
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-    }
-    
-    // Listen for custom disconnect event
-    window.addEventListener('walletDisconnected', handleWalletDisconnected);
-    
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      }
-      window.removeEventListener('walletDisconnected', handleWalletDisconnected);
-    };
-  }, []);
+  const { 
+    isConnected, 
+    connectWallet: connect,
+    disconnectWallet: disconnect,
+    address,
+    balance,
+    isLoading 
+  } = useWallet();
   
   const connectWallet = async () => {
-    try {
-      await Web3Service.connectWallet();
-      setWalletConnected(true);
-      
-      toast({
-        title: "Wallet Connected",
-        description: "Your wallet has been successfully connected.",
-      });
-    } catch (error) {
-      console.error('Error connecting wallet:', error);
-      
-      toast({
-        variant: "destructive",
-        title: "Connection Failed",
-        description: "Failed to connect your wallet. Please try again.",
-      });
-    }
+    await connect();
   };
   
-  const disconnectWallet = () => {
-    Web3Service.disconnectWallet();
-    setWalletConnected(false);
-    
-    toast({
-      title: "Wallet Disconnected",
-      description: "Your wallet has been disconnected.",
-    });
+  const disconnectWallet = async () => {
+    await disconnect();
   };
-
+  
   return {
-    walletConnected,
+    walletConnected: isConnected,
+    walletAddress: address,
+    balance,
+    isLoading,
     connectWallet,
-    disconnectWallet
+    disconnectWallet,
   };
 };

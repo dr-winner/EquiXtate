@@ -1,118 +1,127 @@
 
-import React, { useRef } from 'react';
-import { useWalletState } from '@/components/marketplace/hooks/useWalletState';
-import WalletStatus from './WalletStatus';
-import WalletDropdown from './WalletDropdown';
-import AuthenticationModal from '../auth/AuthenticationModal';
-import { useAuthenticationModal } from '@/hooks/use-authentication-modal';
-import { ConnectionStatus } from './types';
-import { useWalletConnectionState } from './hooks/useWalletConnectionState';
-import { useWalletConnector } from './hooks/useWalletConnector';
-import { useWalletEventHandler } from './hooks/useWalletEventHandler';
-import { useClickOutside } from './hooks/useClickOutside';
+import React, { useState, useRef } from 'react';
+import { useWallet } from '@/hooks/useWallet';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Wallet, ChevronDown, LogOut, Copy, ExternalLink } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 const WalletConnection: React.FC = () => {
-  const { walletConnected } = useWalletState();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isOpen: isAuthModalOpen, openModal: openAuthModal, closeModal: closeAuthModal } = useAuthenticationModal();
-  
-  // Get wallet state from custom hook
   const {
-    walletStatus,
-    setWalletStatus,
-    walletAddress,
-    setWalletAddress,
-    balance,
-    setBalance,
-    showDropdown,
-    setShowDropdown,
+    isReady,
+    isConnected,
     isAuthenticated,
-    setIsAuthenticated,
     isLoading,
-    setIsLoading,
-    connectionAttempts,
-    setConnectionAttempts,
-    fetchWalletInfo,
+    address,
+    balance,
+    network,
+    connectWallet,
+    disconnectWallet,
     formatAddress,
-    getNetworkName
-  } = useWalletConnectionState();
+  } = useWallet();
   
-  // Get wallet connector methods
-  const {
-    walletOptions,
-    handleConnectWallet,
-    handleDisconnectWallet,
-    handleAuthSuccess
-  } = useWalletConnector({
-    walletConnected,
-    setWalletStatus,
-    setWalletAddress,
-    setBalance,
-    setIsAuthenticated,
-    setIsLoading,
-    setConnectionAttempts,
-    fetchWalletInfo,
-    setShowDropdown
-  });
+  const [showDropdown, setShowDropdown] = useState(false);
   
-  // Set up wallet event handlers
-  useWalletEventHandler(walletConnected, fetchWalletInfo, handleDisconnectWallet);
-  
-  // Set up click outside handler
-  useClickOutside(dropdownRef, () => setShowDropdown(false));
-
-  const handleStatusClick = () => {
-    if (!walletConnected) {
-      // If not connected, show wallet connection options
-      setShowDropdown(!showDropdown);
-    } else if (!isAuthenticated) {
-      // If wallet is connected but user not authenticated, prompt for KYC
-      openAuthModal();
-    } else {
-      // If both connected and authenticated, toggle dropdown 
-      setShowDropdown(!showDropdown);
+  // Copy address to clipboard
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      toast({
+        title: "Address Copied",
+        description: "Wallet address copied to clipboard",
+      });
     }
   };
-
-  // Determine wallet status based on loading and connection state
-  const currentWalletStatus = isLoading ? ConnectionStatus.CONNECTING : 
-                       walletConnected ? ConnectionStatus.CONNECTED : 
-                       ConnectionStatus.DISCONNECTED;
-
+  
+  // Open block explorer
+  const handleViewOnExplorer = () => {
+    if (address) {
+      const explorerUrl = `https://etherscan.io/address/${address}`;
+      window.open(explorerUrl, '_blank');
+    }
+  };
+  
+  if (!isReady) {
+    return (
+      <Button variant="outline" disabled>
+        <Wallet className="mr-2 h-4 w-4" />
+        Loading...
+      </Button>
+    );
+  }
+  
+  if (!isConnected) {
+    return (
+      <Button 
+        onClick={connectWallet}
+        disabled={isLoading}
+        className="bg-space-neon-purple hover:bg-space-neon-purple/90"
+      >
+        <Wallet className="mr-2 h-4 w-4" />
+        {isLoading ? 'Connecting...' : 'Connect Wallet'}
+      </Button>
+    );
+  }
+  
   return (
-    <>
-      <div className="relative" ref={dropdownRef}>
-        <WalletStatus 
-          walletStatus={currentWalletStatus}
-          walletAddress={walletAddress}
-          showDropdown={showDropdown}
-          setShowDropdown={setShowDropdown}
-          formatAddress={formatAddress}
-          onClick={handleStatusClick}
-          isAuthenticated={isAuthenticated}
-        />
-        
-        <WalletDropdown 
-          key={`dropdown-${currentWalletStatus}-${showDropdown}`}
-          showDropdown={showDropdown}
-          setShowDropdown={setShowDropdown}
-          walletStatus={currentWalletStatus}
-          walletAddress={walletAddress}
-          balance={balance}
-          connectWallet={handleConnectWallet}
-          disconnectWallet={handleDisconnectWallet}
-          getNetworkName={getNetworkName}
-          walletOptions={walletOptions}
-          isAuthenticated={isAuthenticated}
-        />
-      </div>
+    <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          className="gap-2"
+        >
+          <Wallet className="h-4 w-4" />
+          <div className="flex flex-col items-start">
+            <span className="text-xs font-medium">{formatAddress(address)}</span>
+            <span className="text-xs text-muted-foreground">{balance} ETH</span>
+          </div>
+          <ChevronDown className="h-4 w-4 ml-2" />
+        </Button>
+      </DropdownMenuTrigger>
       
-      <AuthenticationModal 
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        onAuthSuccess={handleAuthSuccess}
-      />
-    </>
+      <DropdownMenuContent align="end" className="w-64">
+        <div className="px-2 py-2">
+          <p className="text-sm font-medium">Connected Wallet</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {formatAddress(address)}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Network: {network}
+          </p>
+          <p className="text-sm font-semibold mt-2">
+            {balance} ETH
+          </p>
+        </div>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem onClick={handleCopyAddress}>
+          <Copy className="mr-2 h-4 w-4" />
+          Copy Address
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem onClick={handleViewOnExplorer}>
+          <ExternalLink className="mr-2 h-4 w-4" />
+          View on Explorer
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem 
+          onClick={disconnectWallet}
+          className="text-red-600 focus:text-red-600"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Disconnect
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

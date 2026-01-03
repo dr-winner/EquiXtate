@@ -14,7 +14,7 @@ export const usePrivyAuth = () => {
   useEffect(() => {
     if (ready && authenticated && user) {
       // User is authenticated via Privy
-      const email = user.email?.address || user.google?.email || user.twitter?.email || 
+      const email = user.email?.address || user.google?.email || 
                    user.discord?.email || user.github?.email || user.apple?.email;
       
       if (email) {

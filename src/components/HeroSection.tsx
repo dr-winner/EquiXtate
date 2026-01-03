@@ -32,7 +32,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div id="home" className="relative min-h-screen flex items-center justify-center pt-16">
+    <div id="home" className="relative min-h-[80vh] flex items-center justify-center pt-16 pb-10">
       {/* Animated floating crypto symbols */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full bg-space-neon-purple/20 blur-3xl animate-float"></div>
@@ -69,7 +69,7 @@ const HeroSection: React.FC = () => {
             The first fully-decentralized platform for tokenized real estate ownership on the blockchain
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-1">
             <Button 
               className="cosmic-btn flex items-center py-6 px-8 text-lg"
               onMouseEnter={() => setIsHovered(true)}
@@ -93,7 +93,7 @@ const HeroSection: React.FC = () => {
           </div>
           
           {/* Improved search bar with form handling */}
-          <div className="max-w-2xl mx-auto mt-12">
+          {/* <div className="max-w-2xl mx-auto mt-12">
             <form onSubmit={handleSearchSubmit} className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-space-neon-purple to-space-neon-blue rounded-lg blur opacity-50"></div>
               <div className="relative flex items-center glassmorphism p-2 rounded-lg">
@@ -113,7 +113,7 @@ const HeroSection: React.FC = () => {
                 </Button>
               </div>
             </form>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

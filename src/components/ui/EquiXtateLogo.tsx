@@ -16,7 +16,7 @@ const EquiXtateLogo: React.FC<EquiXtateLogoProps> = ({
   const sizeClasses = {
     small: 'h-8 w-8',
     medium: 'h-10 w-10',
-    large: 'h-16 w-16'
+    large: 'h-20 w-20'
   };
 
   // Size mapping for text

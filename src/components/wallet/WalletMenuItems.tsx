@@ -61,11 +61,25 @@ const WalletMenuItems: React.FC<WalletMenuItemsProps> = ({
                 e.stopPropagation();
                 console.log("Disconnect clicked");
                 
-                // Close dropdown immediately
+                // CRITICAL: Close dropdown FIRST and synchronously
                 setShowDropdown(false);
                 
-                // Call disconnect
-                disconnectWallet();
+                // Force immediate DOM cleanup of any lingering backdrops
+                requestAnimationFrame(() => {
+                  const backdrops = document.querySelectorAll('[data-wallet-dropdown-backdrop]');
+                  backdrops.forEach((el) => {
+                    if (el.parentNode) {
+                      (el as HTMLElement).style.display = 'none';
+                      (el as HTMLElement).style.visibility = 'hidden';
+                      (el as HTMLElement).style.opacity = '0';
+                    }
+                  });
+                });
+                
+                // Small delay to ensure dropdown closes before disconnect
+                setTimeout(() => {
+                  disconnectWallet();
+                }, 50);
               }}
             >
               {item.icon}

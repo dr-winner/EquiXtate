@@ -189,8 +189,26 @@ export const useWalletConnector = ({
     try {
       console.log("Disconnecting wallet");
       
-      // Close dropdown FIRST - this is critical
+      // CRITICAL: Close dropdown FIRST - this is critical
       setShowDropdown(false);
+      
+      // Force immediate cleanup of any backdrop elements
+      requestAnimationFrame(() => {
+        const backdrops = document.querySelectorAll('[data-wallet-dropdown-backdrop]');
+        backdrops.forEach((el) => {
+          if (el.parentNode) {
+            (el as HTMLElement).style.display = 'none';
+            (el as HTMLElement).style.visibility = 'hidden';
+            (el as HTMLElement).style.opacity = '0';
+            // Remove from DOM after hiding
+            setTimeout(() => {
+              if (el.parentNode) {
+                el.parentNode.removeChild(el);
+              }
+            }, 100);
+          }
+        });
+      });
       
       // Disconnect from Web3Service
       Web3Service.disconnectWallet();
@@ -227,6 +245,23 @@ export const useWalletConnector = ({
       // Even on error, ensure dropdown is closed and state is reset
       setShowDropdown(false);
       setWalletStatus(ConnectionStatus.DISCONNECTED);
+      
+      // Force cleanup on error too
+      requestAnimationFrame(() => {
+        const backdrops = document.querySelectorAll('[data-wallet-dropdown-backdrop]');
+        backdrops.forEach((el) => {
+          if (el.parentNode) {
+            (el as HTMLElement).style.display = 'none';
+            (el as HTMLElement).style.visibility = 'hidden';
+            (el as HTMLElement).style.opacity = '0';
+            setTimeout(() => {
+              if (el.parentNode) {
+                el.parentNode.removeChild(el);
+              }
+            }, 100);
+          }
+        });
+      });
       
       toast({
         variant: "destructive",
