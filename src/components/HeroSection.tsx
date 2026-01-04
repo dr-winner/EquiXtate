@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
             <EquiXtateLogo size="large" variant="light" showText={false} />
           </div>
         
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-bold mb-6 animate-text-flicker">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-bold mb-6">
             {/* <span className="block text-space-neon-green neon-glow-green">COSMIC</span> */}
             <span className="block bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">
               Equi<span className="text-space-neon-blue font-bold neon-glow">X</span>tate

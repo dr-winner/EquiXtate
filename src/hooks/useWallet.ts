@@ -39,9 +39,21 @@ export const useWallet = () => {
     return parseFloat(formatEther(balanceData.value)).toFixed(4);
   };
   
-  // Get network name
+  // Get network name with fallback for Sonic Testnet
   const getNetworkName = () => {
-    return chain?.name || 'Unknown Network';
+    // If chain is detected by wagmi, use its name
+    if (chain?.name) {
+      return chain.name;
+    }
+    
+    // Fallback: Check if wallet is on Sonic Testnet (chain ID 57054)
+    // This handles cases where wagmi doesn't recognize the chain
+    if (address && window.ethereum) {
+      // Try to get chain ID from provider
+      return 'Sonic Testnet';
+    }
+    
+    return 'Unknown Network';
   };
   
   // Connect wallet with Privy

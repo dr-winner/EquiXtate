@@ -6,7 +6,7 @@ export const PRIVY_APP_ID = import.meta.env.VITE_PRIVY_APP_ID || '';
 // Privy configuration
 export const privyConfig: PrivyClientConfig = {
   // Login methods to enable
-  loginMethods: ['email', 'sms', 'google', 'twitter', 'discord', 'github', 'apple'],
+  loginMethods: ['email', 'google', 'twitter', 'telegram', 'farcaster'],
   // Appearance customization
   appearance: {
     theme: 'dark',
