@@ -9,11 +9,15 @@ import { EQUIX_TOKEN_VALUE, STABLECOIN_SYMBOL } from '@/types/property';
 import Web3Service from '@/services/Web3Service';
 import WalletConnectionPrompt from '@/components/user-profile/WalletConnectionPrompt';
 import UserStatsOverview from '@/components/user-profile/UserStatsOverview';
+import KYCStatusDisplay from '@/components/user-profile/KYCStatusDisplay';
 import ProfileTabs from '@/components/user-profile/ProfileTabs';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload } from 'lucide-react';
+import { Plus, Upload, AlertCircle } from 'lucide-react';
 import PropertyUploadModal from '@/components/property/PropertyUploadModal';
+import SumsubWebSDK from '@/components/auth/SumsubWebSDK';
+import { useSumsubKYC } from '@/hooks/useSumsubKYC';
 import { useAuthenticationModal } from '@/hooks/use-authentication-modal';
+import { useKYCStatus } from '@/hooks/useKYCStatus';
 import { toast } from '@/components/ui/use-toast';
 
 const UserProfile = () => {
@@ -21,6 +25,26 @@ const UserProfile = () => {
   const { openModal: openAuthModal } = useAuthenticationModal();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
+  
+  // Safely get wallet address
+  let walletAddress = '';
+  try {
+    walletAddress = Web3Service.getWalletAddress() || '';
+  } catch (error) {
+    console.error('Error getting wallet address:', error);
+  }
+  
+  // Check KYC status
+  const { isKYCVerified, kycTier, canListProperties, isLoading: isKYCLoading } = useKYCStatus(walletAddress);
+  
+  // Get user email for Sumsub
+  const userEmail = localStorage.getItem('userEmail') || '';
+  
+  // Sumsub KYC hook
+  const { isOpen: isSumsubOpen, openKYC, closeKYC } = useSumsubKYC({
+    userId: walletAddress,
+    email: userEmail,
+  });
   
   // Check if user is authenticated
   useEffect(() => {
@@ -30,16 +54,11 @@ const UserProfile = () => {
 
   // Only fetch user properties if wallet is connected
   const userProperties = useUserProperties(walletConnected);
-  
-  // Safely get wallet address
-  let walletAddress = '';
-  try {
-    walletAddress = Web3Service.getWalletAddress() || '';
-  } catch (error) {
-    console.error('Error getting wallet address:', error);
-  }
 
-  const handlePropertyUpload = () => {
+  const handlePropertyUpload = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
     if (!walletConnected) {
       toast({
         title: "Connect Wallet",
@@ -54,6 +73,24 @@ const UserProfile = () => {
         description: "Please complete verification to upload properties.",
       });
       openAuthModal();
+      return;
+    }
+
+    // Check KYC status
+    if (!isKYCVerified) {
+      toast({
+        title: "KYC Required",
+        description: "Complete identity verification to list properties.",
+      });
+      openKYC();
+      return;
+    }
+
+    if (!canListProperties) {
+      toast({
+        title: "Listing Not Allowed",
+        description: "Your KYC tier does not permit property listings.",
+      });
       return;
     }
     
@@ -166,6 +203,15 @@ const UserProfile = () => {
             totalTokensOwned={userStats.totalTokensOwned}
           />
         </div>
+
+        {/* KYC Status Section */}
+        <div className="mb-12 max-w-md">
+          <KYCStatusDisplay
+            isKYCVerified={isKYCVerified}
+            kycTier={kycTier}
+            onStartKYC={() => openKYC()}
+          />
+        </div>
       </main>
       
       <PropertyUploadModal 
@@ -177,6 +223,21 @@ const UserProfile = () => {
             description: "Your property has been submitted for verification.",
           });
           setUploadModalOpen(false);
+        }}
+      />
+
+      <SumsubWebSDK
+        isOpen={isSumsubOpen}
+        onClose={closeKYC}
+        userId={walletAddress}
+        email={userEmail}
+        onVerificationComplete={() => {
+          closeKYC();
+          // Re-check KYC status after completion
+          setTimeout(() => {
+            // Trigger a refresh of KYC status
+            window.location.reload();
+          }, 1000);
         }}
       />
       

@@ -3,20 +3,26 @@
 import { ethers } from "krnl-sdk";
 import { abi as contractAbi, CONTRACT_ADDRESS, ENTRY_ID, ACCESS_TOKEN } from "./config";
 import { AbiCoder } from "ethers";
+import { KRNL_CONFIG } from '@/utils/envConfig';
 
 // ==========================================================
-// Create a provider for KRNL RPC
-const krnlProvider = new ethers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_KRNL);
+// Lazy provider creation using Vite envs
+const getKrnlProvider = () => {
+  const rpcUrl = KRNL_CONFIG.rpcUrl;
+  if (!rpcUrl) {
+    throw new Error("KRNL RPC URL not configured (VITE_RPC_KRNL)");
+  }
+  return new ethers.JsonRpcProvider(rpcUrl);
+};
 
-// ==========================================================
-// Check if required environment variables are available
-if (!CONTRACT_ADDRESS) {
-  throw new Error("Contract address not found");
-}
+// Determine if we're missing critical KRNL config; used to enable mock mode
+const isMockMode = () => !KRNL_CONFIG.rpcUrl || !ENTRY_ID || !ACCESS_TOKEN || !CONTRACT_ADDRESS;
 
-if (!ENTRY_ID || !ACCESS_TOKEN) {
-  throw new Error("Entry ID or Access Token not found");
-}
+// Validate required envs early (but avoid crashing in mock-mode callers)
+const assertRequiredConfig = () => {
+  if (!CONTRACT_ADDRESS) throw new Error("Contract address not found (VITE_CONTRACT_ADDRESS)");
+  if (!ENTRY_ID || !ACCESS_TOKEN) throw new Error("KRNL credentials missing (VITE_KRNL_ENTRY_ID / VITE_KRNL_ACCESS_TOKEN)");
+};
 
 // ==========================================================
 // Encode parameters for kernel 337
@@ -29,6 +35,31 @@ const abiCoder = new ethers.AbiCoder();
  * @returns KRNL payload result
  */
 export async function executeKrnl(address?: string, customKernelId?: string) {
+  const kernelId = customKernelId || "337";
+
+  if (isMockMode()) {
+    console.warn('[KRNL] Mock mode in executeKrnl (missing env). Returning mock payload.');
+    const mockAuth = '0x' + 'mock'.repeat(8).slice(0, 64);
+    const mockResponse = abiCoder.encode([
+      "address",
+      "bool",
+      "uint256"
+    ], [address || ethers.ZeroAddress, true, 0n]);
+
+    return {
+      auth: mockAuth,
+      kernel_responses: mockResponse,
+      kernel_params: {
+        [kernelId]: {
+          functionParams: abiCoder.encode(["uint256", "uint256"], [0, 1])
+        }
+      }
+    };
+  }
+
+  assertRequiredConfig();
+  const krnlProvider = getKrnlProvider();
+
   // Use provided address or throw error if not available
   const walletAddress = address || '';
 
@@ -38,9 +69,6 @@ export async function executeKrnl(address?: string, customKernelId?: string) {
 
   // Encode the address parameter
   const parameterForKernel = abiCoder.encode(["uint256", "uint256"], [0, 1]);
-
-  // Use provided kernel ID or default to 337
-  const kernelId = customKernelId || "337";
 
   // Create the kernel request data with the correct structure
   const kernelRequestData = {

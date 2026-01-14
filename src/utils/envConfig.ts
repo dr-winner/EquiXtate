@@ -1,6 +1,6 @@
 
 /**
- * Environment configuration utility for managing API keys
+ * Environment configuration utility for managing API keys and service configs
  * This allows us to access environment variables safely
  */
 
@@ -8,6 +8,42 @@
 // Trim whitespace in case there are accidental spaces
 const rawApiKey = import.meta.env.VITE_GROQ_API_KEY || "";
 export const GROQ_API_KEY = typeof rawApiKey === 'string' ? rawApiKey.trim() : "";
+
+// KRNL Protocol Configuration
+export const KRNL_CONFIG = {
+  // RPC endpoint for KRNL provider
+  rpcUrl: import.meta.env.VITE_RPC_KRNL || '',
+  
+  // KRNL Entry ID for verification services
+  entryId: import.meta.env.VITE_KRNL_ENTRY_ID || '',
+  
+  // KRNL Access Token
+  accessToken: import.meta.env.VITE_KRNL_ACCESS_TOKEN || '',
+  
+  // KRNL Kernel ID for property verification
+  kernelId: import.meta.env.VITE_KRNL_KERNEL_ID || '1529',
+  
+  // Smart Contract Address for KRNL interactions
+  contractAddress: import.meta.env.VITE_CONTRACT_ADDRESS || '',
+};
+
+// Privy Configuration
+export const PRIVY_CONFIG = {
+  appId: import.meta.env.VITE_PRIVY_APP_ID || '',
+};
+
+// WalletConnect Configuration
+export const WALLETCONNECT_CONFIG = {
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '',
+};
+
+// Sumsub Configuration (KYC/AML Verification)
+export const envConfig = {
+  sumsubApiUrl: import.meta.env.VITE_SUMSUB_API_URL || 'https://api.sumsub.com',
+  sumsubAppToken: import.meta.env.VITE_SUMSUB_APP_TOKEN || '',
+  sumsubSecretKey: import.meta.env.VITE_SUMSUB_SECRET_KEY || '',
+  sumsubSandboxMode: import.meta.env.VITE_SUMSUB_SANDBOX_MODE === 'true',
+};
 
 // Function to check if API key is available
 export const isGroqApiKeyAvailable = (): boolean => {
@@ -48,3 +84,71 @@ export const isGroqApiKeyAvailable = (): boolean => {
   
   return isAvailable && !isPlaceholder;
 };
+
+// Function to check if KRNL config is available
+export const isKRNLConfigAvailable = (): boolean => {
+  const hasRpcUrl = !!KRNL_CONFIG.rpcUrl && KRNL_CONFIG.rpcUrl.length > 0;
+  const hasEntryId = !!KRNL_CONFIG.entryId && KRNL_CONFIG.entryId.length > 0;
+  const hasAccessToken = !!KRNL_CONFIG.accessToken && KRNL_CONFIG.accessToken.length > 0;
+  
+  if (import.meta.env.DEV) {
+    console.log('[envConfig] KRNL config check:', {
+      hasRpcUrl,
+      hasEntryId,
+      hasAccessToken,
+      rpcUrlPreview: KRNL_CONFIG.rpcUrl ? `${KRNL_CONFIG.rpcUrl.substring(0, 20)}...` : 'missing',
+      entryIdPreview: KRNL_CONFIG.entryId || 'missing',
+      kernelId: KRNL_CONFIG.kernelId
+    });
+    
+    if (!hasRpcUrl || !hasEntryId || !hasAccessToken) {
+      console.warn('⚠️ KRNL configuration incomplete! Running in mock mode.');
+      console.warn('📝 Optional environment variables for production:');
+      console.warn('   - VITE_RPC_KRNL (set to KRNL node RPC)');
+      console.warn('   - VITE_KRNL_ENTRY_ID (from KRNL dashboard)');
+      console.warn('   - VITE_KRNL_ACCESS_TOKEN (from KRNL dashboard)');
+      console.warn('   - VITE_CONTRACT_ADDRESS (deployed contract)');
+    }
+  }
+  
+  return hasRpcUrl && hasEntryId && hasAccessToken;
+};
+
+// Function to validate all required environment variables
+export const validateEnvironment = (): { valid: boolean; missing: string[] } => {
+  const missing: string[] = [];
+  
+  if (!PRIVY_CONFIG.appId) {
+    missing.push('VITE_PRIVY_APP_ID');
+  }
+  
+  if (!WALLETCONNECT_CONFIG.projectId) {
+    missing.push('VITE_WALLETCONNECT_PROJECT_ID');
+  }
+  
+  if (!GROQ_API_KEY || GROQ_API_KEY.length < 10) {
+    missing.push('VITE_GROQ_API_KEY');
+  }
+  
+  if (!KRNL_CONFIG.rpcUrl) {
+    missing.push('VITE_RPC_KRNL or NEXT_PUBLIC_RPC_KRNL');
+  }
+  
+  if (!KRNL_CONFIG.entryId) {
+    missing.push('VITE_KRNL_ENTRY_ID or NEXT_PUBLIC_ENTRY_ID');
+  }
+  
+  if (!KRNL_CONFIG.accessToken) {
+    missing.push('VITE_KRNL_ACCESS_TOKEN or NEXT_PUBLIC_ACCESS_TOKEN');
+  }
+  
+  if (missing.length > 0 && import.meta.env.DEV) {
+    console.warn('⚠️ Missing environment variables:', missing);
+  }
+  
+  return {
+    valid: missing.length === 0,
+    missing
+  };
+};
+

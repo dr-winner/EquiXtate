@@ -12,7 +12,6 @@ import NotFound from "./pages/NotFound";
 import PropertyPage from "./pages/PropertyPage";
 import UserProfile from "./pages/UserProfile";
 import GovernancePage from "./pages/GovernancePage";
-import AdminPage from "./pages/AdminPage";
 import AIAdvisorBubble from "./components/AIAdvisorBubble";
 import PrivyAuthHandler from "./components/PrivyAuthHandler";
 import { StarFieldProvider } from "./contexts/StarFieldContext";
@@ -47,7 +46,6 @@ const App = () => (
                   <Route path="/property/:id" element={<PropertyPage />} />
                   <Route path="/profile" element={<UserProfile />} />
                   <Route path="/governance" element={<GovernancePage />} />
-                  <Route path="/admin" element={<AdminPage />} />
                   <Route path="/transactions" element={<UserProfile />} />
                   <Route path="/settings" element={<UserProfile />} />
                   <Route path="/help" element={<UserProfile />} />

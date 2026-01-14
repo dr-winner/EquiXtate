@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, ChevronRight, FileImage, FileText, Loader2, MapPin, Upload, X } from 'lucide-react';
+import { Check, ChevronRight, FileImage, FileText, Loader2, MapPin, Upload, X, Shield } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import PropertyOnboardingService, { OnboardingSubmission } from '@/services/PropertyOnboardingService';
+import UserOnboardingService from '@/services/UserOnboardingService';
+import { useWallet } from '@/hooks/useWallet';
 
 interface PropertyUploadModalProps {
   isOpen: boolean;
@@ -22,7 +24,12 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationInProgress, setVerificationInProgress] = useState(false);
   const totalSteps = 3;
+  
+  // Safely get wallet address with fallback
+  const wallet = useWallet();
+  const address = wallet?.address || wallet?.walletAddress || '';
   
   // Form state
   const [propertyData, setPropertyData] = useState({
@@ -162,21 +169,110 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
       });
       return;
     }
-    
+
+    if (!address) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet to submit property",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
       
-      // Simulated API call or blockchain interaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Step 1: Check if user is verified and can list properties
+      const canList = await UserOnboardingService.canUserListProperty(address);
+      if (!canList.allowed) {
+        toast({
+          title: "KYC Verification Required",
+          description: canList.reason || "Please complete Enhanced KYC verification to list properties",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Create property onboarding submission
+      const submission: OnboardingSubmission = {
+        ownerAddress: address,
+        propertyData: {
+          name: propertyData.name,
+          type: propertyData.type,
+          location: propertyData.location,
+          description: propertyData.description,
+          price: parseFloat(propertyData.price),
+          bedrooms: propertyData.bedrooms ? parseInt(propertyData.bedrooms) : undefined,
+          bathrooms: propertyData.bathrooms ? parseFloat(propertyData.bathrooms) : undefined,
+          squareFootage: propertyData.squareFootage ? parseInt(propertyData.squareFootage) : undefined,
+          listingType: propertyData.listingType as 'sale' | 'auction' | 'rent'
+        },
+        images: propertyImages,
+        documents: propertyDocuments,
+        deedDocument: deedDocument
+      };
+
+      // Step 3: Create onboarding record
+      const onboarding = await PropertyOnboardingService.createOnboarding(submission);
       
       toast({
-        title: "Verification in Progress",
-        description: "Your property is being verified and will be tokenized upon approval.",
+        title: "Property Submitted",
+        description: "Your property has been submitted for processing",
       });
+
+      // Step 4: Start KRNL verification process
+      setVerificationInProgress(true);
       
-      onUploadSuccess();
+      toast({
+        title: "🔍 Verification Started",
+        description: "KRNL Protocol is verifying your property ownership...",
+      });
+
+      const verificationResult = await PropertyOnboardingService.submitForVerification(
+        onboarding.id
+      );
+
+      setVerificationInProgress(false);
+
+      if (verificationResult.success) {
+        toast({
+          title: "✅ Verification Successful",
+          description: "Your property has been verified! Proceeding to tokenization...",
+        });
+
+        // Step 5: Tokenize the property
+        const tokenizationResult = await PropertyOnboardingService.tokenizeProperty(
+          onboarding.id
+        );
+
+        if (tokenizationResult.success) {
+          toast({
+            title: "🎉 Property Listed!",
+            description: `Your property has been tokenized and listed on the marketplace.`,
+          });
+          
+          onUploadSuccess();
+          handleCancel();
+        } else {
+          toast({
+            title: "Tokenization Pending",
+            description: "Property verified but tokenization will be completed shortly.",
+          });
+        }
+      } else {
+        toast({
+          title: "⏳ Manual Review Required",
+          description: "Your property requires additional verification by our validators. You'll be notified within 24-48 hours.",
+        });
+        
+        onUploadSuccess();
+        handleCancel();
+      }
+      
     } catch (error) {
       console.error('Error uploading property:', error);
+      setVerificationInProgress(false);
       toast({
         variant: "destructive",
         title: "Upload Failed",
@@ -211,10 +307,10 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
       case 1: // Property Details
         return (
           <>
-            <DialogTitle className="text-2xl font-orbitron mb-6">Property Details</DialogTitle>
-            <DialogDescription className="mb-6">
+            <h2 className="text-2xl font-orbitron mb-6">Property Details</h2>
+            <p className="text-sm text-gray-400 mb-6">
               Provide basic information about your property for tokenization.
-            </DialogDescription>
+            </p>
             
             <div className="space-y-4">
               <div className="space-y-2">
@@ -245,7 +341,7 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                     <SelectTrigger className="bg-space-deep-purple/30 border-space-neon-blue/30">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[10000]">
                       <SelectItem value="apartment">Apartment</SelectItem>
                       <SelectItem value="house">House</SelectItem>
                       <SelectItem value="villa">Villa</SelectItem>
@@ -267,7 +363,7 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
                     <SelectTrigger className="bg-space-deep-purple/30 border-space-neon-blue/30">
                       <SelectValue placeholder="Select listing type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[10000]">
                       <SelectItem value="sale">For Sale</SelectItem>
                       <SelectItem value="auction">Auction</SelectItem>
                       <SelectItem value="rent">For Rent</SelectItem>
@@ -377,10 +473,10 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
       case 2: // Media Upload
         return (
           <>
-            <DialogTitle className="text-2xl font-orbitron mb-6">Media & Documentation</DialogTitle>
-            <DialogDescription className="mb-6">
+            <h2 className="text-2xl font-orbitron mb-6">Media & Documentation</h2>
+            <p className="text-sm text-gray-400 mb-6">
               Upload high-quality images and video walkthroughs of your property.
-            </DialogDescription>
+            </p>
             
             <div className="space-y-6">
               <div className="space-y-2">
@@ -513,10 +609,14 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
       case 3: // Legal Verification
         return (
           <>
-            <DialogTitle className="text-2xl font-orbitron mb-6">Legal Verification</DialogTitle>
-            <DialogDescription className="mb-6">
+            <h2 className="text-2xl font-orbitron mb-6">Legal Verification</h2>
+            <p className="text-sm text-gray-400 mb-6">
               Provide legal documentation to verify property ownership.
-            </DialogDescription>
+            </p>
+
+            <div className="mb-4 bg-space-deep-purple/30 border border-space-neon-blue/30 p-3 rounded-lg text-sm text-gray-200">
+              Your identity from KYC is already on file. Here we only need property ownership documents—no duplicate personal info.
+            </div>
             
             <div className="space-y-6">
               <div className="space-y-2">
@@ -565,15 +665,22 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
               </div>
               
               <div className="space-y-4 mt-6 bg-space-deep-purple/30 p-4 rounded-lg">
-                <h3 className="font-medium text-space-neon-blue">Verification Process</h3>
+                <h3 className="font-medium text-space-neon-blue flex items-center">
+                  <Shield className="h-5 w-5 mr-2" />
+                  KRNL Protocol Verification
+                </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <Check className="h-4 w-4 mr-2 text-space-neon-green mt-0.5" />
-                    <span>Our system will automatically query government databases to verify ownership</span>
+                    <span>KRNL Protocol will automatically query government databases to verify ownership</span>
                   </li>
                   <li className="flex items-start">
                     <Check className="h-4 w-4 mr-2 text-space-neon-green mt-0.5" />
-                    <span>EquiXtate validators will review all submitted documentation</span>
+                    <span>Document authenticity will be verified through cryptographic attestation</span>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-4 w-4 mr-2 text-space-neon-green mt-0.5" />
+                    <span>Cross-chain property data attestation ensures immutable verification records</span>
                   </li>
                   <li className="flex items-start">
                     <Check className="h-4 w-4 mr-2 text-space-neon-green mt-0.5" />
@@ -610,64 +717,74 @@ const PropertyUploadModal: React.FC<PropertyUploadModalProps> = ({
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={handleCancel}>
-      <DialogContent className="sm:max-w-[600px] glassmorphism border-space-neon-blue/30">
-        <button 
-          onClick={handleCancel} 
-          className="absolute top-4 right-4 p-1 rounded-full hover:bg-space-deep-purple/50 transition-colors"
-          aria-label="Close"
+    <>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80"
+          onClick={handleCancel}
         >
-          <X className="h-4 w-4 text-gray-400" />
-        </button>
+          <div 
+            className="relative w-full max-w-[600px] mx-4 glassmorphism border-space-neon-blue/30 rounded-lg p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={handleCancel} 
+              className="absolute top-4 right-4 p-1 rounded-full hover:bg-space-deep-purple/50 transition-colors z-10"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-gray-400" />
+            </button>
 
-        <DialogHeader>
-          {renderStepIndicators()}
-          {renderStepContent()}
-        </DialogHeader>
-        
-        <div className="flex justify-between mt-6">
-          {currentStep > 1 && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={moveToPreviousStep}
-              className="border-space-neon-blue text-space-neon-blue"
-            >
-              Back
-            </Button>
-          )}
-          
-          {currentStep < totalSteps ? (
-            <Button 
-              type="button"
-              onClick={moveToNextStep}
-              className="cosmic-btn ml-auto"
-            >
-              Next <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button 
-              type="button"
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="cosmic-btn ml-auto"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing
-                </>
-              ) : (
-                <>
-                  <Upload className="mr-2 h-4 w-4" />
-                  Submit for Verification
-                </>
+            <div>
+              {renderStepIndicators()}
+              {renderStepContent()}
+            </div>
+            
+            <div className="flex justify-between mt-6">
+              {currentStep > 1 && (
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={moveToPreviousStep}
+                  className="border-space-neon-blue text-space-neon-blue"
+                >
+                  Back
+                </Button>
               )}
-            </Button>
-          )}
+              
+              {currentStep < totalSteps ? (
+                <Button 
+                  type="button"
+                  onClick={moveToNextStep}
+                  className="cosmic-btn ml-auto"
+                >
+                  Next <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button 
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isLoading || verificationInProgress}
+                  className="cosmic-btn ml-auto"
+                >
+                  {isLoading || verificationInProgress ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {verificationInProgress ? 'Verifying via KRNL...' : 'Processing...'}
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Verify & Submit
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </>
   );
 };
 
