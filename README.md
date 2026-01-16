@@ -440,7 +440,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Built with ❤️ by the EquiXtate Team**
+**Built by the EquiXtate Team**
 
 [Website](https://equixtate.io) • [Documentation](https://docs.equixtate.io) • [Discord](https://discord.gg/equixtate)
 
