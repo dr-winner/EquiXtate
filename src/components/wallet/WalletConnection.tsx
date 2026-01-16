@@ -23,6 +23,7 @@ const WalletConnection: React.FC = () => {
     network,
     connectWallet,
     disconnectWallet,
+    login,
     formatAddress,
   } = useWallet();
   
@@ -56,6 +57,21 @@ const WalletConnection: React.FC = () => {
     );
   }
   
+  // Not authenticated yet: show Login/Sign up
+  if (!isAuthenticated) {
+    return (
+      <Button
+        onClick={login}
+        disabled={isLoading}
+        className="bg-space-neon-blue hover:bg-space-neon-blue/90"
+      >
+        <Wallet className="mr-2 h-4 w-4" />
+        {isLoading ? 'Opening...' : 'Log in / Sign up'}
+      </Button>
+    );
+  }
+
+  // Authenticated but wallet not connected: prompt to connect wallet
   if (!isConnected) {
     return (
       <Button 

@@ -39,18 +39,34 @@ export const useWallet = () => {
     return parseFloat(formatEther(balanceData.value)).toFixed(4);
   };
   
-  // Get network name with fallback for Sonic Testnet
+  // Get network name with fallback for actual chain detection
   const getNetworkName = () => {
-    // If chain is detected by wagmi, use its name
+    // If chain is detected by wagmi, use its name (preferred)
     if (chain?.name) {
       return chain.name;
     }
     
-    // Fallback: Check if wallet is on Sonic Testnet (chain ID 57054)
-    // This handles cases where wagmi doesn't recognize the chain
+    // Fallback: Try to get chain ID from the provider directly
     if (address && window.ethereum) {
-      // Try to get chain ID from provider
-      return 'Sonic Testnet';
+      try {
+        // Get chain ID from provider (synchronous)
+        const chainId = window.ethereum.chainId;
+        if (chainId) {
+          const id = typeof chainId === 'string' ? parseInt(chainId, 16) : chainId;
+          
+          // Map known chain IDs to names
+          const chainNames: { [key: number]: string } = {
+            1: 'Ethereum',
+            11155111: 'Sepolia',
+            57054: 'Sonic Testnet',
+            146: 'Sonic',
+          };
+          
+          return chainNames[id] || `Network (${id})`;
+        }
+      } catch (e) {
+        // Silently fail and return unknown
+      }
     }
     
     return 'Unknown Network';

@@ -7,12 +7,12 @@ export const properties = [
     id: '0x3d8e45a1c51bf05eb23be868d6ec26e050650f09a23af8161',
     name: 'Cantonments Luxury Apartments',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,luxury,apartment',
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,luxury,apartment',
-      'https://source.unsplash.com/featured/?ghana,apartment,interior',
-      'https://source.unsplash.com/featured/?ghana,kitchen,modern',
-      'https://source.unsplash.com/featured/?ghana,bedroom,luxury',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
     ],
     price: 2500000, // Now in USDC directly
     tokenPrice: 50, // Premium token price - 5x base
@@ -49,12 +49,12 @@ export const properties = [
     id: '0x6a4b8e03c50d1e78bc59c085fc4934095c63d55d7ef56e32',
     name: 'Airport Residential Estate',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,estate,modern',
+    image: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,estate,modern',
-      'https://source.unsplash.com/featured/?ghana,living,room',
-      'https://source.unsplash.com/featured/?ghana,interior,design',
-      'https://source.unsplash.com/featured/?ghana,balcony,view',
+      'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800&q=80',
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80',
+      'https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=800&q=80',
     ],
     price: 1800000, // Now in USDC directly
     tokenPrice: 35, // Premium token price - 3.5x base
@@ -91,12 +91,12 @@ export const properties = [
     id: '0x9f2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4',
     name: 'Labadi Beach Villa',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,beach,house',
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,beach,house',
-      'https://source.unsplash.com/featured/?ghana,beach,interior',
-      'https://source.unsplash.com/featured/?ghana,swimming,pool',
-      'https://source.unsplash.com/featured/?ghana,ocean,view',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800&q=80',
     ],
     price: 3200000, // Now in USDC directly
     tokenPrice: 60, // Premium token price - 6x base
@@ -133,12 +133,12 @@ export const properties = [
     id: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e',
     name: 'East Legon Loft',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,loft,urban',
+    image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,loft,urban',
-      'https://source.unsplash.com/featured/?ghana,loft,interior',
-      'https://source.unsplash.com/featured/?ghana,modern,design',
-      'https://source.unsplash.com/featured/?ghana,living,space',
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=800&q=80',
+      'https://images.unsplash.com/photo-1600573472591-ee6c563aaec8?w=800&q=80',
+      'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=800&q=80',
     ],
     price: 1200000, // Now in USDC directly
     tokenPrice: 20, // Medium token price - 2x base
@@ -175,12 +175,12 @@ export const properties = [
     id: '0x2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b',
     name: 'Trassaco Valley Estate',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,luxury,estate',
+    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,luxury,estate',
-      'https://source.unsplash.com/featured/?ghana,villa,interior',
-      'https://source.unsplash.com/featured/?ghana,garden,luxury',
-      'https://source.unsplash.com/featured/?ghana,swimming,pool',
+      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566752229-250ed79470f8?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=800&q=80',
     ],
     price: 4500000, // Now in USDC directly
     tokenPrice: 75, // Premium token price - 7.5x base
@@ -217,12 +217,12 @@ export const properties = [
     id: '0x5e6d7c8b9a0f1e2d3c4b5a6f7d8e9c0b1a2f3e4d5c6b7',
     name: 'Ridge Royal Penthouse',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,penthouse,luxury',
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,penthouse,luxury',
-      'https://source.unsplash.com/featured/?ghana,penthouse,view',
-      'https://source.unsplash.com/featured/?ghana,modern,interior',
-      'https://source.unsplash.com/featured/?ghana,living,luxury',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=800&q=80',
+      'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80',
     ],
     price: 5800000, // Now in USDC directly
     tokenPrice: 100, // Premium token price - 10x base
@@ -259,12 +259,12 @@ export const properties = [
     id: '0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9',
     name: 'Spintex Road Townhouse',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,townhouse,modern',
+    image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,townhouse,modern',
-      'https://source.unsplash.com/featured/?ghana,townhouse,interior',
-      'https://source.unsplash.com/featured/?ghana,living,room',
-      'https://source.unsplash.com/featured/?ghana,bedroom,modern',
+      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80',
+      'https://images.unsplash.com/photo-1600573472591-ee6c563aaec8?w=800&q=80',
+      'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566752547-33a74cb12829?w=800&q=80',
     ],
     price: 850000, // Now in USDC directly
     tokenPrice: 15, // Medium token price - 1.5x base
@@ -301,12 +301,12 @@ export const properties = [
     id: '0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0',
     name: 'Osu Commercial Building',
     location: 'Accra, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,commercial,building',
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,commercial,building',
-      'https://source.unsplash.com/featured/?ghana,office,space',
-      'https://source.unsplash.com/featured/?ghana,conference,room',
-      'https://source.unsplash.com/featured/?ghana,business,district',
+      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
+      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80',
+      'https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=800&q=80',
     ],
     price: 2200000, // Now in USDC directly
     tokenPrice: 45, // Premium token price - 4.5x base
@@ -343,12 +343,12 @@ export const properties = [
     id: '0x9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1',
     name: 'Kumasi Cultural Complex',
     location: 'Kumasi, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,cultural,building',
+    image: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,cultural,building',
-      'https://source.unsplash.com/featured/?ghana,traditional,architecture',
-      'https://source.unsplash.com/featured/?ghana,cultural,center',
-      'https://source.unsplash.com/featured/?ghana,community,space',
+      'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80',
     ],
     price: 1750000, // Now in USDC directly
     tokenPrice: 30, // Medium token price - 3x base
@@ -385,12 +385,12 @@ export const properties = [
     id: '0xd1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2',
     name: 'Takoradi Harbor View Apartments',
     location: 'Takoradi, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,apartment,harbor',
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,apartment,harbor',
-      'https://source.unsplash.com/featured/?ghana,harbor,view',
-      'https://source.unsplash.com/featured/?ghana,coastal,apartment',
-      'https://source.unsplash.com/featured/?ghana,modern,living',
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800&q=80',
     ],
     price: 1350000, // Now in USDC directly
     tokenPrice: 25, // Medium token price - 2.5x base
@@ -427,12 +427,12 @@ export const properties = [
     id: '0xe2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3',
     name: 'Tamale Eco-Resort',
     location: 'Tamale, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,resort,eco',
+    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,resort,eco',
-      'https://source.unsplash.com/featured/?ghana,sustainable,tourism',
-      'https://source.unsplash.com/featured/?ghana,eco,architecture',
-      'https://source.unsplash.com/featured/?ghana,resort,outdoor',
+      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80',
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
+      'https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=800&q=80',
     ],
     price: 2900000, // Now in USDC directly
     tokenPrice: 55, // Premium token price - 5.5x base
@@ -469,12 +469,12 @@ export const properties = [
     id: '0xf3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4',
     name: 'Cape Coast Heritage Home',
     location: 'Cape Coast, Ghana',
-    image: 'https://source.unsplash.com/featured/?ghana,heritage,home',
+    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80',
     images: [
-      'https://source.unsplash.com/featured/?ghana,heritage,home',
-      'https://source.unsplash.com/featured/?ghana,colonial,architecture',
-      'https://source.unsplash.com/featured/?ghana,historical,building',
-      'https://source.unsplash.com/featured/?ghana,restored,interior',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80',
     ],
     price: 980000, // Now in USDC directly
     tokenPrice: 8, // Basic token price - 0.8x base

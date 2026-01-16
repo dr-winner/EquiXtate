@@ -19,11 +19,11 @@ const StarField: React.FC = () => {
     setCanvasDimensions();
     window.addEventListener('resize', setCanvasDimensions);
     
-    // Star properties
+    // Star properties - reduced for cleaner look
     const stars: Star[] = [];
     const shootingStars: ShootingStar[] = [];
     const cryptoSymbols: CryptoSymbol[] = [];
-    const numStars = Math.floor(canvas.width * canvas.height / 20000); // Reduced density
+    const numStars = Math.floor(canvas.width * canvas.height / 40000); // Further reduced density for cleaner look
     
     interface Star {
       x: number;
@@ -63,30 +63,30 @@ const StarField: React.FC = () => {
     const symbols = ['₿', 'Ξ', '◎', '₳', 'Ł', '₮', '✕', 'Ð'];
     const colors = ['#9b87f5', '#33C3F0', '#00f5d4', '#F97316'];
     
-    // Generate stars
+    // Generate stars - minimal and subtle
     for (let i = 0; i < numStars; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 1.2, // Reduced max size
-        opacity: Math.random() * 0.8, // Reduced max opacity
-        speed: 0.1 + Math.random() * 0.2, // Reduced speed
+        radius: Math.random() * 0.8, // Smaller stars
+        opacity: Math.random() * 0.5, // More subtle opacity
+        speed: 0.05 + Math.random() * 0.1, // Slower, calmer animation
         cyclePosition: Math.random() * 2 * Math.PI
       });
     }
     
-    // Generate crypto symbols
-    for (let i = 0; i < 15; i++) {
+    // Generate crypto symbols - fewer and more subtle
+    for (let i = 0; i < 6; i++) {
       cryptoSymbols.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         symbol: symbols[Math.floor(Math.random() * symbols.length)],
-        opacity: 0.05 + Math.random() * 0.15,
-        size: 20 + Math.random() * 40,
-        speed: 0.2 + Math.random() * 0.4,
+        opacity: 0.03 + Math.random() * 0.07, // More transparent
+        size: 15 + Math.random() * 25, // Smaller
+        speed: 0.1 + Math.random() * 0.2, // Slower
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.01,
-        blur: 5 + Math.random() * 10,
+        rotationSpeed: (Math.random() - 0.5) * 0.005, // Slower rotation
+        blur: 8 + Math.random() * 12, // More blur
         color: colors[Math.floor(Math.random() * colors.length)]
       });
     }
@@ -158,8 +158,8 @@ const StarField: React.FC = () => {
           ctx.fill();
         });
         
-        // Handle shooting stars
-        if (frameCount % 100 === 0 && Math.random() > 0.7) {
+        // Handle shooting stars - less frequent for cleaner look
+        if (frameCount % 300 === 0 && Math.random() > 0.85) {
           shootingStars.push(createShootingStar());
         }
         

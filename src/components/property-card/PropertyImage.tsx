@@ -49,8 +49,8 @@ const PropertyImage: React.FC<PropertyImageProps> = ({ image, name, type, roi, i
       <img 
         src={imageToDisplay} 
         alt={name}
-        className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
-        style={{ transform: isHovered && !isMobile ? 'scale(1.05)' : 'scale(1)' }}
+        className="w-full h-full object-cover transition-transform duration-300 ease-out"
+        style={{ transform: isHovered && !isMobile ? 'scale(1.02)' : 'scale(1)' }}
         onError={() => setImageError(true)}
       />
       
@@ -64,10 +64,10 @@ const PropertyImage: React.FC<PropertyImageProps> = ({ image, name, type, roi, i
       
       {roi && (
         <motion.div 
-          className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-space-neon-green/80 text-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-bold"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-space-neon-green/90 text-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-bold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
         >
           {roi}% ROI
         </motion.div>

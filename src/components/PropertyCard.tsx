@@ -61,12 +61,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <motion.div
       className="space-card h-full flex flex-col"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
       whileHover={{
-        y: -5,
-        transition: { duration: 0.3 }
+        y: -3,
+        transition: { duration: 0.2 }
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

@@ -29,15 +29,15 @@ const TokenizationSection: React.FC = () => {
   return (
     <section id="tokenization" className="py-20 relative">
       <div className="absolute top-0 right-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-space-neon-purple/10 blur-3xl"></div>
-        <div className="absolute bottom-1/3 left-1/4 w-96 h-96 rounded-full bg-space-neon-blue/10 blur-3xl"></div>
+        <div className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-space-neon-purple/5 blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-96 h-96 rounded-full bg-space-neon-blue/5 blur-3xl"></div>
       </div>
 
       <div className="container px-4 mx-auto z-10 relative">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold mb-4">
             <span className="text-white">Property </span>
-            <span className="bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">Tokenization</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-space-neon-purple to-space-neon-blue">Tokenization</span>
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto font-inter">
             We transform physical real estate into blockchain tokens, creating liquid assets
@@ -50,14 +50,14 @@ const TokenizationSection: React.FC = () => {
             <motion.div
               key={index}
               className="glassmorphism p-6 relative overflow-hidden group"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
               viewport={{ once: true }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-space-neon-purple/20 to-space-neon-blue/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-space-neon-purple/10 to-space-neon-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               <div className="relative z-10">
-                <div className="bg-space-deep-purple/50 p-4 inline-flex rounded-lg mb-4 group-hover:shadow-neon-purple transition-all duration-300">
+                <div className="bg-space-deep-purple/50 p-4 inline-flex rounded-lg mb-4 group-hover:bg-space-deep-purple/70 transition-colors duration-200">
                   {step.icon}
                 </div>
                 <h3 className="text-xl font-orbitron font-semibold mb-2 text-white">
@@ -79,7 +79,7 @@ const TokenizationSection: React.FC = () => {
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8">
                 <h3 className="text-2xl md:text-3xl font-orbitron font-bold mb-4 text-white">
-                  Unlock the Power of <span className="text-space-neon-green neon-glow-green">Tokenized</span> Ownership
+                  Unlock the Power of <span className="text-space-neon-green">Tokenized</span> Ownership
                 </h3>
                 <p className="text-gray-300 mb-6 font-inter">
                   Own tokens representing premium real estate without traditional barriers.
