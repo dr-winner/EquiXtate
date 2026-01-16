@@ -19,7 +19,7 @@ const InvestmentOpportunities: React.FC = () => {
     <section id="invest" className="py-20 relative overflow-hidden">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-12 text-center">
-          <span className="bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-space-neon-purple to-space-neon-blue">
             Investment Opportunities
           </span>
         </h2>

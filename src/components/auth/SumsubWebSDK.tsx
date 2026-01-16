@@ -11,7 +11,7 @@ interface SumsubWebSDKProps {
   email: string;
   phone?: string;
   onVerificationComplete?: (status: string, result?: Record<string, unknown>) => void;
-  levelName?: string; // 'basic-kyc-level' or 'compliance-kyc-level'
+  levelName?: string; // 'id-and-liveness' is the default
 }
 
 const SumsubWebSDK: React.FC<SumsubWebSDKProps> = ({
@@ -21,7 +21,7 @@ const SumsubWebSDK: React.FC<SumsubWebSDKProps> = ({
   email,
   phone,
   onVerificationComplete,
-  levelName = 'basic-kyc-level',
+  levelName = 'id-and-liveness',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sdkInstanceRef = useRef<any>(null);
@@ -75,6 +75,11 @@ const SumsubWebSDK: React.FC<SumsubWebSDKProps> = ({
     try {
       setIsLoading(true);
       setError(null);
+
+      // Validate userId before making API call
+      if (!userId) {
+        throw new Error('Wallet address is required for KYC verification');
+      }
 
       // Get initial access token
       const token = await getNewAccessToken();

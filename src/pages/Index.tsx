@@ -126,9 +126,9 @@ const Index = () => {
           initial="hidden"
           variants={{
             visible: { opacity: 1, y: 0 },
-            hidden: { opacity: 0, y: 50 }
+            hidden: { opacity: 0, y: 20 }
           }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
           <MarketplaceSection />
         </motion.div>
@@ -149,7 +149,7 @@ const Index = () => {
               <div className="flex flex-col lg:flex-row items-center justify-between">
                 <div className="lg:w-2/3 mb-6 lg:mb-0">
                   <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-4">
-                    <span className="bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-space-neon-purple to-space-neon-blue">
                       Ready to Transform Real Estate Investment?
                     </span>
                   </h2>

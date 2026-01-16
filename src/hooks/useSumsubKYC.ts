@@ -36,12 +36,17 @@ export function useSumsubKYC(options: UseSumsubKYCOptions): UseSumsubKYCReturn {
       setIsLoading(true);
       setError(null);
 
+      // Validate userId before making request
+      if (!options.userId) {
+        throw new Error('Wallet address required for KYC verification. Please connect your wallet first.');
+      }
+
       // Generate access token
       const tokenData = await SumsubService.generateAccessToken({
         userId: options.userId,
-        email: options.email,
+        email: options.email || `${options.userId}@equixtate.app`,
         phone: options.phone,
-        levelName: options.levelName,
+        levelName: options.levelName || 'id-and-liveness',
       });
 
       setAccessToken(tokenData.token);

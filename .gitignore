@@ -33,3 +33,7 @@ dist-ssr
 *.recovered
 *.bak
 *.backup
+# Foundry build outputs
+src/contracts/out/
+src/contracts/cache/
+src/contracts/broadcast/

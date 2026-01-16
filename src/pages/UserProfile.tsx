@@ -9,7 +9,6 @@ import { EQUIX_TOKEN_VALUE, STABLECOIN_SYMBOL } from '@/types/property';
 import Web3Service from '@/services/Web3Service';
 import WalletConnectionPrompt from '@/components/user-profile/WalletConnectionPrompt';
 import UserStatsOverview from '@/components/user-profile/UserStatsOverview';
-import KYCStatusDisplay from '@/components/user-profile/KYCStatusDisplay';
 import ProfileTabs from '@/components/user-profile/ProfileTabs';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, AlertCircle } from 'lucide-react';
@@ -191,6 +190,9 @@ const UserProfile = () => {
             governanceInfluence={userStats.governanceInfluence}
             calculateTokenValue={calculateTokenValue}
             userAvatarImage={userAvatarImage}
+            isKYCVerified={isKYCVerified}
+            kycTier={kycTier}
+            onStartKYC={() => openKYC()}
           />
 
           <ProfileTabs 
@@ -201,15 +203,6 @@ const UserProfile = () => {
             rewardsEarned={userStats.rewardsEarned}
             calculateTokenValue={calculateTokenValue}
             totalTokensOwned={userStats.totalTokensOwned}
-          />
-        </div>
-
-        {/* KYC Status Section */}
-        <div className="mb-12 max-w-md">
-          <KYCStatusDisplay
-            isKYCVerified={isKYCVerified}
-            kycTier={kycTier}
-            onStartKYC={() => openKYC()}
           />
         </div>
       </main>

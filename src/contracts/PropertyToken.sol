@@ -3,11 +3,13 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./KYCVerifier.sol";
 
 /**
  * @title PropertyToken
  * @dev ERC20 token representing fractional ownership of a property
+ * @notice Requires KYC verification for all token purchases
  */
 contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
     uint256 public pricePerToken; // Price in USDC (using 6 decimals)
@@ -17,6 +19,7 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
 
     address public propertyManager;
     address public propertyAddress;
+    KYCVerifier public kycVerifier;
 
     // Token distribution
     uint256 public tokensForSale;
@@ -44,12 +47,15 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         string memory _propertyName,
         string memory _propertyLocation,
         uint256 _propertyValue,
-        address _propertyManager
+        address _propertyManager,
+        address _kycVerifier
     ) ERC20(_name, _symbol) Ownable(msg.sender) {
+        require(_kycVerifier != address(0), "Invalid KYC verifier address");
         propertyName = _propertyName;
         propertyLocation = _propertyLocation;
         propertyValue = _propertyValue;
         propertyManager = _propertyManager;
+        kycVerifier = KYCVerifier(_kycVerifier);
 
         // Initialize token distribution
         tokensForSale = PROPERTY_TOKENS;
@@ -68,6 +74,12 @@ contract PropertyToken is ERC20, Ownable, ReentrancyGuard {
         uint256 amount,
         uint256 usdcAmount
     ) external nonReentrant {
+        // Require KYC verification
+        require(
+            kycVerifier.isKYCVerified(msg.sender),
+            "KYC verification required to purchase tokens"
+        );
+        
         require(
             amount <= tokensForSale,
             "Not enough tokens available for sale"

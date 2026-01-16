@@ -45,6 +45,11 @@ export const envConfig = {
   sumsubSandboxMode: import.meta.env.VITE_SUMSUB_SANDBOX_MODE === 'true',
 };
 
+// KYC Verifier Contract Configuration
+export const KYC_VERIFIER_CONFIG = {
+  contractAddress: import.meta.env.VITE_KYC_VERIFIER_CONTRACT || '',
+};
+
 // Function to check if API key is available
 export const isGroqApiKeyAvailable = (): boolean => {
   const isAvailable = !!GROQ_API_KEY && GROQ_API_KEY.length > 0;

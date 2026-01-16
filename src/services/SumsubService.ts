@@ -55,7 +55,7 @@ class SumsubService {
           userId: applicantData.userId,
           email: applicantData.email,
           phone: applicantData.phone,
-          levelName: applicantData.levelName || 'basic-kyc-level',
+          levelName: applicantData.levelName || 'id-and-liveness',
         }),
       });
 

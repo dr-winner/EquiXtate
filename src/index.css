@@ -78,75 +78,54 @@
 
 @layer components {
   .neon-glow {
-    text-shadow: 0 0 5px rgba(51,195,240,0.7), 0 0 10px rgba(51,195,240,0.5), 0 0 15px rgba(51,195,240,0.3);
+    text-shadow: 0 0 3px rgba(51,195,240,0.4), 0 0 6px rgba(51,195,240,0.2);
   }
 
   .neon-glow-purple {
-    text-shadow: 0 0 5px rgba(155,135,245,0.7), 0 0 10px rgba(155,135,245,0.5), 0 0 15px rgba(155,135,245,0.3);
+    text-shadow: 0 0 3px rgba(155,135,245,0.4), 0 0 6px rgba(155,135,245,0.2);
   }
 
   .neon-glow-green {
-    text-shadow: 0 0 5px rgba(0,245,212,0.7), 0 0 10px rgba(0,245,212,0.5), 0 0 15px rgba(0,245,212,0.3);
+    text-shadow: 0 0 3px rgba(0,245,212,0.4), 0 0 6px rgba(0,245,212,0.2);
   }
 
   .neon-border {
-    box-shadow: 0 0 5px rgba(51,195,240,0.5), 0 0 10px rgba(51,195,240,0.3);
-    border: 1px solid rgba(51,195,240,0.5);
+    box-shadow: 0 0 3px rgba(51,195,240,0.3), 0 0 8px rgba(51,195,240,0.15);
+    border: 1px solid rgba(51,195,240,0.4);
   }
 
   .neon-border-purple {
-    box-shadow: 0 0 5px rgba(155,135,245,0.5), 0 0 10px rgba(155,135,245,0.3);
-    border: 1px solid rgba(155,135,245,0.5);
+    box-shadow: 0 0 3px rgba(155,135,245,0.3), 0 0 8px rgba(155,135,245,0.15);
+    border: 1px solid rgba(155,135,245,0.4);
   }
 
   .glassmorphism {
-    background: rgba(26, 31, 44, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(155, 135, 245, 0.18);
+    background: rgba(26, 31, 44, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(155, 135, 245, 0.12);
     border-radius: 12px;
   }
 
   .space-card {
-    @apply glassmorphism relative overflow-hidden transition-all duration-300 hover:shadow-neon-purple;
+    @apply glassmorphism relative overflow-hidden transition-all duration-200;
+    border: 1px solid rgba(155, 135, 245, 0.15);
   }
 
-  .space-card:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(155, 135, 245, 0.2), transparent);
-    transition: 0.5s;
-    pointer-events: none;
-  }
-
-  .space-card:hover::before {
-    left: 100%;
+  .space-card:hover {
+    border-color: rgba(155, 135, 245, 0.3);
+    box-shadow: 0 4px 20px rgba(155, 135, 245, 0.1);
   }
 
   .cosmic-btn {
     @apply bg-gradient-to-r from-space-neon-purple to-space-neon-blue 
-           text-white font-orbitron px-6 py-2 rounded-lg 
-           transition-all duration-300 relative overflow-hidden
-           shadow-md hover:shadow-neon;
+           text-white font-medium px-6 py-2 rounded-lg 
+           transition-all duration-200 relative overflow-hidden;
   }
 
-  .cosmic-btn:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
-  }
-
-  .cosmic-btn:hover::before {
-    left: 100%;
+  .cosmic-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
 
   .star {
@@ -176,13 +155,12 @@
   }
   
   .three-d-card {
-    transition: transform 0.5s ease;
-    transform-style: preserve-3d;
+    transition: transform 0.2s ease;
   }
   
   .three-d-card:hover {
-    transform: perspective(1000px) rotateY(10deg) rotateX(5deg);
-    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
   
   .digital-circuit {

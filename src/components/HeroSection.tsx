@@ -33,21 +33,10 @@ const HeroSection: React.FC = () => {
 
   return (
     <div id="home" className="relative min-h-[80vh] flex items-center justify-center pt-16 pb-10">
-      {/* Animated floating crypto symbols */}
+      {/* Subtle background glow - simplified */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full bg-space-neon-purple/20 blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-60 h-60 rounded-full bg-space-neon-blue/20 blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-2/3 left-1/3 w-32 h-32 rounded-full bg-space-neon-green/20 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        
-        {/* Blockchain and token symbols floating in the background */}
-        <div className="absolute top-1/5 right-1/3 text-space-neon-blue/30 text-6xl animate-float" style={{ animationDelay: '1.2s' }}>₿</div>
-        <div className="absolute bottom-1/4 left-1/4 text-space-neon-purple/30 text-7xl animate-float" style={{ animationDelay: '2.5s' }}>Ξ</div>
-        <div className="absolute top-2/3 right-1/4 text-space-neon-green/30 text-5xl animate-float" style={{ animationDelay: '3.2s' }}>◎</div>
-        
-        {/* Additional crypto tokens */}
-        <div className="absolute top-1/3 right-1/5 text-space-neon-blue/20 text-4xl animate-float" style={{ animationDelay: '1.8s' }}>$</div>
-        <div className="absolute bottom-1/2 left-1/5 text-space-neon-purple/20 text-5xl animate-float" style={{ animationDelay: '3.5s' }}>⟠</div>
-        <div className="absolute top-1/6 left-2/3 text-space-neon-green/20 text-3xl animate-float" style={{ animationDelay: '2.8s' }}>ⓧ</div>
+        <div className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full bg-space-neon-purple/10 blur-3xl"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-60 h-60 rounded-full bg-space-neon-blue/10 blur-3xl"></div>
       </div>
       
       <div className="container px-4 z-10 pt-10">
@@ -58,11 +47,10 @@ const HeroSection: React.FC = () => {
           </div>
         
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-bold mb-6">
-            {/* <span className="block text-space-neon-green neon-glow-green">COSMIC</span> */}
-            <span className="block bg-clip-text text-transparent bg-neon-gradient neon-glow-purple">
-              Equi<span className="text-space-neon-blue font-bold neon-glow">X</span>tate
+            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-space-neon-purple to-space-neon-blue">
+              Equi<span className="text-space-neon-blue font-bold">X</span>tate
             </span>
-            <span className="block text-white">MarketPlace</span>
+            <span className="block text-white mt-2">MarketPlace</span>
           </h1>
           
           <p className="text-lg sm:text-xl md:text-2xl text-gray-300 font-spacegrotesk mb-8 max-w-3xl mx-auto">
@@ -71,18 +59,18 @@ const HeroSection: React.FC = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-1">
             <Button 
-              className="cosmic-btn flex items-center py-6 px-8 text-lg"
+              className="bg-gradient-to-r from-space-neon-purple to-space-neon-blue text-white font-medium px-8 py-6 rounded-lg transition-all duration-200 hover:opacity-90 flex items-center text-lg"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               onClick={scrollToMarketplace}
             >
               <span className="mr-2">Explore Properties</span>
-              <ChevronRight className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`} />
+              <ChevronRight className={`transition-transform duration-200 ${isHovered ? 'translate-x-1' : ''}`} />
             </Button>
             
             <Button 
               variant="outline" 
-              className="border-2 border-space-neon-blue text-space-neon-blue hover:bg-space-neon-blue/10 hover:text-white transition-all duration-300 py-6 px-8 text-lg"
+              className="border-2 border-space-neon-blue text-space-neon-blue hover:bg-space-neon-blue/10 hover:text-white transition-all duration-200 py-6 px-8 text-lg rounded-lg"
               onClick={() => {
                 const element = document.getElementById('tokenization');
                 if (element) element.scrollIntoView({ behavior: 'smooth' });
