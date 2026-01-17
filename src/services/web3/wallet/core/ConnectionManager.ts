@@ -155,7 +155,7 @@ class ConnectionManager {
   
   // Helper method to get the appropriate Ethereum object, handling multiple providers
   private getEthereumObject(): any {
-    let ethereum = window.ethereum;
+    const ethereum = window.ethereum;
     
     // No provider available
     if (!ethereum) {

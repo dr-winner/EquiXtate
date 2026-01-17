@@ -160,9 +160,14 @@ Our contracts are built with Solidity and deployed using Foundry.
 ### Deployed Addresses (Sepolia Testnet)
 
 ```
-KYCVerifier:     0x6eeA600d2AbC11D3fF82a6732b1042Eec52A111d
-Oracle Wallet:   0xbBAc31249988fB9521dA2f6F1Cc518AC768615e9
+KYCVerifier:         0x6eeA600d2AbC11D3fF82a6732b1042Eec52A111d
+PropertyRegistry:    0xE11D19503029Ed7D059A0022288FB88d61C7c3b4
+PropertyGovernance:  0xCd7b9006207F0DA7287f692A7250B64E1B3c8453
+RentDistribution:    0xd1b544926e3e8761aD4c06605A7aA9689A169dF0
+Oracle Wallet:       0xbBAc31249988fB9521dA2f6F1Cc518AC768615e9
 ```
+
+All contracts are verified on [Sepolia Etherscan](https://sepolia.etherscan.io/).
 
 ### Building Contracts
 

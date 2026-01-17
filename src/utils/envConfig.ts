@@ -25,6 +25,15 @@ export const KRNL_CONFIG = {
   
   // Smart Contract Address for KRNL interactions
   contractAddress: import.meta.env.VITE_CONTRACT_ADDRESS || '',
+  
+  // Attestor Image (docker image for KRNL attestor)
+  attestorImage: import.meta.env.VITE_ATTESTOR_IMAGE || '',
+  
+  // Delegated Account Address
+  delegatedAccountAddress: import.meta.env.VITE_DELEGATED_ACCOUNT_ADDRESS || '0x9969827E2CB0582e08787B23F641b49Ca82bc774',
+  
+  // Delegate Owner (your EOA)
+  delegateOwner: import.meta.env.VITE_DELEGATE_OWNER || '',
 };
 
 // Privy Configuration
@@ -53,6 +62,16 @@ export const KYC_VERIFIER_CONFIG = {
 // Property Registry Contract Configuration
 export const PROPERTY_REGISTRY_CONFIG = {
   contractAddress: import.meta.env.VITE_PROPERTY_REGISTRY_ADDRESS || '0xE11D19503029Ed7D059A0022288FB88d61C7c3b4',
+};
+
+// Property Governance Contract Configuration
+export const PROPERTY_GOVERNANCE_CONFIG = {
+  contractAddress: import.meta.env.VITE_PROPERTY_GOVERNANCE_ADDRESS || '',
+};
+
+// Rent Distribution Contract Configuration
+export const RENT_DISTRIBUTION_CONFIG = {
+  contractAddress: import.meta.env.VITE_RENT_DISTRIBUTION_ADDRESS || '',
 };
 
 // Function to check if API key is available

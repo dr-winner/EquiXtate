@@ -33,7 +33,21 @@ dist-ssr
 *.recovered
 *.bak
 *.backup
+
 # Foundry build outputs
 src/contracts/out/
 src/contracts/cache/
 src/contracts/broadcast/
+
+# KRNL attestor build (contains sensitive keys)
+build/
+*.so
+constr.key
+
+# Vite cache
+.vite/
+
+# Temporary scripts (local dev only)
+setup-krnl-attestor.sh
+deploy-kyc-secure.sh
+scripts/krnl-setup.sh

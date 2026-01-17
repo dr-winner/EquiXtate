@@ -39,7 +39,7 @@ export const useWalletConnector = ({
   const walletOptions = detectedWallets.map(wallet => {
     let icon = '🔗'; // Default icon
     let description = '';
-    let mobileSupported = true;
+    const mobileSupported = true;
     
     if (wallet.id === 'metamask' || wallet.id === 'metamask-mobile') {
       icon = '🦊';

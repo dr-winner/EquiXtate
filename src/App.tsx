@@ -7,6 +7,7 @@ import { WagmiConfig } from 'wagmi'
 import { config } from './config/wagmi'
 import { PrivyProvider } from '@privy-io/react-auth';
 import { PRIVY_APP_ID, privyConfig } from './config/privy';
+import { KRNLWrapper } from './providers/KRNLWrapper';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PropertyPage from "./pages/PropertyPage";
@@ -52,12 +53,13 @@ const App = () => {
         appId={PRIVY_APP_ID}
         config={privyConfig}
       >
-        <WagmiConfig config={config}>
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <StarFieldProvider>
-                <Toaster />
-                <Sonner />
+        <KRNLWrapper>
+          <WagmiConfig config={config}>
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <StarFieldProvider>
+                  <Toaster />
+                  <Sonner />
                 <BrowserRouter>
                   <PrivyAuthHandler />
                   <AIAdvisorBubble />
@@ -77,7 +79,8 @@ const App = () => {
             </TooltipProvider>
           </QueryClientProvider>
         </WagmiConfig>
-      </PrivyProvider>
+      </KRNLWrapper>
+    </PrivyProvider>
     </ErrorBoundary>
   );
 };
