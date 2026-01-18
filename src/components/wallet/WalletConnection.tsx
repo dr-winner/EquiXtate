@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Wallet, ChevronDown, LogOut, Copy, ExternalLink } from 'lucide-react';
+import { Wallet, ChevronDown, LogOut, Copy, ExternalLink, Link } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 const WalletConnection: React.FC = () => {
@@ -22,7 +22,8 @@ const WalletConnection: React.FC = () => {
     balance,
     network,
     connectWallet,
-    disconnectWallet,
+    linkExternalWallet,
+    logout,
     login,
     formatAddress,
   } = useWallet();
@@ -127,14 +128,19 @@ const WalletConnection: React.FC = () => {
           View on Explorer
         </DropdownMenuItem>
         
+        <DropdownMenuItem onClick={linkExternalWallet}>
+          <Link className="mr-2 h-4 w-4" />
+          Link Another Wallet
+        </DropdownMenuItem>
+        
         <DropdownMenuSeparator />
         
         <DropdownMenuItem 
-          onClick={disconnectWallet}
+          onClick={logout}
           className="text-red-600 focus:text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Disconnect
+          Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

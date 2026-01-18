@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
-import { useAccount, useDisconnect, useBalance } from 'wagmi';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { useAccount, useBalance } from 'wagmi';
 import { formatEther } from 'viem';
 import { toast } from '@/components/ui/use-toast';
 
 /**
  * Unified wallet hook that integrates Privy authentication with Wagmi
- * This hook provides a single source of truth for wallet connection state
+ * 
+ * IMPORTANT: With Privy, authentication and wallet are tightly coupled:
+ * - Email/social login → Privy creates an embedded wallet automatically
+ * - Wallet login → The wallet IS your auth method
+ * - You cannot disconnect wallet without logging out
+ * 
+ * This hook provides a single source of truth for wallet connection state.
  */
 export const useWallet = () => {
   const { 
@@ -16,16 +22,39 @@ export const useWallet = () => {
     login: privyLogin, 
     logout: privyLogout,
     connectWallet: privyConnectWallet,
-    linkWallet: privyLinkWallet,
+    linkWallet: privyLinkWallet, // For linking external wallets
   } = usePrivy();
   
-  const { address, isConnected, chain } = useAccount();
-  const { disconnect } = useDisconnect();
+  // Get all wallets from Privy (embedded + linked)
+  const { wallets } = useWallets();
+  
+  const { address: wagmiAddress, chain } = useAccount();
   const { data: balanceData } = useBalance({
-    address: address,
+    address: wagmiAddress,
   });
   
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get the active wallet address (prefer wagmi, fallback to privy wallets)
+  const getActiveWalletAddress = (): string | undefined => {
+    // If wagmi has an address, use it
+    if (wagmiAddress) return wagmiAddress;
+    
+    // Fallback to first Privy wallet
+    if (wallets && wallets.length > 0) {
+      return wallets[0].address;
+    }
+    
+    return undefined;
+  };
+  
+  const address = getActiveWalletAddress();
+  
+  // Check if user has a wallet (embedded or external)
+  const hasWallet = wallets && wallets.length > 0;
+  
+  // Check if connected (authenticated + has wallet)
+  const isConnected = privyAuthenticated && hasWallet;
   
   // Format wallet address for display
   const formatAddress = (addr: string | undefined) => {
@@ -49,12 +78,10 @@ export const useWallet = () => {
     // Fallback: Try to get chain ID from the provider directly
     if (address && window.ethereum) {
       try {
-        // Get chain ID from provider (synchronous)
         const chainId = window.ethereum.chainId;
         if (chainId) {
           const id = typeof chainId === 'string' ? parseInt(chainId, 16) : chainId;
           
-          // Map known chain IDs to names
           const chainNames: { [key: number]: string } = {
             1: 'Ethereum',
             11155111: 'Sepolia',
@@ -69,63 +96,83 @@ export const useWallet = () => {
       }
     }
     
-    return 'Unknown Network';
+    return 'Sepolia'; // Default to Sepolia for demo
   };
   
-  // Connect wallet with Privy
+  // Login / Connect wallet with Privy
   const connectWallet = async () => {
     try {
       setIsLoading(true);
       
       if (!privyAuthenticated) {
-        // First authenticate with Privy (email, social, etc.)
+        // Authenticate with Privy (opens login modal)
         await privyLogin();
-      } else {
+      } else if (!hasWallet) {
         // If authenticated but no wallet, connect/link wallet
         await privyConnectWallet();
       }
+      // If already authenticated and has wallet, do nothing
       
-      toast({
-        title: "Wallet Connected",
-        description: "Your wallet has been successfully connected.",
-      });
     } catch (error) {
       console.error('Error connecting wallet:', error);
       toast({
         variant: "destructive",
         title: "Connection Failed",
-        description: error instanceof Error ? error.message : "Failed to connect wallet. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to connect. Please try again.",
       });
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Disconnect wallet
-  const disconnectWallet = async () => {
+  // Link an additional external wallet
+  const linkExternalWallet = async () => {
+    try {
+      setIsLoading(true);
+      // Use linkWallet for linking external wallets like MetaMask
+      await privyLinkWallet();
+      toast({
+        title: "Wallet Linked",
+        description: "External wallet has been linked to your account.",
+      });
+    } catch (error) {
+      console.error('Error linking wallet:', error);
+      toast({
+        variant: "destructive",
+        title: "Link Failed",
+        description: "Failed to link external wallet.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Full logout (the only way to "disconnect" with Privy)
+  const logout = async () => {
     try {
       setIsLoading(true);
       
-      // Disconnect wagmi
-      disconnect();
-      
-      // Logout from Privy
+      // Logout from Privy (this disconnects all wallets)
       await privyLogout();
       
       // Clear local storage
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('userEmail');
       
+      // Dispatch event for other components
+      const event = new Event('authStatusChanged');
+      window.dispatchEvent(event);
+      
       toast({
-        title: "Wallet Disconnected",
-        description: "Your wallet has been disconnected.",
+        title: "Logged Out",
+        description: "You have been logged out successfully.",
       });
     } catch (error) {
-      console.error('Error disconnecting wallet:', error);
+      console.error('Error logging out:', error);
       toast({
         variant: "destructive",
-        title: "Disconnection Failed",
-        description: "Failed to disconnect wallet. Please try again.",
+        title: "Logout Failed",
+        description: "Failed to log out. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -141,26 +188,32 @@ export const useWallet = () => {
                    privyUser.github?.email || 
                    privyUser.apple?.email;
       
+      localStorage.setItem('isAuthenticated', 'true');
       if (email) {
-        localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('userEmail', email);
-        
-        // Dispatch event for other components
-        const event = new Event('authStatusChanged');
-        window.dispatchEvent(event);
       }
+      
+      // Dispatch event for other components
+      const event = new Event('authStatusChanged');
+      window.dispatchEvent(event);
+      
     } else if (privyReady && !privyAuthenticated) {
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('userEmail');
+      
+      // Dispatch event for other components
+      const event = new Event('authStatusChanged');
+      window.dispatchEvent(event);
     }
   }, [privyReady, privyAuthenticated, privyUser]);
   
   return {
     // Connection state
     isReady: privyReady,
-    isConnected: isConnected && privyAuthenticated,
+    isConnected,
     isAuthenticated: privyAuthenticated,
     isLoading,
+    hasWallet,
     
     // Wallet info
     address,
@@ -168,15 +221,16 @@ export const useWallet = () => {
     balance: getBalance(),
     chain,
     network: getNetworkName(),
+    wallets, // All linked wallets
     
     // User info from Privy
     user: privyUser,
     
     // Actions
-    connectWallet,
-    disconnectWallet,
-    login: privyLogin,
-    logout: privyLogout,
+    connectWallet,      // Login + connect wallet
+    linkExternalWallet, // Link additional wallet
+    logout,             // Full logout (only way to disconnect)
+    login: privyLogin,  // Direct Privy login
     
     // Utilities
     formatAddress,
