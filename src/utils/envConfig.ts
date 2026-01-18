@@ -50,6 +50,11 @@ export const KYC_VERIFIER_CONFIG = {
   contractAddress: import.meta.env.VITE_KYC_VERIFIER_CONTRACT || '',
 };
 
+// Property Registry Contract Configuration
+export const PROPERTY_REGISTRY_CONFIG = {
+  contractAddress: import.meta.env.VITE_PROPERTY_REGISTRY_ADDRESS || '0xE11D19503029Ed7D059A0022288FB88d61C7c3b4',
+};
+
 // Function to check if API key is available
 export const isGroqApiKeyAvailable = (): boolean => {
   const isAvailable = !!GROQ_API_KEY && GROQ_API_KEY.length > 0;

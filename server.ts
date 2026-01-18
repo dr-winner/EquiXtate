@@ -35,31 +35,47 @@ const KYC_VERIFIER_ABI = [
   'function revokeKYC(address user) external'
 ];
 
+// PropertyRegistry Contract ABI (for oracle operations)
+const PROPERTY_REGISTRY_ABI = [
+  'function approveProperty(uint256 propertyId, string memory verificationId, address tokenAddress) external',
+  'function rejectProperty(uint256 propertyId) external',
+  'function properties(uint256) view returns (uint256 id, address owner, string name, string location, uint256 value, address tokenAddress, bool isActive, uint256 listedAt, bytes32 documentHash, bytes32 locationHash, string verificationId)',
+  'function isPendingApproval(uint256 propertyId) view returns (bool)'
+];
+
 // Initialize KYC Oracle
 let kycVerifier: ethers.Contract | null = null;
+let propertyRegistry: ethers.Contract | null = null;
 let oracleWallet: ethers.Wallet | null = null;
 
 const initializeKYCOracle = () => {
   const rpcUrl = process.env.SEPOLIA_RPC_URL || `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;
   const oracleKey = process.env.ORACLE_PRIVATE_KEY || process.env.PRIVATE_KEY;
   const kycVerifierAddress = process.env.KYC_VERIFIER_CONTRACT || process.env.VITE_KYC_VERIFIER_CONTRACT;
+  const propertyRegistryAddress = process.env.PROPERTY_REGISTRY_ADDRESS || process.env.VITE_PROPERTY_REGISTRY_ADDRESS;
 
-  if (!oracleKey || !kycVerifierAddress) {
-    console.warn('⚠️  KYC Oracle not configured. Set ORACLE_PRIVATE_KEY and KYC_VERIFIER_CONTRACT');
+  if (!oracleKey) {
+    console.warn('⚠️  Oracle not configured. Set ORACLE_PRIVATE_KEY');
     return;
   }
 
   try {
     const provider = new ethers.JsonRpcProvider(rpcUrl);
     oracleWallet = new ethers.Wallet(oracleKey, provider);
-    kycVerifier = new ethers.Contract(kycVerifierAddress, KYC_VERIFIER_ABI, oracleWallet);
     
-    console.log('✅ KYC Oracle initialized:', {
-      oracleAddress: oracleWallet.address,
-      contractAddress: kycVerifierAddress
-    });
+    if (kycVerifierAddress) {
+      kycVerifier = new ethers.Contract(kycVerifierAddress, KYC_VERIFIER_ABI, oracleWallet);
+      console.log('✅ KYC Verifier Oracle initialized:', kycVerifierAddress);
+    }
+    
+    if (propertyRegistryAddress) {
+      propertyRegistry = new ethers.Contract(propertyRegistryAddress, PROPERTY_REGISTRY_ABI, oracleWallet);
+      console.log('✅ Property Registry Oracle initialized:', propertyRegistryAddress);
+    }
+    
+    console.log('✅ Oracle Wallet:', oracleWallet.address);
   } catch (error) {
-    console.error('❌ Failed to initialize KYC Oracle:', error);
+    console.error('❌ Failed to initialize Oracle:', error);
   }
 };
 
@@ -221,8 +237,137 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok',
     kycOracle: !!kycVerifier,
+    propertyOracle: !!propertyRegistry,
     sumsub: !!SUMSUB_APP_TOKEN
   });
+});
+
+// ============================================
+// PROPERTY REGISTRY ORACLE ENDPOINTS
+// ============================================
+
+/**
+ * POST /api/property/approve
+ * Oracle approves a property after KRNL verification
+ */
+app.post('/api/property/approve', async (req, res) => {
+  try {
+    if (!propertyRegistry) {
+      return res.status(503).json({ error: 'Property Registry Oracle not configured' });
+    }
+
+    const { propertyId, verificationId, tokenAddress } = req.body;
+
+    if (!propertyId || !verificationId) {
+      return res.status(400).json({ error: 'propertyId and verificationId are required' });
+    }
+
+    // Check if property is pending approval
+    const isPending = await propertyRegistry.isPendingApproval(propertyId);
+    if (!isPending) {
+      return res.status(400).json({ error: 'Property is not pending approval' });
+    }
+
+    // Approve the property
+    const tx = await propertyRegistry.approveProperty(
+      propertyId,
+      verificationId,
+      tokenAddress || ethers.ZeroAddress
+    );
+    
+    console.log(`📝 Property ${propertyId} approval tx:`, tx.hash);
+    const receipt = await tx.wait();
+
+    res.json({
+      success: true,
+      transactionHash: receipt.hash,
+      propertyId,
+      verificationId
+    });
+  } catch (error: any) {
+    console.error('Property approval error:', error);
+    res.status(500).json({ 
+      error: 'Failed to approve property',
+      details: error.reason || error.message
+    });
+  }
+});
+
+/**
+ * POST /api/property/reject
+ * Oracle rejects a property
+ */
+app.post('/api/property/reject', async (req, res) => {
+  try {
+    if (!propertyRegistry) {
+      return res.status(503).json({ error: 'Property Registry Oracle not configured' });
+    }
+
+    const { propertyId, reason } = req.body;
+
+    if (!propertyId) {
+      return res.status(400).json({ error: 'propertyId is required' });
+    }
+
+    // Check if property is pending approval
+    const isPending = await propertyRegistry.isPendingApproval(propertyId);
+    if (!isPending) {
+      return res.status(400).json({ error: 'Property is not pending approval' });
+    }
+
+    // Reject the property
+    const tx = await propertyRegistry.rejectProperty(propertyId);
+    
+    console.log(`❌ Property ${propertyId} rejection tx:`, tx.hash);
+    const receipt = await tx.wait();
+
+    res.json({
+      success: true,
+      transactionHash: receipt.hash,
+      propertyId,
+      reason: reason || 'Verification failed'
+    });
+  } catch (error: any) {
+    console.error('Property rejection error:', error);
+    res.status(500).json({ 
+      error: 'Failed to reject property',
+      details: error.reason || error.message
+    });
+  }
+});
+
+/**
+ * GET /api/property/:propertyId
+ * Get property details
+ */
+app.get('/api/property/:propertyId', async (req, res) => {
+  try {
+    if (!propertyRegistry) {
+      return res.status(503).json({ error: 'Property Registry not configured' });
+    }
+
+    const { propertyId } = req.params;
+    const property = await propertyRegistry.properties(propertyId);
+    const isPending = await propertyRegistry.isPendingApproval(propertyId);
+
+    res.json({
+      id: property.id.toString(),
+      owner: property.owner,
+      name: property.name,
+      location: property.location,
+      value: property.value.toString(),
+      tokenAddress: property.tokenAddress,
+      isActive: property.isActive,
+      listedAt: property.listedAt.toString(),
+      documentHash: property.documentHash,
+      locationHash: property.locationHash,
+      verificationId: property.verificationId,
+      isPendingApproval: isPending
+    });
+  } catch (error: any) {
+    console.error('Get property error:', error);
+    res.status(500).json({ error: 'Failed to get property details' });
+  }
 });
 
 // Initialize and start server
