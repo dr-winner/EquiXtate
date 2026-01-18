@@ -72,8 +72,7 @@ const RegistrationStepOne: React.FC<RegistrationStepOneProps> = ({
               placeholder="••••••••" 
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={password && confirmPassword && password !== confirmPassword ? "border-red-500" : ""}
-              className="bg-space-deep-purple/30 border-space-neon-blue/30 pr-10"
+              className={`bg-space-deep-purple/30 border-space-neon-blue/30 pr-10 ${password && confirmPassword && password !== confirmPassword ? "border-red-500" : ""}`}
             />
             <button
               type="button"
